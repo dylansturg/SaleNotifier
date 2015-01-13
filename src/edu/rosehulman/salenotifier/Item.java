@@ -20,4 +20,12 @@ public class Item {
 	public void update(){
 		// TODO Implement db updates
 	}
+
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
 }
