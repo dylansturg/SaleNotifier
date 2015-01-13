@@ -6,8 +6,8 @@ public class ItemPrice {
 	private String productCode;
 	private double price;
 	private Date date;
-	private String seller;
-	private Object source;
+	private int sellerId;
+	private IPricingSource source;
 	
 	public Object method(){
 		throw new RuntimeException("Don't call this method.");
