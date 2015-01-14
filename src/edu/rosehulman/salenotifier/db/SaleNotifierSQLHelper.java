@@ -1,9 +1,11 @@
 package edu.rosehulman.salenotifier.db;
 
+import edu.rosehulman.salenotifier.TrackedItemsActivity;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class SaleNotifierSQLHelper extends SQLiteOpenHelper {
 	
@@ -22,8 +24,10 @@ public class SaleNotifierSQLHelper extends SQLiteOpenHelper {
 	
 	public static synchronized SaleNotifierSQLHelper getInstance(){
 		if(instance == null){
+			Log.d(TrackedItemsActivity.LOG_TAG, "Tried to access SaleNotifierSQLHelper.getInstance with calling init first");
 			throw new IllegalStateException("Tried to access SaleNotifierSQLHelper.getInstance with calling init first");
 		}
+		return instance;
 	}
 
 	private SaleNotifierSQLHelper(Context context){
