@@ -9,8 +9,24 @@ public class SaleNotifierSQLHelper extends SQLiteOpenHelper {
 	
 	private static final int DATABASE_VERSION = 1;
 	private static final String DATABASE_NAME = "sale_notifier.db";
+	
+	private static SaleNotifierSQLHelper instance = null;
+	
+	public static synchronized void init(Context context){
+		instance = new SaleNotifierSQLHelper(context);
+	}
+	
+	public static synchronized boolean isInit(){
+		return instance != null;
+	}
+	
+	public static synchronized SaleNotifierSQLHelper getInstance(){
+		if(instance == null){
+			throw new IllegalStateException("Tried to access SaleNotifierSQLHelper.getInstance with calling init first");
+		}
+	}
 
-	public SaleNotifierSQLHelper(Context context){
+	private SaleNotifierSQLHelper(Context context){
 		super(context, "database.name", null, 1);
 	}
 
