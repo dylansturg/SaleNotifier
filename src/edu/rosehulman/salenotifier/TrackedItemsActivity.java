@@ -2,6 +2,7 @@ package edu.rosehulman.salenotifier;
 
 import edu.rosehulman.salenotifier.db.SaleNotifierSQLHelper;
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.DialogFragment;
 import android.os.Bundle;
 import android.view.Menu;
@@ -44,7 +45,11 @@ public class TrackedItemsActivity extends Activity {
 	
 	private void launchSearch(){
 		DialogFragment tempSearch = new DialogFragment(){
-			
+			@Override
+			public Dialog onCreateDialog(Bundle savedInstanceState) {
+				// TODO Auto-generated method stub
+				return super.onCreateDialog(savedInstanceState);
+			}
 		};
 		tempSearch.show(getFragmentManager(), "temp_search_dialog");
 	}
