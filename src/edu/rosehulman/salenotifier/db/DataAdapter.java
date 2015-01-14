@@ -72,11 +72,13 @@ public abstract class DataAdapter<T extends IQueryable> {
 	protected List<T> getAll(String where, String groupBy, String order) {
 		Cursor results = db.query(getTableName(), null, where, null, groupBy,
 				null, order);
-		results.moveToFirst();
+
 		ArrayList<T> items = new ArrayList<T>();
-		do {
-			items.add(constructItem(results));
-		} while (results.moveToNext());
+		if (results.moveToFirst()) {
+			do {
+				items.add(constructItem(results));
+			} while (results.moveToNext());
+		}
 		return items;
 	}
 

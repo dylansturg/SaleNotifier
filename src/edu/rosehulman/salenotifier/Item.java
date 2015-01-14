@@ -67,4 +67,9 @@ public class Item implements IQueryable {
 	public void update() {
 		// TODO Implement db updates
 	}
+	
+	@Override
+	public String toString() {
+		return "" + mId + " " + displayName + " image: " + imageUrl.toExternalForm() + " upc: " + productCode;
+	}
 }

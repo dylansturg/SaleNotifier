@@ -21,11 +21,11 @@ public class ItemPriceDataAdapter extends DataAdapter<ItemPrice>{
 	static {
 		StringBuilder sb = new StringBuilder("CREATE TABLE ");
 		sb.append(TABLE_ITEM_PRICES + " (");
-		sb.append(DB_KEY_ID + "integer primary key autoincrement, ");
-		sb.append(DB_KEY_PRODUCT_CODE + "text not null, ");
-		sb.append(DB_KEY_PRICE + "real not null, ");
-		sb.append(DB_KEY_DATE + "integer not null, ");
-		sb.append(DB_KEY_SELLER_ID + "integer not null);");
+		sb.append(DB_KEY_ID + " integer primary key autoincrement, ");
+		sb.append(DB_KEY_PRODUCT_CODE + " text not null, ");
+		sb.append(DB_KEY_PRICE + " real not null, ");
+		sb.append(DB_KEY_DATE + " integer not null, ");
+		sb.append(DB_KEY_SELLER_ID + " integer not null);");
 		
 		CREATE_TABLE = sb.toString();
 	}
