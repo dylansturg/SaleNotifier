@@ -13,19 +13,23 @@ public abstract class DataAdapter<T extends IQueryable> {
 
 	protected SQLiteOpenHelper dbOpenHelper;
 	protected SQLiteDatabase db;
-	
+
 	abstract String getTableName();
+
 	abstract String getDBKeyColumn();
+
 	abstract boolean doesItemExist(T item);
+
 	abstract ContentValues toContentValues(T item);
+
 	abstract T constructItem(Cursor vals);
 
-	public DataAdapter() {
+	protected DataAdapter() {
 		dbOpenHelper = SaleNotifierSQLHelper.getInstance();
 		db = dbOpenHelper.getWritableDatabase();
 	}
 
-	boolean insert(T item) {
+	protected boolean insert(T item) {
 		if (doesItemExist(item)) {
 			return update(item);
 		}
@@ -37,26 +41,27 @@ public abstract class DataAdapter<T extends IQueryable> {
 		return id >= 0;
 	}
 
-	boolean update(T item) {
+	protected boolean update(T item) {
 		if (!doesItemExist(item)) {
 			return insert(item);
 		}
 		ContentValues vals = toContentValues(item);
-		return db.update(getTableName(), vals, getDBKeyColumn() + "=" + item.getId(),
-				null) == 1;
+		return db.update(getTableName(), vals,
+				getDBKeyColumn() + "=" + item.getId(), null) == 1;
 	}
 
-	boolean delete(T item) {
+	protected boolean delete(T item) {
 		return delete(item.getId());
 	}
 
-	boolean delete(long id) {
+	protected boolean delete(long id) {
 		return db.delete(getTableName(), getDBKeyColumn() + "=" + id, null) == 1;
 	}
 
-	T getById(long id) {
-		Cursor results = db.query(getTableName(), null, getDBKeyColumn() + "=" + id, null, null, null, null);
-		if(results.getCount() <= 0){
+	protected T getById(long id) {
+		Cursor results = db.query(getTableName(), null, getDBKeyColumn() + "="
+				+ id, null, null, null, null);
+		if (results.getCount() <= 0) {
 			return null;
 		}
 		results.moveToFirst();
@@ -64,13 +69,14 @@ public abstract class DataAdapter<T extends IQueryable> {
 		return result;
 	}
 
-	List<T> getAll(String where, String groupBy, String order){
-		Cursor results = db.query(getTableName(), null, where, null, groupBy, null, order);
+	protected List<T> getAll(String where, String groupBy, String order) {
+		Cursor results = db.query(getTableName(), null, where, null, groupBy,
+				null, order);
 		results.moveToFirst();
 		ArrayList<T> items = new ArrayList<T>();
 		do {
 			items.add(constructItem(results));
-		}while(results.moveToNext());
+		} while (results.moveToNext());
 		return items;
 	}
 
