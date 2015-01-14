@@ -1,5 +1,6 @@
 package edu.rosehulman.salenotifier;
 
+import edu.rosehulman.salenotifier.db.SaleNotifierSQLHelper;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -14,6 +15,8 @@ public class TrackedItemsActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tracked_items);
+        
+        initPersistentStorage();
     }
 
 
@@ -34,5 +37,9 @@ public class TrackedItemsActivity extends Activity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+    
+    private void initPersistentStorage(){
+    	SaleNotifierSQLHelper.init(this);
     }
 }

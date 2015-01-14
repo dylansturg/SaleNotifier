@@ -2,8 +2,11 @@ package edu.rosehulman.salenotifier.db;
 
 import java.util.List;
 
+import edu.rosehulman.salenotifier.TrackedItemsActivity;
+
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public abstract class DataAdapter<T> {
 	
@@ -11,7 +14,8 @@ public abstract class DataAdapter<T> {
 	private SQLiteDatabase db;
 	
 	public DataAdapter() {
-		
+		dbOpenHelper = SaleNotifierSQLHelper.getInstance();
+		db = dbOpenHelper.getWritableDatabase();
 	}
 	
 	abstract boolean insert(T item);

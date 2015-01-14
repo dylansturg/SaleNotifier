@@ -43,7 +43,7 @@ public class SaleNotifierSQLHelper extends SQLiteOpenHelper {
 	}
 
 	private SaleNotifierSQLHelper(Context context){
-		super(context, "database.name", null, 1);
+		super(context,  DATABASE_NAME, null, DATABASE_VERSION);
 	}
 
 	@Override
