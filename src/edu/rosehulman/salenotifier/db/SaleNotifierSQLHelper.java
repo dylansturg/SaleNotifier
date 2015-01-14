@@ -12,6 +12,18 @@ public class SaleNotifierSQLHelper extends SQLiteOpenHelper {
 	private static final int DATABASE_VERSION = 1;
 	private static final String DATABASE_NAME = "sale_notifier.db";
 	
+	private static final String[] CREATE_TABLE_STATEMENTS = {
+		ItemDataAdapter.CREATE_TABLE,
+		ItemPriceDataAdapter.CREATE_TABLE,
+		SellerDataAdapter.CREATE_TABLE,
+	};
+	
+	private static final String[] TABLE_NAMES = {
+		ItemDataAdapter.TABLE_ITEMS,
+		ItemPriceDataAdapter.TABLE_ITEM_PRICES,
+		SellerDataAdapter.TABLE_SELLERS,
+	};
+	
 	private static SaleNotifierSQLHelper instance = null;
 	
 	public static synchronized void init(Context context){
@@ -36,14 +48,21 @@ public class SaleNotifierSQLHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		// TODO Auto-generated method stub
-		
+		for (String createTable : CREATE_TABLE_STATEMENTS) {
+			db.execSQL(createTable);
+		}
 	}
 
+	/* For now, drop and recreate entire set of tables.  We aren't worried about data persistence between upgrades at this moment.
+	 * (non-Javadoc)
+	 * @see android.database.sqlite.SQLiteOpenHelper#onUpgrade(android.database.sqlite.SQLiteDatabase, int, int)
+	 */
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		// TODO Auto-generated method stub
-		
+		for (String tableName : TABLE_NAMES) {
+			db.execSQL("DROP TABLE IF EXISTS " + tableName);
+		}
+		onCreate(db);
 	}
 
 }
