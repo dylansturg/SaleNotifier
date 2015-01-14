@@ -6,8 +6,8 @@ import java.util.List;
 
 import android.util.Log;
 
-public class Item {
-	private long mId;
+public class Item implements IQueryable {
+	private long mId = -1;
 	private String displayName;
 	private String productCode;
 	private List<ItemPrice> priceData;

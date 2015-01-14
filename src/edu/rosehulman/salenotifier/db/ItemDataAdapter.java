@@ -27,7 +27,23 @@ public class ItemDataAdapter extends DataAdapter<Item> {
 		CREATE_TABLE = sb.toString();
 	}
 
-	private ContentValues toContentValues(Item item) {
+	@Override
+	String getTableName() {
+		return TABLE_ITEMS;
+	}
+
+	@Override
+	String getDBKeyColumn() {
+		return DB_KEY_ID;
+	}
+
+	@Override
+	boolean doesItemExist(Item item) {
+		return item.getId() >= 0;
+	}
+
+	@Override
+	ContentValues toContentValues(Item item) {
 		ContentValues values = new ContentValues();
 		values.put(DB_KEY_DISPLAY_NAME, item.getDisplayName());
 		values.put(DB_KEY_IMAGE, item.getImageUrl().toExternalForm());
@@ -35,38 +51,5 @@ public class ItemDataAdapter extends DataAdapter<Item> {
 		return values;
 	}
 
-	private boolean doesItemExist(Item item) {
-		return item.getId() >= 0;
-	}
-
-	@Override
-	public boolean insert(Item item) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean update(Item item) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean delete(Item item) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public Item getById(long id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<Item> getAll(String where, String groupBy, String order) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 }
