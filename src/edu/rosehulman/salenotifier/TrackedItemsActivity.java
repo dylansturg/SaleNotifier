@@ -7,6 +7,8 @@ import android.view.MenuItem;
 
 
 public class TrackedItemsActivity extends Activity {
+	
+	public static final String LOG_TAG = "SNL";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
