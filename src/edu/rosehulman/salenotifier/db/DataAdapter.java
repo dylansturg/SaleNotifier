@@ -1,10 +1,11 @@
 package edu.rosehulman.salenotifier.db;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.rosehulman.salenotifier.IQueryable;
-import edu.rosehulman.salenotifier.Item;
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -17,7 +18,7 @@ public abstract class DataAdapter<T extends IQueryable> {
 	abstract String getDBKeyColumn();
 	abstract boolean doesItemExist(T item);
 	abstract ContentValues toContentValues(T item);
-	
+	abstract T constructItem(Cursor vals);
 
 	public DataAdapter() {
 		dbOpenHelper = SaleNotifierSQLHelper.getInstance();
@@ -54,11 +55,23 @@ public abstract class DataAdapter<T extends IQueryable> {
 	}
 
 	T getById(long id) {
-		return null;
+		Cursor results = db.query(getTableName(), null, getDBKeyColumn() + "=" + id, null, null, null, null);
+		if(results.getCount() <= 0){
+			return null;
+		}
+		results.moveToFirst();
+		T result = constructItem(results);
+		return result;
 	}
 
 	List<T> getAll(String where, String groupBy, String order){
-		return null;
+		Cursor results = db.query(getTableName(), null, where, null, groupBy, null, order);
+		results.moveToFirst();
+		ArrayList<T> items = new ArrayList<T>();
+		do {
+			items.add(constructItem(results));
+		}while(results.moveToNext());
+		return items;
 	}
 
 }

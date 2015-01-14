@@ -13,7 +13,7 @@ public class Item implements IQueryable {
 	private List<ItemPrice> priceData;
 	private URL imageUrl;
 
-	Item() {
+	public Item() {
 
 	}
 

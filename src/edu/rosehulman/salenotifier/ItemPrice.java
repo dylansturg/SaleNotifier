@@ -2,8 +2,8 @@ package edu.rosehulman.salenotifier;
 
 import java.util.GregorianCalendar;
 
-public class ItemPrice {
-	private long mId;
+public class ItemPrice implements IQueryable{
+	private long mId = -1;
 	private String productCode;
 	private double price;
 	private GregorianCalendar date;

@@ -1,7 +1,7 @@
 package edu.rosehulman.salenotifier;
 
-public class Seller {
-	private long mId;
+public class Seller implements IQueryable {
+	private long mId = -1;
 	private String mName;
 
 	public long getId() {

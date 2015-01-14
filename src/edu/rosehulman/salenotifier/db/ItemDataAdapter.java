@@ -3,6 +3,7 @@ package edu.rosehulman.salenotifier.db;
 import java.util.List;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 
 import edu.rosehulman.salenotifier.Item;
 
@@ -51,5 +52,13 @@ public class ItemDataAdapter extends DataAdapter<Item> {
 		return values;
 	}
 
-
+	@Override
+	Item constructItem(Cursor vals) {
+		Item result = new Item();
+		result.setId(vals.getLong(vals.getColumnIndex(DB_KEY_ID)));
+		result.setDisplayName(vals.getString(vals.getColumnIndex(DB_KEY_DISPLAY_NAME)));
+		result.setImageUrl(vals.getString(vals.getColumnIndex(DB_KEY_IMAGE)));
+		result.setProductCode(vals.getString(vals.getColumnIndex(DB_KEY_PRODUCT_CODE)));
+		return result;
+	}
 }
