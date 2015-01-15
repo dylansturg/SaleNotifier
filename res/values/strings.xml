@@ -4,7 +4,13 @@
     <string name="app_name">SaleNotifier</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    
     <string name="action_search">Search</string>
-
+    <string name="title_activity_item_search">ItemSearchActivity</string>
+    <string name="title_activity_search_results">SearchResultsActivity</string>
+	<string name="tracked_image_content_desc">Image relevant to the item</string>
+	
+	<string name="context_menu_current">View Current</string>
+	<string name="context_menu_history">View History</string>
+	<string name="context_menu_options">Options</string>
+	<string name="context_menu_delete">Delete</string>
 </resources>

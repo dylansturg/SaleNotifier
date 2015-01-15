@@ -34,4 +34,16 @@ public class SQLiteAdapter implements IItemSourceAdapter {
 		return itemDb.getAll(null, null, null);
 	}
 
+	@Override
+	public void deleteItem(Item item) {
+		deleteItem(item.getId());
+	}
+
+	@Override
+	public void deleteItem(long id) {
+		// TODO Auto-generated method stub
+		ItemDataAdapter itemDb = new ItemDataAdapter();
+		itemDb.delete(id);
+	}
+
 }

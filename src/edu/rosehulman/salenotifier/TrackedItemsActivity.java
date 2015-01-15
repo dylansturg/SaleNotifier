@@ -10,9 +10,14 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListAdapter;
@@ -21,9 +26,9 @@ import android.widget.ListView;
 public class TrackedItemsActivity extends Activity {
 
 	public static final String LOG_TAG = "SNL";
-	
+
 	private IItemSourceAdapter itemSource;
-	
+
 	private ListView listView;
 	private ListAdapter listAdapter;
 
@@ -34,11 +39,39 @@ public class TrackedItemsActivity extends Activity {
 
 		initPersistentStorage();
 		itemSource = new SQLiteAdapter();
-		
-		listView = (ListView)findViewById(R.id.tracked_items_list);
+
+		listView = (ListView) findViewById(R.id.tracked_items_list);
 		List<Item> items = itemSource.getAllItems();
-		listAdapter = new ArrayAdapter<Item>(this, android.R.layout.simple_list_item_1, items);
+		listAdapter = new TrackedItemsListAdapter(this, items);
 		listView.setAdapter(listAdapter);
+
+		registerForContextMenu(listView);
+	}
+
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+		getMenuInflater().inflate(R.menu.context_tracked_items, menu);
+	}
+
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+		switch (item.getItemId()) {
+		case R.id.context_tracked_current:
+			return true;
+		case R.id.context_tracked_history:
+			return true;
+		case R.id.context_tracked_options:
+			return true;
+		case R.id.context_tracked_delete:
+			deleteItem(info.id);
+			return true;
+
+		default:
+			return super.onContextItemSelected(item);
+		}
 	}
 
 	@Override
@@ -64,52 +97,68 @@ public class TrackedItemsActivity extends Activity {
 			return super.onOptionsItemSelected(item);
 		}
 	}
-	
-	
-	private void launchSearch(){
-		DialogFragment tempSearch = new DialogFragment(){
+
+	private void launchSearch() {
+		DialogFragment tempSearch = new DialogFragment() {
 			@Override
 			public Dialog onCreateDialog(Bundle savedInstanceState) {
-				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-				View v = getLayoutInflater().inflate(R.layout.dialog_create_item, null, false);
+				AlertDialog.Builder builder = new AlertDialog.Builder(
+						getActivity());
+				View v = getLayoutInflater().inflate(
+						R.layout.dialog_create_item, null, false);
 				builder.setView(v);
-				builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-					
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						AlertDialog diag = (AlertDialog)dialog;
-						String name = ((EditText)diag.findViewById(R.id.dialog_create_item_name)).getText().toString();
-						String productCode = ((EditText)diag.findViewById(R.id.dialog_create_item_product_code)).getText().toString();
-						String image = ((EditText)diag.findViewById(R.id.dialog_create_item_image)).getText().toString();
-						
-						Item item = new Item();
-						item.setDisplayName(name);
-						item.setProductCode(productCode);
-						item.setImageUrl(image);
-						
-						itemSource.saveItem(item);
-						
-						updateItemList();
-					}
-				});
-				
-				builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-					
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dismiss();
-					}
-				});
-				
+				builder.setPositiveButton(android.R.string.ok,
+						new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								AlertDialog diag = (AlertDialog) dialog;
+								String name = ((EditText) diag
+										.findViewById(R.id.dialog_create_item_name))
+										.getText().toString();
+								String productCode = ((EditText) diag
+										.findViewById(R.id.dialog_create_item_product_code))
+										.getText().toString();
+								String image = ((EditText) diag
+										.findViewById(R.id.dialog_create_item_image))
+										.getText().toString();
+
+								Item item = new Item();
+								item.setDisplayName(name);
+								item.setProductCode(productCode);
+								item.setImageUrl(image);
+
+								itemSource.saveItem(item);
+
+								updateItemList();
+							}
+						});
+
+				builder.setNegativeButton(android.R.string.cancel,
+						new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								dismiss();
+							}
+						});
+
 				return builder.create();
 			}
 		};
 		tempSearch.show(getFragmentManager(), "temp_search_dialog");
 	}
 	
-	private void updateItemList(){
+	private void deleteItem(long id){
+		itemSource.deleteItem(id);
+		updateItemList();
+	}
+
+	private void updateItemList() {
 		List<Item> items = itemSource.getAllItems();
-		listAdapter = new ArrayAdapter<Item>(this, android.R.layout.simple_list_item_1, items);
+		listAdapter = new TrackedItemsListAdapter(this, items);
 		listView.setAdapter(listAdapter);
 	}
 
