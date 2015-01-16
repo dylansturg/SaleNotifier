@@ -30,7 +30,7 @@ public class TrackedItemsActivity extends Activity {
 	private IItemSourceAdapter itemSource;
 
 	private ListView listView;
-	private ListAdapter listAdapter;
+	private TrackedItemsListAdapter listAdapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +66,7 @@ public class TrackedItemsActivity extends Activity {
 		case R.id.context_tracked_options:
 			return true;
 		case R.id.context_tracked_delete:
-			deleteItem(info.id);
+			confirmDeletion(info.id, info.position);
 			return true;
 
 		default:
@@ -149,6 +149,27 @@ public class TrackedItemsActivity extends Activity {
 			}
 		};
 		tempSearch.show(getFragmentManager(), "temp_search_dialog");
+	}
+	
+	private void confirmDeletion(final long id, final int position){
+		DialogFragment deleteDialog = new DialogFragment(){
+			@Override
+			public Dialog onCreateDialog(Bundle savedInstanceState) {
+				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+				builder.setTitle(R.string.dialog_delete_title);
+				String name = listAdapter.getItem(position).getDisplayName();
+				builder.setMessage(getString(R.string.dialog_delete_message, name));
+				builder.setNegativeButton(android.R.string.cancel, null);
+				builder.setPositiveButton(R.string.dialog_delete_positive, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						deleteItem(id);
+					}
+				});
+				return builder.create();
+			}
+		};
+		deleteDialog.show(getFragmentManager(), "delete_confirm");
 	}
 	
 	private void deleteItem(long id){

@@ -13,4 +13,9 @@
 	<string name="context_menu_history">View History</string>
 	<string name="context_menu_options">Options</string>
 	<string name="context_menu_delete">Delete</string>
+	
+	<string name="dialog_delete_title">Confirm Delete</string>
+	<string name="dialog_delete_message">Are you sure you want to delete %s?</string>
+	<string name="dialog_delete_positive">Delete</string>
+	
 </resources>
