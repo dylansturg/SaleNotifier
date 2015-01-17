@@ -9,6 +9,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -97,8 +98,13 @@ public class TrackedItemsActivity extends Activity {
 			return super.onOptionsItemSelected(item);
 		}
 	}
+	
+	private void launchSearch(){
+		Intent searchIntent = new Intent(this, ItemSearchActivity.class);
+		startActivity(searchIntent);
+	}
 
-	private void launchSearch() {
+	private void launchSearchDialog() {
 		DialogFragment tempSearch = new DialogFragment() {
 			@Override
 			public Dialog onCreateDialog(Bundle savedInstanceState) {

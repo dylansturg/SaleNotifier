@@ -6,6 +6,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 public class SearchResultsActivity extends Activity {
+	
+	public static final String KEY_SEARCH_ITEM = "KEY_SEARCH_ITEM";
+	public static final String KEY_SEARCH_RADIUS = "KEY_SEARCH_RADIUS";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

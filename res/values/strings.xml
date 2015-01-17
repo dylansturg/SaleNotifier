@@ -7,15 +7,33 @@
     <string name="action_search">Search</string>
     <string name="title_activity_item_search">ItemSearchActivity</string>
     <string name="title_activity_search_results">SearchResultsActivity</string>
-	<string name="tracked_image_content_desc">Image relevant to the item</string>
-	
-	<string name="context_menu_current">View Current</string>
-	<string name="context_menu_history">View History</string>
-	<string name="context_menu_options">Options</string>
-	<string name="context_menu_delete">Delete</string>
-	
-	<string name="dialog_delete_title">Confirm Delete</string>
-	<string name="dialog_delete_message">Are you sure you want to delete %s?</string>
-	<string name="dialog_delete_positive">Delete</string>
-	
+    <string name="tracked_image_content_desc">Image relevant to the item</string>
+    <string name="context_menu_current">View Current</string>
+    <string name="context_menu_history">View History</string>
+    <string name="context_menu_options">Options</string>
+    <string name="context_menu_delete">Delete</string>
+    <string name="dialog_delete_title">Confirm Delete</string>
+    <string name="dialog_delete_message">Are you sure you want to delete %s?</string>
+    <string name="dialog_delete_positive">Delete</string>
+    <string name="search_title">Item Search</string>
+    <string name="search_name">Product Name</string>
+    <string name="search_name_hint">Name</string>
+    <string name="search_product_code">Product Code/UPC</string>
+    <string name="search_product_code_hint">UPC</string>
+    <string name="search_scan">Scan</string>
+    <string name="search_distance">Search Distance</string>
+    <string name="search_distance_default">50</string>
+    <string name="search_online">Include online retailers</string>
+    <string name="bad_distance_unit_message">The %s unit probably won\'t work well.</string>
+
+    <string-array name="search_distance_units">
+        <item>Miles</item>
+        <item>Kilometers</item>
+        <item>Pixels</item>
+        <item>Blue Whales</item>
+        <item>Lightyears</item>
+    </string-array>
+
+    <string name="search_button">Find Deals</string>
+
 </resources>
