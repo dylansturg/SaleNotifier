@@ -3,6 +3,8 @@ package edu.rosehulman.salenotifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.rosehulman.salenotifier.db.SQLiteAdapter;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -37,6 +39,8 @@ public class SearchResultsActivity extends Activity {
 	private SearchResultsAdapter mAdapter;
 	private ListView mResultsList;
 	private List<Item> mSearchResults;
+	
+	private IItemSourceAdapter mItemStorage;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +49,7 @@ public class SearchResultsActivity extends Activity {
 
 		Intent launcher = getIntent();
 		mSearched = launcher.getParcelableExtra(KEY_SEARCH_ITEM);
+		mItemStorage = new SQLiteAdapter();
 
 		displaySearchToast();
 
@@ -84,7 +89,7 @@ public class SearchResultsActivity extends Activity {
 
 		mResultsList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
 		mResultsList.setMultiChoiceModeListener(new MultiChoiceModeListener() {
-			private int mSelectedPosition;
+			private ArrayList<Integer> mSelected;
 
 			@Override
 			public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
@@ -100,6 +105,7 @@ public class SearchResultsActivity extends Activity {
 				getMenuInflater().inflate(R.menu.actionmode_search_results,
 						menu);
 				mode.setTitle(R.string.actionmode_search_result_title);
+				mSelected = new ArrayList<Integer>();
 				return true;
 			}
 
@@ -107,8 +113,12 @@ public class SearchResultsActivity extends Activity {
 			public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
 				switch (item.getItemId()) {
 				case R.id.action_search_results_track:
+					trackItems(getItems(mSelected));
+					mode.finish();
+					finish();
 					return true;
 				case R.id.action_search_results_find:
+					mode.finish();
 					return true;
 
 				default:
@@ -119,8 +129,26 @@ public class SearchResultsActivity extends Activity {
 			@Override
 			public void onItemCheckedStateChanged(ActionMode mode,
 					int position, long id, boolean checked) {
-
+				if(checked){
+					mSelected.add(position);
+				} else {
+					mSelected.remove((Integer)position);
+				}
 			}
 		});
+	}
+	
+	private List<Item> getItems(List<Integer> itemPositions){
+		ArrayList<Item> items = new ArrayList<Item>();
+		for (Integer position : itemPositions) {
+			items.add((Item) mResultsList.getItemAtPosition(position));
+		}
+		return items;
+	}
+	
+	private void trackItems(List<Item> items){
+		for (Item item : items) {
+			mItemStorage.saveItem(item);
+		}
 	}
 }
