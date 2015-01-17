@@ -1,5 +1,7 @@
 package edu.rosehulman.salenotifier.db;
 
+import java.util.GregorianCalendar;
+
 import android.content.ContentValues;
 import android.database.Cursor;
 import edu.rosehulman.salenotifier.ItemPrice;
@@ -46,10 +48,9 @@ public class ItemPriceDataAdapter extends DataAdapter<ItemPrice>{
 	@Override
 	ContentValues toContentValues(ItemPrice item) {
 		ContentValues vals = new ContentValues();
-		vals.put(DB_KEY_DATE, item.getDate().getTimeInMillis());
+		vals.put(DB_KEY_DATE, item.getDate() != null ? item.getDate().getTimeInMillis() : new GregorianCalendar().getTimeInMillis());
 		vals.put(DB_KEY_PRICE, item.getPrice());
-		vals.put(DB_KEY_PRODUCT_CODE, item.getProductCode());
-		vals.put(DB_KEY_SELLER_ID, item.getSellerId());
+		vals.put(DB_KEY_PRODUCT_CODE, item.getProductCode() != null ? item.getProductCode() : "");
 		return vals;
 	}
 	@Override

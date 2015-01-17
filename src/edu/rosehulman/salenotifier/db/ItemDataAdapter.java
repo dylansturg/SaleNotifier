@@ -46,9 +46,12 @@ public class ItemDataAdapter extends DataAdapter<Item> {
 	@Override
 	ContentValues toContentValues(Item item) {
 		ContentValues values = new ContentValues();
-		values.put(DB_KEY_DISPLAY_NAME, item.getDisplayName());
-		values.put(DB_KEY_IMAGE, item.getImageUrl().toExternalForm());
-		values.put(DB_KEY_PRODUCT_CODE, item.getProductCode());
+		values.put(DB_KEY_DISPLAY_NAME,
+				item.getDisplayName() != null ? item.getDisplayName() : "");
+		values.put(DB_KEY_IMAGE, item.getImageUrl() != null ? item
+				.getImageUrl().toExternalForm() : "");
+		values.put(DB_KEY_PRODUCT_CODE,
+				item.getProductCode() != null ? item.getProductCode() : "");
 		return values;
 	}
 

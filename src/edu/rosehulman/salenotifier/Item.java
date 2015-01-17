@@ -8,8 +8,8 @@ import android.util.Log;
 
 public class Item implements IQueryable {
 	private long mId = -1;
-	private String displayName;
-	private String productCode;
+	private String displayName = "";
+	private String productCode = "";
 	private List<ItemPrice> priceData;
 	private URL imageUrl;
 

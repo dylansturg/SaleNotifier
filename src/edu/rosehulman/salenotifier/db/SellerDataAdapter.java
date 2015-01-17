@@ -34,7 +34,7 @@ public class SellerDataAdapter extends DataAdapter<Seller> {
 	@Override
 	ContentValues toContentValues(Seller item) {
 		ContentValues vals = new ContentValues();
-		vals.put(DB_KEY_NAME, item.getName());
+		vals.put(DB_KEY_NAME, item.getName() != null ? item.getName() : "");
 		return vals;
 	}
 	@Override

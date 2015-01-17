@@ -27,6 +27,9 @@ public class DownloadImageTask extends AsyncTask<URL, Void, Bitmap> {
 
 		try {
 			URL imageUrl = params[0];
+			if(imageUrl == null){
+				cancel(true);
+			}
 			InputStream in = imageUrl.openStream();
 			result = BitmapFactory.decodeStream(in);
 			in.close();
