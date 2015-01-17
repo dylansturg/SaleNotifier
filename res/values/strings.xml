@@ -39,5 +39,9 @@
     <string name="search_result_title">Search Result</string>
     <string name="search_result_subtitle">Search Result\'s Price</string>
     <string name="search_results_quit">Give Up</string>
+    
+    <string name="actionmode_search_results_track">Save To Track</string>
+    <string name="actionmode_search_results_find">Find Current Prices</string>
+    <string name="actionmode_search_result_title">Track or Browse Items</string>
 
 </resources>
