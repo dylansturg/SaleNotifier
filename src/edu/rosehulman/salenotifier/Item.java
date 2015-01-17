@@ -67,7 +67,7 @@ public class Item implements IQueryable, Parcelable {
 			imageUrl = new URL(location);
 		} catch (MalformedURLException e) {
 			Log.d(TrackedItemsActivity.LOG_TAG, "Failed to parse " + location
-					+ " into a valid Image URL.", e);
+					+ " into a valid Image URL.");
 			imageUrl = null;
 		}
 
