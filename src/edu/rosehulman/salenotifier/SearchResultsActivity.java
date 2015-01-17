@@ -10,10 +10,8 @@ import android.widget.Toast;
 public class SearchResultsActivity extends Activity {
 	
 	public static final String KEY_SEARCH_ITEM = "KEY_SEARCH_ITEM";
-	public static final String KEY_SEARCH_RADIUS = "KEY_SEARCH_RADIUS";
 	
-	private Item mSearched;
-	private double mSearchRadius;
+	private ItemQueryConstraints mSearched;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -22,11 +20,12 @@ public class SearchResultsActivity extends Activity {
 		
 		Intent launcher = getIntent();
 		mSearched = launcher.getParcelableExtra(KEY_SEARCH_ITEM);
-		mSearchRadius = launcher.getDoubleExtra(KEY_SEARCH_RADIUS, -1);
 		
 		if(mSearched == null){
 			Toast.makeText(this, "Please provide something to search for!", Toast.LENGTH_LONG).show();
 			finish();
+		} else {
+			Toast.makeText(this, "Searching for " + mSearched.getName() + "(" + mSearched.getProductCode() + ") within " + mSearched.getSearchRadius() + " miles.", Toast.LENGTH_LONG).show();
 		}
 	}
 }

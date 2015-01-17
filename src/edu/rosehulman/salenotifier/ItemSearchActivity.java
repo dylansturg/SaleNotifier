@@ -94,20 +94,19 @@ public class ItemSearchActivity extends Activity implements OnClickListener {
 	}
 	
 	private void searchForItem(){
-		Item searchQuery = buildSearchItem();
-		double searchDistance = parseSearchRadius();
+		ItemQueryConstraints searchQuery = buildSearchItem();
 		
 		Intent launchSearch = new Intent(this, SearchResultsActivity.class);
 		launchSearch.putExtra(SearchResultsActivity.KEY_SEARCH_ITEM, searchQuery);
-		launchSearch.putExtra(SearchResultsActivity.KEY_SEARCH_RADIUS, searchDistance);
 		startActivity(launchSearch);
 		finish();
 	}
 
-	private Item buildSearchItem() {
-		Item query = new Item();
-		query.setDisplayName(mName.getText().toString());
+	private ItemQueryConstraints buildSearchItem() {
+		ItemQueryConstraints query = new ItemQueryConstraints();
+		query.setName(mName.getText().toString());
 		query.setProductCode(mProductCode.getText().toString());
+		query.setSearchRadius(parseSearchRadius());
 		return query;
 	}
 

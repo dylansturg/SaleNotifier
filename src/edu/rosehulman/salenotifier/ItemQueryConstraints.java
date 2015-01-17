@@ -35,6 +35,38 @@ public class ItemQueryConstraints implements Parcelable {
 		mSearchLocation = location;
 	}
 
+	public String getName() {
+		return mName;
+	}
+
+	public void setName(String name) {
+		mName = name;
+	}
+
+	public String getProductCode() {
+		return mProductCode;
+	}
+
+	public void setProductCode(String upc) {
+		mProductCode = upc;
+	};
+
+	public double getSearchRadius() {
+		return mSearchRadiusMiles;
+	}
+
+	public void setSearchRadius(double miles) {
+		mSearchRadiusMiles = miles;
+	}
+
+	public Location getSearchLocation() {
+		return mSearchLocation;
+	}
+
+	public void setSearchLocation(Location loc) {
+		mSearchLocation = loc;
+	}
+
 	@Override
 	public int describeContents() {
 		return hashCode();
@@ -54,13 +86,13 @@ public class ItemQueryConstraints implements Parcelable {
 		@Override
 		public ItemQueryConstraints createFromParcel(Parcel source) {
 			// TODO Auto-generated method stub
-			return null;
+			return new ItemQueryConstraints(source);
 		}
 
 		@Override
 		public ItemQueryConstraints[] newArray(int size) {
 			// TODO Auto-generated method stub
-			return null;
+			return new ItemQueryConstraints[size];
 		}
 
 	}
