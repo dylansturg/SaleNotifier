@@ -84,8 +84,7 @@ public class ItemSearchActivity extends Activity implements OnClickListener {
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.item_search:
-			Toast.makeText(this, "Searching for your item!", Toast.LENGTH_LONG)
-					.show();
+			searchForItem();
 			break;
 		case R.id.item_search_scan:
 			Toast.makeText(this, "Scanning your barcode!", Toast.LENGTH_LONG)
@@ -99,7 +98,10 @@ public class ItemSearchActivity extends Activity implements OnClickListener {
 		double searchDistance = parseSearchRadius();
 		
 		Intent launchSearch = new Intent(this, SearchResultsActivity.class);
-		
+		launchSearch.putExtra(SearchResultsActivity.KEY_SEARCH_ITEM, searchQuery);
+		launchSearch.putExtra(SearchResultsActivity.KEY_SEARCH_RADIUS, searchDistance);
+		startActivity(launchSearch);
+		finish();
 	}
 
 	private Item buildSearchItem() {
@@ -119,7 +121,7 @@ public class ItemSearchActivity extends Activity implements OnClickListener {
 		double currentDistance = Double.parseDouble(mDistance.getText()
 				.toString());
 		double currentMiles = (1 / DistanceUnitConversions.get(currentUnit)) * currentDistance;
-		double distanceConverted = DistanceUnitConversions.get(unit) * currentMiles;
+		double distanceConverted = DistanceUnitConversions.get(mDistanceAdapter.getItem(unit)) * currentMiles;
 		return distanceConverted;
 	}
 
