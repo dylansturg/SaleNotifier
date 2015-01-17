@@ -38,5 +38,6 @@
     
     <string name="search_result_title">Search Result</string>
     <string name="search_result_subtitle">Search Result\'s Price</string>
+    <string name="search_results_quit">Give Up</string>
 
 </resources>

@@ -22,6 +22,12 @@ public class Item implements IQueryable, Parcelable {
 
 	}
 	
+	public Item(String name, String upc, String imageUrl){
+		displayName = name;
+		productCode = upc;
+		setImageUrl(imageUrl);
+	}
+	
 	public Item(Parcel source){
 		mId = source.readLong();
 		displayName = source.readString();
