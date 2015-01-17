@@ -2,19 +2,32 @@ package edu.rosehulman.salenotifier;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
-public class Item implements IQueryable {
+public class Item implements IQueryable, Parcelable {
 	private long mId = -1;
 	private String displayName = "";
 	private String productCode = "";
 	private List<ItemPrice> priceData;
 	private URL imageUrl;
 
+	public static final Parcelable.Creator<Item> CREATOR = new ItemCreator();
+	
 	public Item() {
 
+	}
+	
+	public Item(Parcel source){
+		mId = source.readLong();
+		displayName = source.readString();
+		productCode = source.readString();
+		priceData = new ArrayList<ItemPrice>();
+		source.readTypedList(priceData, ItemPrice.CREATOR);
 	}
 
 	public long getId() {
@@ -71,5 +84,32 @@ public class Item implements IQueryable {
 	@Override
 	public String toString() {
 		return "" + mId + " " + displayName + " image: " + imageUrl.toExternalForm() + " upc: " + productCode;
+	}
+
+	@Override
+	public int describeContents() {
+		return hashCode();
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeLong(mId);
+		dest.writeString(displayName);
+		dest.writeString(productCode);
+		dest.writeTypedList(priceData != null ? priceData : new ArrayList<ItemPrice>());
+		dest.writeString(imageUrl != null ? imageUrl.toExternalForm() : "");
+	}
+	
+	private static class ItemCreator implements Parcelable.Creator<Item>{
+
+		@Override
+		public Item createFromParcel(Parcel source) {
+			return new Item(source);
+		}
+
+		@Override
+		public Item[] newArray(int size) {
+			return new Item[size];
+		}
 	}
 }

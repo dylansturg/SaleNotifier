@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -97,6 +98,7 @@ public class ItemSearchActivity extends Activity implements OnClickListener {
 		Item searchQuery = buildSearchItem();
 		double searchDistance = parseSearchRadius();
 		
+		Intent launchSearch = new Intent(this, SearchResultsActivity.class);
 		
 	}
 
