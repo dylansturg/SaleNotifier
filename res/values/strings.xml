@@ -35,5 +35,8 @@
     </string-array>
 
     <string name="search_button">Find Deals</string>
+    
+    <string name="search_result_title">Search Result</string>
+    <string name="search_result_subtitle">Search Result\'s Price</string>
 
 </resources>
