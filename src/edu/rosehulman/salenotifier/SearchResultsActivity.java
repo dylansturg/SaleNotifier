@@ -39,7 +39,7 @@ public class SearchResultsActivity extends Activity {
 	private SearchResultsAdapter mAdapter;
 	private ListView mResultsList;
 	private List<Item> mSearchResults;
-	
+
 	private IItemSourceAdapter mItemStorage;
 
 	@Override
@@ -129,24 +129,24 @@ public class SearchResultsActivity extends Activity {
 			@Override
 			public void onItemCheckedStateChanged(ActionMode mode,
 					int position, long id, boolean checked) {
-				if(checked){
+				if (checked) {
 					mSelected.add(position);
 				} else {
-					mSelected.remove((Integer)position);
+					mSelected.remove((Integer) position);
 				}
 			}
 		});
 	}
-	
-	private List<Item> getItems(List<Integer> itemPositions){
+
+	private List<Item> getItems(List<Integer> itemPositions) {
 		ArrayList<Item> items = new ArrayList<Item>();
 		for (Integer position : itemPositions) {
 			items.add((Item) mResultsList.getItemAtPosition(position));
 		}
 		return items;
 	}
-	
-	private void trackItems(List<Item> items){
+
+	private void trackItems(List<Item> items) {
 		for (Item item : items) {
 			mItemStorage.saveItem(item);
 		}

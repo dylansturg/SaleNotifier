@@ -39,7 +39,7 @@ public class TrackedItemsListAdapter extends ArrayAdapter<Item> {
 		title.setText(item.getDisplayName());
 		// TODO Implement price display
 		subtitle.setText(item.getProductCode());
-		new DownloadImageTask(image).execute(item.getImageUrl());
+		new DownloadImageTask(image, getContext().getCacheDir()).execute(item.getImageUrl());
 
 		return convertView;
 	}

@@ -32,7 +32,7 @@ public class SearchResultsAdapter extends ArrayAdapter<Item> {
 		((TextView)resultView.findViewById(R.id.search_result_subtitle)).setText("Eventually put a price here");
 		
 		ImageView image = (ImageView)resultView.findViewById(R.id.search_result_image);
-		new DownloadImageTask(image).execute(searchResult.getImageUrl());
+		new DownloadImageTask(image, getContext().getCacheDir()).execute(searchResult.getImageUrl());
 		
 		return resultView;
 	}
