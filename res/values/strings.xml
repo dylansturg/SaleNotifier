@@ -35,13 +35,16 @@
     </string-array>
 
     <string name="search_button">Find Deals</string>
-    
     <string name="search_result_title">Search Result</string>
     <string name="search_result_subtitle">Search Result\'s Price</string>
     <string name="search_results_quit">Give Up</string>
-    
     <string name="actionmode_search_results_track">Save To Track</string>
     <string name="actionmode_search_results_find">Find Current Prices</string>
     <string name="actionmode_search_result_title">Track or Browse Items</string>
+
+    <integer name="viewfinder_border_width">4</integer>
+    <integer name="viewfinder_border_length">60</integer>
+
+    <string name="title_activity_barcode_scanner">BarcodeScannerActivity</string>
 
 </resources>
