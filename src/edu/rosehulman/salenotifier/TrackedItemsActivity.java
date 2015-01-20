@@ -5,6 +5,8 @@ import java.util.List;
 import edu.rosehulman.salenotifier.db.SQLiteAdapter;
 import edu.rosehulman.salenotifier.db.SaleNotifierSQLHelper;
 import edu.rosehulman.salenotifier.models.Item;
+import edu.rosehulman.salenotifier.settings.Setting;
+import edu.rosehulman.salenotifier.settings.SettingFactory;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -12,6 +14,7 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -48,6 +51,16 @@ public class TrackedItemsActivity extends Activity {
 		listView.setAdapter(listAdapter);
 
 		registerForContextMenu(listView);
+		
+		Setting<?> result = SettingFactory.constructSetting(-1, "app", "test", "BOOLEAN", new byte[]{1});
+		Log.d(LOG_TAG, "setting value: " + result.getValue());
+		Log.d(LOG_TAG, "setting name: " + result.getName());
+		
+		byte[] blob = SettingFactory.blobify(result.getValue());
+		
+		Log.d(LOG_TAG, "Blob value: " + blob[0]);
+		
+		int x = 3;
 	}
 
 	@Override
