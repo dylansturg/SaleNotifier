@@ -85,6 +85,8 @@ public class ItemSearchActivity extends Activity implements OnClickListener {
 		mSearchButton = (Button) findViewById(R.id.item_search);
 		mSearchButton.setOnClickListener(this);
 	}
+	
+	
 
 	@Override
 	public void onClick(View v) {
