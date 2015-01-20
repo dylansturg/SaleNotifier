@@ -87,10 +87,15 @@ public class ItemSearchActivity extends Activity implements OnClickListener {
 			searchForItem();
 			break;
 		case R.id.item_search_scan:
-			Toast.makeText(this, "Scanning your barcode!", Toast.LENGTH_LONG)
-					.show();
+			scanBarcode();
 			break;
 		}
+	}
+	
+	private void scanBarcode(){
+		Intent launchScanner = new Intent(this, BarcodeScannerActivity.class);
+		startActivity(launchScanner);
+		
 	}
 	
 	private void searchForItem(){
