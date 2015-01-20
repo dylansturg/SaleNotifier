@@ -33,7 +33,8 @@ public class ItemSearchActivity extends Activity implements OnClickListener {
 		DistanceUnitConversions.put("Lightyears",
 				1.70111428 * Math.pow(10, -13));
 	}
-	
+
+	public static final String KEY_DISTANCE_UNIT = "KEY_DISTANCE_UNIT";
 	public static final int RESULT_BARCODE_SCAN = 0x80085;
 
 	private Spinner mDistanceUnitPicker;
@@ -52,6 +53,10 @@ public class ItemSearchActivity extends Activity implements OnClickListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_item_search);
 
+		if (savedInstanceState != null) {
+			mCurrentDistanceUnit = savedInstanceState.getInt(KEY_DISTANCE_UNIT,
+					0);
+		}
 		mDistance = (EditText) findViewById(R.id.item_search_distance);
 
 		mDistanceUnitPicker = (Spinner) findViewById(R.id.item_search_distance_unit);
@@ -85,8 +90,13 @@ public class ItemSearchActivity extends Activity implements OnClickListener {
 		mSearchButton = (Button) findViewById(R.id.item_search);
 		mSearchButton.setOnClickListener(this);
 	}
-	
-	
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+
+		outState.putInt(KEY_DISTANCE_UNIT, mCurrentDistanceUnit);
+	}
 
 	@Override
 	public void onClick(View v) {
@@ -99,29 +109,31 @@ public class ItemSearchActivity extends Activity implements OnClickListener {
 			break;
 		}
 	}
-	
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if(resultCode != RESULT_OK){
+		if (resultCode != RESULT_OK) {
 			return;
 		}
-		
-		if(requestCode == RESULT_BARCODE_SCAN){
-			BarcodeResult result = data.getParcelableExtra(BarcodeScannerActivity.KEY_BARCODE_RESULT);
+
+		if (requestCode == RESULT_BARCODE_SCAN) {
+			BarcodeResult result = data
+					.getParcelableExtra(BarcodeScannerActivity.KEY_BARCODE_RESULT);
 			mProductCode.setText(result.getContent());
 		}
 	}
-	
-	private void scanBarcode(){
+
+	private void scanBarcode() {
 		Intent launchScanner = new Intent(this, BarcodeScannerActivity.class);
 		startActivityForResult(launchScanner, RESULT_BARCODE_SCAN);
 	}
-	
-	private void searchForItem(){
+
+	private void searchForItem() {
 		ItemQueryConstraints searchQuery = buildSearchItem();
-		
+
 		Intent launchSearch = new Intent(this, SearchResultsActivity.class);
-		launchSearch.putExtra(SearchResultsActivity.KEY_SEARCH_ITEM, searchQuery);
+		launchSearch.putExtra(SearchResultsActivity.KEY_SEARCH_ITEM,
+				searchQuery);
 		startActivity(launchSearch);
 		finish();
 	}
@@ -144,8 +156,10 @@ public class ItemSearchActivity extends Activity implements OnClickListener {
 				.getItem(mCurrentDistanceUnit);
 		double currentDistance = Double.parseDouble(mDistance.getText()
 				.toString());
-		double currentMiles = (1 / DistanceUnitConversions.get(currentUnit)) * currentDistance;
-		double distanceConverted = DistanceUnitConversions.get(mDistanceAdapter.getItem(unit)) * currentMiles;
+		double currentMiles = (1 / DistanceUnitConversions.get(currentUnit))
+				* currentDistance;
+		double distanceConverted = DistanceUnitConversions.get(mDistanceAdapter
+				.getItem(unit)) * currentMiles;
 		return distanceConverted;
 	}
 
