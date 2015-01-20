@@ -51,16 +51,6 @@ public class TrackedItemsActivity extends Activity {
 		listView.setAdapter(listAdapter);
 
 		registerForContextMenu(listView);
-		
-		Setting<?> result = SettingFactory.constructSetting(-1, "app", "test", "BOOLEAN", new byte[]{1});
-		Log.d(LOG_TAG, "setting value: " + result.getValue());
-		Log.d(LOG_TAG, "setting name: " + result.getName());
-		
-		byte[] blob = SettingFactory.blobify(result.getValue());
-		
-		Log.d(LOG_TAG, "Blob value: " + blob[0]);
-		
-		int x = 3;
 	}
 
 	@Override

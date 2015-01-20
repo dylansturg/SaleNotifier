@@ -8,6 +8,7 @@ import java.util.Map;
 import edu.rosehulman.salenotifier.TrackedItemsActivity;
 
 import android.util.Log;
+import android.util.Pair;
 
 public abstract class SettingFactory {
 	protected abstract Setting<?> buildSettingForValue(byte[] value);
@@ -15,10 +16,11 @@ public abstract class SettingFactory {
 
 	private static Map<String, SettingFactory> cachedFactories = new HashMap<String, SettingFactory>();
 
-	public static byte[] blobify(Object value) {
+	public static Pair<String, byte[]> blobify(Object value) {
 		String type = value.getClass().getSimpleName();
 		SettingFactory factory = resolveFactory(type);
-		return factory.createBlobForSetting(value);
+		byte[] val = factory.createBlobForSetting(value);
+		return new Pair<String, byte[]>(type, val);
 	}
 
 	public static Setting<?> constructSetting(long id, String target,
