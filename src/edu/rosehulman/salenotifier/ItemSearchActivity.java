@@ -3,6 +3,9 @@ package edu.rosehulman.salenotifier;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.rosehulman.salenotifier.models.BarcodeResult;
+import edu.rosehulman.salenotifier.models.ItemQueryConstraints;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -30,6 +33,8 @@ public class ItemSearchActivity extends Activity implements OnClickListener {
 		DistanceUnitConversions.put("Lightyears",
 				1.70111428 * Math.pow(10, -13));
 	}
+	
+	public static final int RESULT_BARCODE_SCAN = 0x80085;
 
 	private Spinner mDistanceUnitPicker;
 	private ArrayAdapter<CharSequence> mDistanceAdapter;
@@ -40,6 +45,7 @@ public class ItemSearchActivity extends Activity implements OnClickListener {
 	private Button mSearchButton;
 
 	private int mCurrentDistanceUnit = 0;
+	private String mBarcodeType;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -92,10 +98,21 @@ public class ItemSearchActivity extends Activity implements OnClickListener {
 		}
 	}
 	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if(resultCode != RESULT_OK){
+			return;
+		}
+		
+		if(requestCode == RESULT_BARCODE_SCAN){
+			BarcodeResult result = data.getParcelableExtra(BarcodeScannerActivity.KEY_BARCODE_RESULT);
+			mProductCode.setText(result.getContent());
+		}
+	}
+	
 	private void scanBarcode(){
 		Intent launchScanner = new Intent(this, BarcodeScannerActivity.class);
-		startActivity(launchScanner);
-		
+		startActivityForResult(launchScanner, RESULT_BARCODE_SCAN);
 	}
 	
 	private void searchForItem(){
@@ -111,6 +128,7 @@ public class ItemSearchActivity extends Activity implements OnClickListener {
 		ItemQueryConstraints query = new ItemQueryConstraints();
 		query.setName(mName.getText().toString());
 		query.setProductCode(mProductCode.getText().toString());
+		query.setProductCodeType(mBarcodeType);
 		query.setSearchRadius(parseSearchRadius());
 		return query;
 	}

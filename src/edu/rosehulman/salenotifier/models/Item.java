@@ -1,9 +1,11 @@
-package edu.rosehulman.salenotifier;
+package edu.rosehulman.salenotifier.models;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import edu.rosehulman.salenotifier.TrackedItemsActivity;
 
 import android.os.Parcel;
 import android.os.Parcelable;

@@ -2,6 +2,8 @@ package edu.rosehulman.salenotifier;
 
 import java.util.List;
 
+import edu.rosehulman.salenotifier.models.Item;
+
 public class ItemService {
 	public ItemService() {
 		// TODO Auto-generated constructor stub

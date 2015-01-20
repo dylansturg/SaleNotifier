@@ -1,6 +1,8 @@
-package edu.rosehulman.salenotifier;
+package edu.rosehulman.salenotifier.models;
 
 import java.util.GregorianCalendar;
+
+import edu.rosehulman.salenotifier.IPricingSource;
 
 import android.os.Parcel;
 import android.os.Parcelable;

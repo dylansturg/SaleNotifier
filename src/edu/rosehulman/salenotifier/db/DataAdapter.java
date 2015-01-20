@@ -3,7 +3,7 @@ package edu.rosehulman.salenotifier.db;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.rosehulman.salenotifier.IQueryable;
+import edu.rosehulman.salenotifier.models.IQueryable;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;

@@ -2,6 +2,8 @@ package edu.rosehulman.salenotifier;
 
 import java.util.List;
 
+import edu.rosehulman.salenotifier.models.Item;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;

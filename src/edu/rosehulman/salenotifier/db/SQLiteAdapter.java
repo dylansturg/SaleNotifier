@@ -3,7 +3,7 @@ package edu.rosehulman.salenotifier.db;
 import java.util.List;
 
 import edu.rosehulman.salenotifier.IItemSourceAdapter;
-import edu.rosehulman.salenotifier.Item;
+import edu.rosehulman.salenotifier.models.Item;
 
 public class SQLiteAdapter implements IItemSourceAdapter {
 	

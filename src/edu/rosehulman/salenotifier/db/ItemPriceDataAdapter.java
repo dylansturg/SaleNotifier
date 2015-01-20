@@ -4,7 +4,7 @@ import java.util.GregorianCalendar;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import edu.rosehulman.salenotifier.ItemPrice;
+import edu.rosehulman.salenotifier.models.ItemPrice;
 
 public class ItemPriceDataAdapter extends DataAdapter<ItemPrice>{
 	protected static final String TABLE_ITEM_PRICES = "itemPrices";

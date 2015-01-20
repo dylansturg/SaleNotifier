@@ -1,4 +1,4 @@
-package edu.rosehulman.salenotifier;
+package edu.rosehulman.salenotifier.models;
 
 public class Seller implements IQueryable {
 	private long mId = -1;

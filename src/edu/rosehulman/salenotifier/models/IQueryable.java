@@ -1,4 +1,4 @@
-package edu.rosehulman.salenotifier;
+package edu.rosehulman.salenotifier.models;
 
 public interface IQueryable {
 	public long getId();
