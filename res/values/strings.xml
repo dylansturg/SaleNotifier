@@ -46,5 +46,7 @@
     <integer name="viewfinder_border_length">60</integer>
 
     <string name="title_activity_barcode_scanner">BarcodeScannerActivity</string>
+    <string name="title_activity_app_settings">AppSettingsActivity</string>
+    <string name="title_activity_item_settings">ItemSettingsActivity</string>
 
 </resources>

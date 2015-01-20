@@ -37,6 +37,14 @@
             android:name=".BarcodeScannerActivity"
             android:label="@string/title_activity_barcode_scanner" >
         </activity>
+        <activity
+            android:name=".AppSettingsActivity"
+            android:label="@string/title_activity_app_settings" >
+        </activity>
+        <activity
+            android:name=".ItemSettingsActivity"
+            android:label="@string/title_activity_item_settings" >
+        </activity>
     </application>
 
 </manifest>
