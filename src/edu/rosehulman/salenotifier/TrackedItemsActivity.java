@@ -97,10 +97,16 @@ public class TrackedItemsActivity extends Activity {
 			launchSearch();
 			return true;
 		case R.id.action_settings:
+			launchSettings();
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
+	}
+	
+	private void launchSettings(){
+		Intent settingsIntent = new Intent(this, AppSettingsActivity.class);
+		startActivity(settingsIntent);
 	}
 	
 	private void launchSearch(){

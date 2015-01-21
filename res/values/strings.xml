@@ -48,5 +48,22 @@
     <string name="title_activity_barcode_scanner">BarcodeScannerActivity</string>
     <string name="title_activity_app_settings">AppSettingsActivity</string>
     <string name="title_activity_item_settings">ItemSettingsActivity</string>
+    <string name="settings_notifications_title">Notifications</string>
+    <string name="settings_allow_notifiations">Allow Notifications</string>
+    <string name="settings_data_sources">Data Sources</string>
+
+    <string-array name="settings_data_sources_options">
+        <item>Amazon</item>
+        <item>Ebay</item>
+        <item>Walmart</item>
+        <item>Semantics3</item>
+    </string-array>
+
+    <string name="settings_item_options">Item Options</string>
+    <string name="settings_delete_after">Delete Prices After (Days): </string>
+    <string name="settings_default_delete_after">30</string>
+    <string name="action_settings_save">Save and Close</string>
+    <string name="action_settings_close">Discard and Close</string>
+    <string name="toast_settings_saved">Your settings were successfully saved.</string>
 
 </resources>
