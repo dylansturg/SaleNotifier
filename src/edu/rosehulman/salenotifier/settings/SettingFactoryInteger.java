@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 import android.util.Log;
 import edu.rosehulman.salenotifier.TrackedItemsActivity;
 
-public class SettingFactoryInt extends SettingFactory {
+public class SettingFactoryInteger extends SettingFactory {
 	private static final int BYTE_COUNT = 4;
 
 	@Override

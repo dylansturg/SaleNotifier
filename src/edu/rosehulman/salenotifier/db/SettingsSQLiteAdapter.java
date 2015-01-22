@@ -9,18 +9,39 @@ public class SettingsSQLiteAdapter {
 	public SettingsSQLiteAdapter() {
 	}
 	
-	public List<Setting<?>> getAllSettings(){
+	public void saveSetting(Setting<?> setting){
+		SettingDataAdapter settingSource = new SettingDataAdapter();
+		settingSource.update(setting);
+	}
+	
+	public void saveAll(List<Setting<?>> settings){
+		for (Setting<?> setting : settings) {
+			saveSetting(setting);
+		}
+	}
+	
+	public Enumerable<Setting<?>> getAllSettings(){
 		SettingDataAdapter settingSource = new SettingDataAdapter();
 		List<Setting<?>> settings = settingSource.getAll(null, null, null);
-		return settings;
+		return new Enumerable<Setting<?>>(settings);
 	}
 	
-	public List<Setting<?>> getSettingsForTarget(String target){
+	public Enumerable<Setting<?>> getSettingsForTarget(String target){
 		SettingDataAdapter settingSource = new SettingDataAdapter();
-		List<Setting<?>> settings = settingSource.getAll(SettingDataAdapter.DB_KEY_TARGET + " = " + target, null, null);
-		return settings;
+		List<Setting<?>> settings = settingSource.getAll(SettingDataAdapter.DB_KEY_TARGET + " = \"" + target + "\"", null, null);
+		return new Enumerable<Setting<?>>(settings);
 	}
 	
+	public void deleteSetting(Setting<?> setting){
+		SettingDataAdapter settingSource = new SettingDataAdapter();
+		settingSource.delete(setting);
+	}
 	
-
+	public void deleteAll(List<Setting<?>> settings){
+		SettingDataAdapter settingSource = new SettingDataAdapter();
+		for (Setting<?> setting : settings) {
+			settingSource.delete(setting);
+		}
+	}
+	
 }

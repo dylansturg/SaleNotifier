@@ -19,6 +19,9 @@ public abstract class SettingFactory {
 	public static Pair<String, byte[]> blobify(Object value) {
 		String type = value.getClass().getSimpleName();
 		SettingFactory factory = resolveFactory(type);
+		if(factory == null){
+			return null;
+		}
 		byte[] val = factory.createBlobForSetting(value);
 		return new Pair<String, byte[]>(type, val);
 	}
