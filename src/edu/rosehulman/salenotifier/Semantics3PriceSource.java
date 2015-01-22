@@ -1,7 +1,7 @@
 package edu.rosehulman.salenotifier;
 
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -23,6 +23,10 @@ public class Semantics3PriceSource implements IPricingSource {
 		resetQuery();
 	}
 	
+	/***
+	 * Reinitializes the query with our default settings. Should be called after
+	 * An api call to make sure filtering does not persist past that request.
+	 */
 	public void resetQuery() {
 		products = new Products(APP_KEY, SECRET);
 		products.productsField("activeproductsonly", 1);
@@ -32,44 +36,57 @@ public class Semantics3PriceSource implements IPricingSource {
 	
 	@Override
 	public List<ItemPrice> getPrices(Item item) throws ApiException {
-		return search(item.getDisplayName());
+		return getPrices(item.getProductCode());
 	}
 	
-	public List<ItemPrice> search(String searchString) throws ApiException {
-		products.productsField("search", searchString);
-		try {
-			JSONObject results = products.getProducts();
-//			System.out.println(results.toString());
-		} catch (Exception e) {
-			throw new ApiException(e);
-		}
-		return null;
-	}
-	
+	/***
+	 * Returns a list of strings that are the names of the products found that match the
+	 * given search term
+	 * @param searchString
+	 * @return
+	 * @throws ApiException
+	 */
 	public List<String> searchForProduct(String searchString) throws ApiException {
 		products.productsField("search", searchString);
 		try {
 			JSONObject productResults = products.getProducts();
 			List<String> l = getProductNamesFromResponse(productResults);
-//			for(String s : l) {
-//				System.out.println(s);
-//			}
 			return l;
 		} catch (Exception e) {
 			throw new ApiException(e);
 		}
 	}
 	
-	public List<ItemPrice> searchForPrices(String searchString) throws ApiException {
+	/***
+	 * Returns a list of Items that match the search string. The have their
+	 * prices field populated with the ItemPrice objects found.
+	 * @param searchString : term or phrase to search for
+	 * @return list of items
+	 * @throws ApiException when missing data in ApiResponse or API throws error
+	 */
+	public List<Item> searchForItems(String searchString) throws ApiException {
 		products.productsField("search", searchString);
 		try {
+			List<Item> prodList = new ArrayList<Item>();
 			JSONObject productResults = products.getProducts();
 			List<ItemPrice> l = getPricesFromResponse(productResults);
-//			for(ItemPrice ip : l) {
-//				System.out.println(ip.getName() + " == " + ip.getProductCode() + " == " + ip.getSeller() + " == " +ip.getPrice());
-//			}
-			return l;
+			
+			// Map of UPC -> Name
+			HashMap<String, String> uniqueUpcs = new HashMap<String, String>();
+			for(ItemPrice ip : l)
+				uniqueUpcs.put(ip.getProductCode(), ip.getName());
+			
+			for(String key : uniqueUpcs.keySet()) {
+				Item toAdd = new Item(uniqueUpcs.get(key), key, null);
+				for(ItemPrice ip : l) {
+					toAdd.getPrices().add(ip);
+				}
+				prodList.add(toAdd);
+			}
+			resetQuery();
+			return prodList;
 		} catch (Exception e) {
+			resetQuery();
 			throw new ApiException(e);
 		}
 	}
@@ -99,49 +116,71 @@ public class Semantics3PriceSource implements IPricingSource {
 			products.productsField("upc", upc);
 		try {
 			JSONObject results = products.getProducts();
+			resetQuery();
 			return getPricesFromResponse(results);
 		} catch(Exception e) {
+			resetQuery();
 			throw new ApiException(e);
 		}
 	}
 	
+	/***
+	 * Parses the response results into a List of ItemPrice
+	 * @param response
+	 * @return
+	 * @throws ApiException
+	 */
 	private List<ItemPrice> getPricesFromResponse(JSONObject response) throws ApiException {
 		Set<ItemPrice> list = new HashSet<ItemPrice>();
-		JSONArray results = response.getJSONArray("results");
-		// Iterate over each results entry
-		for(int i = 0; i < results.length(); i++) {
-			JSONObject entry = results.getJSONObject(i);
-			try {
-				String pName = entry.getString("name");
-				double pPrice = entry.getDouble("price");
-				String pUpc = entry.getString("upc");
-				JSONArray siteDetails = entry.getJSONArray("sitedetails");
-				// Iterate over each site (seems to only have 1 ever but they
-				// made it an array so...
-				for(int sdi = 0; sdi < siteDetails.length(); sdi++) {
-					JSONObject sdEntry = siteDetails.getJSONObject(sdi);
-					String pSourceName = sdEntry.getString("name");
-					String pSourceUrl = sdEntry.getString("url");
-					ItemPrice ip = new ItemPrice(pName, pUpc, pPrice, pSourceUrl, pSourceName);
-					list.add(ip);
+		try {
+			JSONArray results = response.getJSONArray("results");
+			// Iterate over each results entry
+			for(int i = 0; i < results.length(); i++) {
+				JSONObject entry = results.getJSONObject(i);
+				try {
+					String pName = entry.getString("name");
+					double pPrice = entry.getDouble("price");
+					String pUpc = entry.getString("upc");
+					JSONArray siteDetails = entry.getJSONArray("sitedetails");
+					// Iterate over each site (seems to only have 1 ever but they
+					// made it an array so...
+					for(int sdi = 0; sdi < siteDetails.length(); sdi++) {
+						JSONObject sdEntry = siteDetails.getJSONObject(sdi);
+						String pSourceName = sdEntry.getString("name");
+						String pSourceUrl = sdEntry.getString("url");
+						ItemPrice ip = new ItemPrice(pName, pUpc, pPrice, pSourceUrl, pSourceName);
+						list.add(ip);
+					}
+				} catch(JSONException e) {
+					continue;
 				}
-			} catch(JSONException e) {
-				continue;
 			}
+		} catch(JSONException e) {
+			throw new ApiException(e);
 		}
 		return new ArrayList<ItemPrice>(list);
 	}
 	
+	/***
+	 * Parses the response into a string list of unique product names
+	 * @param response
+	 * @return
+	 * @throws ApiException
+	 */
 	private List<String> getProductNamesFromResponse(JSONObject response) throws ApiException {
 		Set<String> list = new HashSet<String>();
-		JSONArray results = response.getJSONArray("results");
-		for(int i = 0; i < results.length(); i++) {
-			JSONObject entry = results.getJSONObject(i);
-			try {
-				list.add(entry.getString("name"));
-			} catch(JSONException e) {
-				continue;
+		try {
+			JSONArray results = response.getJSONArray("results");
+			for(int i = 0; i < results.length(); i++) {
+				JSONObject entry = results.getJSONObject(i);
+				try {
+					list.add(entry.getString("name"));
+				} catch(JSONException e) {
+					continue;
+				}
 			}
+		} catch(JSONException e) {
+			throw new ApiException(e);
 		}
 		return new ArrayList<String>(list);
 	}
