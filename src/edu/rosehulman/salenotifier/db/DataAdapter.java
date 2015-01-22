@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.rosehulman.salenotifier.models.IQueryable;
-import edu.rosehulman.salenotifier.settings.Setting;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;

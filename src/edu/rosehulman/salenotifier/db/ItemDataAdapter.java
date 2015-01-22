@@ -1,7 +1,5 @@
 package edu.rosehulman.salenotifier.db;
 
-import java.util.List;
-
 import android.content.ContentValues;
 import android.database.Cursor;
 

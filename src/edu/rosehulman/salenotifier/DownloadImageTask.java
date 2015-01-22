@@ -1,12 +1,9 @@
 package edu.rosehulman.salenotifier;
 
 import java.io.BufferedOutputStream;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
@@ -14,7 +11,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.util.LruCache;
 import android.widget.ImageView;
 
 public class DownloadImageTask extends AsyncTask<URL, Void, Bitmap> {

@@ -6,40 +6,40 @@
 
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Name" />
+        android:layout_height="wrap_content" />
 
     <EditText
         android:id="@+id/dialog_create_item_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10" >
+        android:ems="10"
+        android:inputType="text" >
 
         <requestFocus />
     </EditText>
 
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Product Code" />
+        android:layout_height="wrap_content" />
 
     <EditText
         android:id="@+id/dialog_create_item_product_code"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10" >
+        android:ems="10"
+        android:inputType="text" >
     </EditText>
 
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Image Url" />
+        android:layout_height="wrap_content" />
 
     <EditText
         android:id="@+id/dialog_create_item_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10" >
+        android:ems="10"
+        android:inputType="text" >
     </EditText>
 
 </LinearLayout>
