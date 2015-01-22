@@ -65,5 +65,14 @@
     <string name="action_settings_save">Save and Close</string>
     <string name="action_settings_close">Discard and Close</string>
     <string name="toast_settings_saved">Your settings were successfully saved.</string>
+    
+    <string name="item_settings_title_placeholder">Item Title Placeholder</string>
+    <string name="item_settings_notification_hint">Threshold</string>
+    <string name="item_settings_storage">Price Storage</string>
+    <string-array name="item_settings_notification_types">
+        <item>Price Below</item>
+        <item>Price Above</item>
+        <item>Average Price Below</item>
+    </string-array>
 
 </resources>
