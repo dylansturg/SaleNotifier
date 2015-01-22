@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.rosehulman.salenotifier.db.SQLiteAdapter;
+import edu.rosehulman.salenotifier.db.SaleNotifierSQLHelper;
 import edu.rosehulman.salenotifier.models.Item;
 import edu.rosehulman.salenotifier.models.ItemQueryConstraints;
 
@@ -19,7 +20,7 @@ import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.ListView;
 import android.widget.Toast;
 
-public class SearchResultsActivity extends Activity {
+public class SearchResultsActivity extends StorageActivity {
 
 	public static final String KEY_SEARCH_ITEM = "KEY_SEARCH_ITEM";
 
@@ -51,6 +52,7 @@ public class SearchResultsActivity extends Activity {
 
 		Intent launcher = getIntent();
 		mSearched = launcher.getParcelableExtra(KEY_SEARCH_ITEM);
+
 		mItemStorage = new SQLiteAdapter();
 
 		displaySearchToast();

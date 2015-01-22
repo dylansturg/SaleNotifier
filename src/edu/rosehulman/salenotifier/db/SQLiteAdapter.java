@@ -6,20 +6,27 @@ import edu.rosehulman.salenotifier.IItemSourceAdapter;
 import edu.rosehulman.salenotifier.models.Item;
 
 public class SQLiteAdapter implements IItemSourceAdapter {
-	
+
 	private static SQLiteAdapter instance = new SQLiteAdapter();
-	public static synchronized SQLiteAdapter getInstance(){
+
+	public static synchronized SQLiteAdapter getInstance() {
 		return instance;
 	}
 
 	@Override
 	public Item getItem(String productCode) {
 		ItemDataAdapter itemDb = new ItemDataAdapter();
-		List<Item> results = itemDb.getAll(ItemDataAdapter.DB_KEY_PRODUCT_CODE + "=" + productCode, null, null);
-		if(results.size() > 0){
+		List<Item> results = itemDb.getAll(ItemDataAdapter.DB_KEY_PRODUCT_CODE
+				+ "=" + productCode, null, null);
+		if (results.size() > 0) {
 			return results.get(0);
 		}
 		return null;
+	}
+
+	public Item getItemById(long id) {
+		ItemDataAdapter itemDb = new ItemDataAdapter();
+		return itemDb.getById(id);
 	}
 
 	@Override

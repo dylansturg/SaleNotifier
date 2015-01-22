@@ -69,6 +69,7 @@
     <string name="item_settings_title_placeholder">Item Title Placeholder</string>
     <string name="item_settings_notification_hint">Threshold</string>
     <string name="item_settings_storage">Price Storage</string>
+    <string name="item_settings_no_item">Cannot create settings for untracked item.</string>
     <string-array name="item_settings_notification_types">
         <item>Price Below</item>
         <item>Price Above</item>

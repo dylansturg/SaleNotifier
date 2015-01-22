@@ -20,11 +20,9 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
 
-public class TrackedItemsActivity extends Activity {
+public class TrackedItemsActivity extends StorageActivity {
 
 	public static final String LOG_TAG = "SNL";
-
-	private IItemSourceAdapter itemSource;
 
 	private ListView listView;
 	private TrackedItemsListAdapter listAdapter;
@@ -33,9 +31,6 @@ public class TrackedItemsActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_tracked_items);
-
-		initPersistentStorage();
-		itemSource = new SQLiteAdapter();
 
 		listView = (ListView) findViewById(R.id.tracked_items_list);
 		List<Item> items = itemSource.getAllItems();
@@ -54,13 +49,15 @@ public class TrackedItemsActivity extends Activity {
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
+				.getMenuInfo();
 		switch (item.getItemId()) {
 		case R.id.context_tracked_current:
 			return true;
 		case R.id.context_tracked_history:
 			return true;
 		case R.id.context_tracked_options:
+			launchItemSettings(info.id);
 			return true;
 		case R.id.context_tracked_delete:
 			confirmDeletion(info.id, info.position);
@@ -95,39 +92,49 @@ public class TrackedItemsActivity extends Activity {
 			return super.onOptionsItemSelected(item);
 		}
 	}
-	
-	private void launchSettings(){
+
+	private void launchItemSettings(long id) {
+		Intent itemSettings = new Intent(this, ItemSettingsActivity.class);
+		itemSettings.putExtra(ItemSettingsActivity.KEY_ITEM_ID, id);
+		startActivity(itemSettings);
+	}
+
+	private void launchSettings() {
 		Intent settingsIntent = new Intent(this, AppSettingsActivity.class);
 		startActivity(settingsIntent);
 	}
-	
-	private void launchSearch(){
+
+	private void launchSearch() {
 		Intent searchIntent = new Intent(this, ItemSearchActivity.class);
 		startActivity(searchIntent);
 	}
-	
-	private void confirmDeletion(final long id, final int position){
-		DialogFragment deleteDialog = new DialogFragment(){
+
+	private void confirmDeletion(final long id, final int position) {
+		DialogFragment deleteDialog = new DialogFragment() {
 			@Override
 			public Dialog onCreateDialog(Bundle savedInstanceState) {
-				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+				AlertDialog.Builder builder = new AlertDialog.Builder(
+						getActivity());
 				builder.setTitle(R.string.dialog_delete_title);
 				String name = listAdapter.getItem(position).getDisplayName();
-				builder.setMessage(getString(R.string.dialog_delete_message, name));
+				builder.setMessage(getString(R.string.dialog_delete_message,
+						name));
 				builder.setNegativeButton(android.R.string.cancel, null);
-				builder.setPositiveButton(R.string.dialog_delete_positive, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						deleteItem(id);
-					}
-				});
+				builder.setPositiveButton(R.string.dialog_delete_positive,
+						new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								deleteItem(id);
+							}
+						});
 				return builder.create();
 			}
 		};
 		deleteDialog.show(getFragmentManager(), "delete_confirm");
 	}
-	
-	private void deleteItem(long id){
+
+	private void deleteItem(long id) {
 		itemSource.deleteItem(id);
 		updateItemList();
 	}
@@ -136,9 +143,5 @@ public class TrackedItemsActivity extends Activity {
 		List<Item> items = itemSource.getAllItems();
 		listAdapter = new TrackedItemsListAdapter(this, items);
 		listView.setAdapter(listAdapter);
-	}
-
-	private void initPersistentStorage() {
-		SaleNotifierSQLHelper.init(this);
 	}
 }

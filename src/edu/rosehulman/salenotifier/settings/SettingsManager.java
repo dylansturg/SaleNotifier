@@ -24,6 +24,10 @@ public class SettingsManager {
 		sqlSource = new SettingsSQLiteAdapter();
 	}
 	
+	public Enumerable<Setting<?>> getSettingsForTarget(String target){
+		return sqlSource.getSettingsForTarget(target);
+	}
+	
 	public Enumerable<Setting<?>> getAppSettings(){
 		return sqlSource.getSettingsForTarget(KEY_APP_SETTINGS);
 	}
@@ -33,7 +37,6 @@ public class SettingsManager {
 			throw new IllegalArgumentException("Cannot get settings for null item.");
 		}
 		return sqlSource.getSettingsForTarget("" + item.getId());
-		
 	}
 	
 	public void saveSettings(List<Setting<?>> settings){
