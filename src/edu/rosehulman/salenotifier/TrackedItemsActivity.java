@@ -50,6 +50,15 @@ public class TrackedItemsActivity extends Activity {
 	}
 
 	@Override
+	protected void onResume() {
+		super.onResume();
+
+		List<Item> items = itemSource.getAllItems();
+		listAdapter = new TrackedItemsListAdapter(this, items);
+		listView.setAdapter(listAdapter);
+	}
+
+	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
@@ -58,7 +67,8 @@ public class TrackedItemsActivity extends Activity {
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
+				.getMenuInfo();
 		switch (item.getItemId()) {
 		case R.id.context_tracked_current:
 			return true;
@@ -98,8 +108,8 @@ public class TrackedItemsActivity extends Activity {
 			return super.onOptionsItemSelected(item);
 		}
 	}
-	
-	private void launchSearch(){
+
+	private void launchSearch() {
 		Intent searchIntent = new Intent(this, ItemSearchActivity.class);
 		startActivity(searchIntent);
 	}
@@ -156,29 +166,33 @@ public class TrackedItemsActivity extends Activity {
 		};
 		tempSearch.show(getFragmentManager(), "temp_search_dialog");
 	}
-	
-	private void confirmDeletion(final long id, final int position){
-		DialogFragment deleteDialog = new DialogFragment(){
+
+	private void confirmDeletion(final long id, final int position) {
+		DialogFragment deleteDialog = new DialogFragment() {
 			@Override
 			public Dialog onCreateDialog(Bundle savedInstanceState) {
-				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+				AlertDialog.Builder builder = new AlertDialog.Builder(
+						getActivity());
 				builder.setTitle(R.string.dialog_delete_title);
 				String name = listAdapter.getItem(position).getDisplayName();
-				builder.setMessage(getString(R.string.dialog_delete_message, name));
+				builder.setMessage(getString(R.string.dialog_delete_message,
+						name));
 				builder.setNegativeButton(android.R.string.cancel, null);
-				builder.setPositiveButton(R.string.dialog_delete_positive, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						deleteItem(id);
-					}
-				});
+				builder.setPositiveButton(R.string.dialog_delete_positive,
+						new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								deleteItem(id);
+							}
+						});
 				return builder.create();
 			}
 		};
 		deleteDialog.show(getFragmentManager(), "delete_confirm");
 	}
-	
-	private void deleteItem(long id){
+
+	private void deleteItem(long id) {
 		itemSource.deleteItem(id);
 		updateItemList();
 	}
