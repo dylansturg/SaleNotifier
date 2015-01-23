@@ -38,6 +38,15 @@ public class TrackedItemsActivity extends StorageActivity {
 	}
 
 	@Override
+	protected void onResume() {
+		super.onResume();
+
+		List<Item> items = itemSource.getAllItems();
+		listAdapter = new TrackedItemsListAdapter(this, items);
+		listView.setAdapter(listAdapter);
+	}
+
+	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
