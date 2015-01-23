@@ -94,7 +94,8 @@ public class ItemSettingsActivity extends SettingsActivity {
 	}
 
 	public void removeNotification(View clicked) {
-		ItemNotificationView view = (ItemNotificationView) clicked.getParent().getParent();
+		ItemNotificationView view = (ItemNotificationView) clicked.getParent()
+				.getParent();
 		mNotificationsContainer.removeView(view);
 		notificationViews.remove(view);
 	}
@@ -107,8 +108,8 @@ public class ItemSettingsActivity extends SettingsActivity {
 		List<NotificationPredicate> availabledPreds = NotificationPredicateFactory
 				.getAvailablePredicates();
 		for (Setting<?> setting : notificationSettings) {
-			String value = (String) setting.getValue();
-			String[] options = value.split(NOTIFICATION_SEPARATOR);
+			String[] options = splitNotificationValue((String) setting
+					.getValue());
 			ItemNotificationView view = new ItemNotificationView(this,
 					availabledPreds, options[0], options[1], setting.getId());
 			mNotificationsContainer.addView(view);
@@ -135,10 +136,10 @@ public class ItemSettingsActivity extends SettingsActivity {
 		List<Setting<?>> remainingNotifications = new ArrayList<Setting<?>>();
 
 		for (ItemNotificationView notificationView : notificationViews) {
-			if(notificationView.getThresholdValue().isEmpty()){
+			if (notificationView.getThresholdValue().isEmpty()) {
 				continue;
 			}
-			
+
 			Setting<String> notificationSetting = null;
 			if (notificationView.getNotificationId() >= 0) {
 				final long settingId = notificationView.getNotificationId();
@@ -159,17 +160,25 @@ public class ItemSettingsActivity extends SettingsActivity {
 			}
 
 			remainingNotifications.add(notificationSetting);
-
-			notificationSetting.setValue(notificationView
-					.getNotificationPredicate()
-					+ NOTIFICATION_SEPARATOR
-					+ notificationView.getThresholdValue());
+			String value = createNotificationValue(
+					notificationView.getNotificationPredicate(),
+					notificationView.getThresholdValue());
+			notificationSetting.setValue(value);
 
 			SettingsManager.getManager().saveSetting(notificationSetting);
 		}
-		
+
 		itemNotifications.removeAll(remainingNotifications);
 		SettingsManager.getManager().deleteAll(itemNotifications);
+	}
+
+	private String createNotificationValue(String predicateName,
+			String thresholdValue) {
+		return predicateName + NOTIFICATION_SEPARATOR + thresholdValue;
+	}
+
+	private String[] splitNotificationValue(String value) {
+		return value.split(NOTIFICATION_SEPARATOR);
 	}
 
 	@Override
