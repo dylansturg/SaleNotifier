@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal" >
+
+    <Spinner
+        android:id="@+id/item_notification_view_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent" />
+
+    <EditText
+        android:id="@+id/item_notification_view_threshold"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:ems="10"
+        android:hint="@string/item_settings_notification_hint"
+        android:inputType="numberDecimal" >
+    </EditText>
+
+    <ImageButton
+        android:id="@+id/item_notification_view_remover"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:onClick="removeNotification"
+        android:contentDescription="@string/item_settings_remove_notification"
+        android:src="@drawable/ic_action_discard" />
+
+</LinearLayout>

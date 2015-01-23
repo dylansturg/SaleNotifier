@@ -51,7 +51,7 @@ public abstract class SettingFactory {
 		// Ensures all types resolve to same factory
 		SettingFactory instance = null;
 		if (cachedFactories.containsKey(type)) {
-			instance = cachedFactories.get(type);
+			return cachedFactories.get(type);
 		}
 
 		if (instance == null) {
@@ -65,6 +65,7 @@ public abstract class SettingFactory {
 				Constructor<?> ctor = clazz.getConstructor();
 				Object object = ctor.newInstance(new Object[] {});
 				instance = (SettingFactory) object;
+				cachedFactories.put(type, instance);
 			} catch (Exception reflectFailure) {
 				Log.d(TrackedItemsActivity.LOG_TAG,
 						"SettingFactory creating Setting<?> failed due to missing class for type: "
@@ -72,11 +73,6 @@ public abstract class SettingFactory {
 				Log.d(TrackedItemsActivity.LOG_TAG, "Reflection Error: ",
 						reflectFailure);
 			}
-		}
-
-		if (instance == null) {
-			// We tried pretty hard...
-			return null;
 		}
 
 		return instance;

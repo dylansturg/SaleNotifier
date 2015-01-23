@@ -75,5 +75,7 @@
         <item>Price Above</item>
         <item>Average Price Below</item>
     </string-array>
+    <string name="item_settings_add_description">Add a notification</string>
+    <string name="item_settings_remove_notification">Delete Notification</string>
 
 </resources>

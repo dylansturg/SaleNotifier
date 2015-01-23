@@ -8,6 +8,7 @@ public class Setting<T> implements IQueryable{
 	public static final String DATA_SOURCE_NAME_FORMAT = DATA_SOURCE_PREFIX + "%s";
 	
 	public static final String SETTING_NAME_NOTIFICATIONS = "NOTIFICATIONS";
+	public static final String SETTING_NAME_SPECIFIC_NOTIFICATIONS = "SPECIFIC_NOTIFICATIONS";
 	public static final String SETTING_NAME_DELETE_AFTER = "DELETE_AFTER";
 	
 	public static IPredicate<Setting<?>> createNamePredicate(final String name){

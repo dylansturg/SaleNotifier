@@ -27,6 +27,7 @@
         </activity>
         <activity
             android:name=".ItemSearchActivity"
+            android:windowSoftInputMode="stateUnchanged"
             android:label="@string/title_activity_item_search" >
         </activity>
         <activity
@@ -39,10 +40,12 @@
         </activity>
         <activity
             android:name=".AppSettingsActivity"
+            android:windowSoftInputMode="stateUnchanged"
             android:label="@string/title_activity_app_settings" >
         </activity>
         <activity
             android:name=".ItemSettingsActivity"
+            android:windowSoftInputMode="stateUnchanged"
             android:label="@string/title_activity_item_settings" >
         </activity>
     </application>
