@@ -12,7 +12,6 @@ public class StorageActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
 		initPersistentStorage();
 		itemSource = new SQLiteAdapter();
 	}

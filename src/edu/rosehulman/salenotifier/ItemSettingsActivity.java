@@ -2,16 +2,12 @@ package edu.rosehulman.salenotifier;
 
 import java.util.ArrayList;
 
-import edu.rosehulman.salenotifier.db.Enumerable;
-import edu.rosehulman.salenotifier.db.SQLiteAdapter;
-import edu.rosehulman.salenotifier.db.SaleNotifierSQLHelper;
 import edu.rosehulman.salenotifier.models.Item;
-import edu.rosehulman.salenotifier.settings.Setting;
-import edu.rosehulman.salenotifier.settings.SettingsManager;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -23,6 +19,7 @@ public class ItemSettingsActivity extends SettingsActivity {
 	public static final String KEY_ITEM_ID = "KEY_ITEM_ID";
 
 	private Item mItem;
+	private long mItemId;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -35,18 +32,42 @@ public class ItemSettingsActivity extends SettingsActivity {
 			return;
 		}
 
-		long itemId = launcher.getLongExtra(KEY_ITEM_ID, -1);
-		mItem = itemSource.getItemById(itemId);
+		mItemId = launcher.getLongExtra(KEY_ITEM_ID, -1);
+		mItem = itemSource.getItemById(mItemId);
 		if (mItem == null) {
 			alertNonExistentItem();
 			return;
 		}
+
+		// Set mItemId before refreshSettings
+		refreshSettings();
 
 		mHistoryDuration = (EditText) findViewById(R.id.item_settings_history_duration);
 		mDataSourcesContainer = (LinearLayout) findViewById(R.id.item_settings_sources_container);
 		mDataSourcesCheckBoxes = new ArrayList<CheckBox>();
 		mNotificationsSwitch = (Switch) findViewById(R.id.item_settings_notifications_switch);
 
+		displayCachedOrSavedSettings(savedInstanceState);
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.app_settings, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.action_settings_save:
+			saveSettings();
+			return true;
+		case R.id.action_settings_close:
+			finish();
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
 	}
 
 	private void alertNonExistentItem() {
@@ -59,6 +80,6 @@ public class ItemSettingsActivity extends SettingsActivity {
 
 	@Override
 	protected String getSettingsTarget() {
-		return "" + mItem.getId();
+		return "" + mItemId;
 	}
 }

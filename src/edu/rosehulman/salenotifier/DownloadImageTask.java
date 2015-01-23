@@ -21,6 +21,7 @@ public class DownloadImageTask extends AsyncTask<URL, Void, Bitmap> {
 	public DownloadImageTask(ImageView target, File cacheDir) {
 		mTargetView = target;
 		mCacheDir = cacheDir;
+		target.setImageResource(R.drawable.loader);
 	}
 	
 	private int getImageScale(int unscaledWidth, int unscaledHeight, int reqWidth, int reqHeight){

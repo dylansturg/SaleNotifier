@@ -36,14 +36,86 @@ public abstract class SettingsActivity extends StorageActivity {
 	protected void refreshSettings() {
 		mSettings = SettingsManager.getManager().getSettingsForTarget(
 				getSettingsTarget());
+		Log.d(TrackedItemsActivity.LOG_TAG, "Number of settings for target ("
+				+ getSettingsTarget() + ") " + mSettings.size());
 	}
-	
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
-		super.onCreate(savedInstanceState);
-		
-		refreshSettings();
+
+	protected void displayCachedOrSavedSettings(Bundle savedInstanceState) {
+		ArrayList<String> previouslyChecked = null;
+		Boolean previousNotifications = null;
+		Integer previousDeleteAfter = null;
+		if (savedInstanceState != null) {
+			previouslyChecked = savedInstanceState
+					.getStringArrayList(KEY_CHECKED_DATA_SOURCES);
+
+			if (savedInstanceState.containsKey(KEY_CHECKED_NOTIFICATIONS)) {
+				previousNotifications = savedInstanceState
+						.getBoolean(KEY_CHECKED_NOTIFICATIONS);
+			}
+			if (savedInstanceState.containsKey(KEY_DELETE_AFTER_SETTING)) {
+				previousDeleteAfter = savedInstanceState
+						.getInt(KEY_DELETE_AFTER_SETTING);
+			}
+		}
+
+		presentDataSourceSettings(previouslyChecked);
+		presentNotificationsSetting(previousNotifications);
+		presentDeleteAfterSetting(previousDeleteAfter);
+	}
+
+	private void presentDeleteAfterSetting(Integer localVersion) {
+		if (localVersion != null) {
+			mHistoryDuration.setText(localVersion.toString());
+		} else {
+			@SuppressWarnings("unchecked")
+			Setting<Integer> preference = (Setting<Integer>) mSettings
+					.firstOrDefault(Setting
+							.createNamePredicate(Setting.SETTING_NAME_DELETE_AFTER));
+			if (preference != null) {
+				mHistoryDuration.setText(preference.getValue().toString());
+			}
+		}
+	}
+
+	private void presentNotificationsSetting(Boolean localVersion) {
+		if (localVersion != null) {
+			mNotificationsSwitch.setChecked(localVersion);
+		} else {
+			@SuppressWarnings("unchecked")
+			Setting<Boolean> preference = (Setting<Boolean>) mSettings
+					.firstOrDefault(Setting
+							.createNamePredicate(Setting.SETTING_NAME_NOTIFICATIONS));
+			if (preference != null) {
+				mNotificationsSwitch.setChecked(preference.getValue());
+			}
+		}
+	}
+
+	private void presentDataSourceSettings(List<String> localVersion) {
+		String[] dataSources = getResources().getStringArray(
+				R.array.settings_data_sources_options);
+		for (final String dataSource : dataSources) {
+			CheckBox dataSourceCheckBox = new CheckBox(this);
+			dataSourceCheckBox.setText(dataSource);
+			mDataSourcesContainer.addView(dataSourceCheckBox);
+			mDataSourcesCheckBoxes.add(dataSourceCheckBox);
+
+			if (localVersion != null) {
+				dataSourceCheckBox
+						.setChecked(localVersion.contains(dataSource));
+			} else {
+				@SuppressWarnings("unchecked")
+				Setting<Boolean> preference = (Setting<Boolean>) mSettings
+						.firstOrDefault(Setting.createNamePredicate(String
+								.format(Setting.DATA_SOURCE_NAME_FORMAT,
+										dataSource)));
+				if (preference != null) {
+					dataSourceCheckBox.setChecked(preference.getValue());
+				} else {
+					dataSourceCheckBox.setChecked(false);
+				}
+			}
+		}
 	}
 
 	@Override
@@ -71,7 +143,7 @@ public abstract class SettingsActivity extends StorageActivity {
 		}
 		outState.putStringArrayList(KEY_CHECKED_DATA_SOURCES, checkedSources);
 	}
-	
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected void saveSettings() {
 		refreshSettings();
@@ -140,7 +212,6 @@ public abstract class SettingsActivity extends StorageActivity {
 		SettingsManager.getManager().saveSetting(allowNotifications);
 	}
 
-
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private Enumerable<Setting<Boolean>> getDataSourceSettings() {
 		Enumerable<Setting<Boolean>> dataSourceSettings = new Enumerable<Setting<Boolean>>();
@@ -161,7 +232,7 @@ public abstract class SettingsActivity extends StorageActivity {
 		return dataSourceSettings;
 	}
 
-	private void captureCurrentDataSourceSettings(
+	protected void captureCurrentDataSourceSettings(
 			Enumerable<Setting<Boolean>> settings) {
 		assert (settings != null);
 
