@@ -18,6 +18,13 @@ public abstract class DataAdapter<T extends IQueryable> {
 
 	abstract String getDBKeyColumn();
 
+	/**
+	 * Quickly determine if the item could be in the database (no queries
+	 * allowed).
+	 * 
+	 * @param item
+	 * @return item in database plausible
+	 */
 	abstract boolean doesItemExist(T item);
 
 	abstract ContentValues toContentValues(T item);
@@ -29,11 +36,15 @@ public abstract class DataAdapter<T extends IQueryable> {
 		db = dbOpenHelper.getWritableDatabase();
 	}
 
+	/**
+	 * Inserts the item into the database. Only call if the item is NOT already
+	 * in the database. If the item might be in the database, call update
+	 * instead.
+	 * 
+	 * @param item
+	 * @return
+	 */
 	protected boolean insert(T item) {
-		if (doesItemExist(item)) {
-			return update(item);
-		}
-
 		ContentValues vals = toContentValues(item);
 		long id = db.insert(getTableName(), null, vals);
 		item.setId(id);
@@ -41,13 +52,27 @@ public abstract class DataAdapter<T extends IQueryable> {
 		return id >= 0;
 	}
 
+	/**
+	 * Updates the item in the database. Guaranteed to result in the modified
+	 * item existing in database. Will insert if necessary. Should almost always
+	 * be used in place of insert.
+	 * 
+	 * @param item
+	 * @return
+	 */
 	protected boolean update(T item) {
 		if (!doesItemExist(item)) {
 			return insert(item);
 		}
 		ContentValues vals = toContentValues(item);
-		return db.update(getTableName(), vals,
-				getDBKeyColumn() + "=" + item.getId(), null) == 1;
+		int updated = db.update(getTableName(), vals, getDBKeyColumn() + "="
+				+ item.getId(), null);
+		if (updated > 0) {
+			return true;
+		} else {
+			return insert(item);
+		}
+
 	}
 
 	protected boolean delete(T item) {

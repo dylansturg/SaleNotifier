@@ -28,23 +28,35 @@ public class ItemNotificationView extends FrameLayout {
 
 	public ItemNotificationView(Context context,
 			List<NotificationPredicate> predicates, String selectedPredicate,
-			String threshold, long settingId) {
-		super(context);
-		
-		mId = settingId;
-		View content = LayoutInflater.from(context).inflate(R.layout.item_notification_view, this, false);
-		addView(content);
-		
-		setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+			double threshold, long notificationId) {
+		this(context, predicates, selectedPredicate, "" + threshold,
+				notificationId);
+	}
 
-		mEventType = (Spinner) content.findViewById(R.id.item_notification_view_spinner);
-		mThreshold = (EditText) content.findViewById(R.id.item_notification_view_threshold);
-		if(threshold != null){
+	public ItemNotificationView(Context context,
+			List<NotificationPredicate> predicates, String selectedPredicate,
+			String threshold, long notificationId) {
+		super(context);
+
+		mId = notificationId;
+		View content = LayoutInflater.from(context).inflate(
+				R.layout.item_notification_view, this, false);
+		addView(content);
+
+		setLayoutParams(new LinearLayout.LayoutParams(
+				LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+
+		mEventType = (Spinner) content
+				.findViewById(R.id.item_notification_view_spinner);
+		mThreshold = (EditText) content
+				.findViewById(R.id.item_notification_view_threshold);
+		if (threshold != null) {
 			mThreshold.setText(threshold);
 		}
-		
-		ImageButton remover = (ImageButton) content.findViewById(R.id.item_notification_view_remover);
-		remover.setTag(settingId);
+
+		ImageButton remover = (ImageButton) content
+				.findViewById(R.id.item_notification_view_remover);
+		remover.setTag(notificationId);
 
 		mEventAdapter = new ArrayAdapter<NotificationPredicate>(context,
 				android.R.layout.simple_spinner_dropdown_item, predicates);
@@ -53,29 +65,36 @@ public class ItemNotificationView extends FrameLayout {
 				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
 		mEventType.setAdapter(mEventAdapter);
-		
-		if(selectedPredicate != null){
+
+		if (selectedPredicate != null) {
 			for (NotificationPredicate notificationPredicate : predicates) {
-				if(notificationPredicate.getPredicate().equalsIgnoreCase(selectedPredicate)){
-					int position = mEventAdapter.getPosition(notificationPredicate);
+				if (notificationPredicate.getPredicate().equalsIgnoreCase(
+						selectedPredicate)) {
+					int position = mEventAdapter
+							.getPosition(notificationPredicate);
 					mEventType.setSelection(position);
 					break;
 				}
 			}
 		}
-		
+
 	}
-	
-	public long getNotificationId(){
+
+	public long getNotificationId() {
 		return mId;
 	}
-	
-	public String getThresholdValue(){
-		return mThreshold.getText().toString();
+
+	public Double getThresholdValue() {
+		try {
+			return Double.parseDouble(mThreshold.getText().toString());
+		} catch (NumberFormatException parseFailed) {
+			return null;
+		}
 	}
-	
-	public String getNotificationPredicate(){
-		return ((NotificationPredicate) mEventType.getSelectedItem()).getPredicate();
+
+	public String getNotificationPredicate() {
+		return ((NotificationPredicate) mEventType.getSelectedItem())
+				.getPredicate();
 	}
 
 }

@@ -8,7 +8,7 @@ import android.util.Log;
 
 public class SaleNotifierSQLHelper extends SQLiteOpenHelper {
 	
-	private static final int DATABASE_VERSION = 2;
+	private static final int DATABASE_VERSION = 4;
 	private static final String DATABASE_NAME = "sale_notifier.db";
 	
 	private static final String[] CREATE_TABLE_STATEMENTS = {
@@ -16,6 +16,7 @@ public class SaleNotifierSQLHelper extends SQLiteOpenHelper {
 		ItemPriceDataAdapter.CREATE_TABLE,
 		SellerDataAdapter.CREATE_TABLE,
 		SettingDataAdapter.CREATE_TABLE,
+		ItemNotificationDataAdapter.CREATE_TABLE,
 	};
 	
 	private static final String[] TABLE_NAMES = {
@@ -23,6 +24,7 @@ public class SaleNotifierSQLHelper extends SQLiteOpenHelper {
 		ItemPriceDataAdapter.TABLE_ITEM_PRICES,
 		SellerDataAdapter.TABLE_SELLERS,
 		SettingDataAdapter.TABLE_SETTINGS,
+		ItemNotificationDataAdapter.TABLE_ITEM_NOTIFICATIONS,
 	};
 	
 	private static SaleNotifierSQLHelper instance = null;

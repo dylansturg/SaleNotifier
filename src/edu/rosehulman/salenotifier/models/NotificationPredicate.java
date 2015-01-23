@@ -5,16 +5,16 @@ public class NotificationPredicate implements IQueryable {
 	private long mId = -1;
 	private String mDescription;
 	private String mPredicate;
-	
+
 	public NotificationPredicate() {
 		this(-1, "", "");
 	}
-	
-	public NotificationPredicate(String description, String predicate){
+
+	public NotificationPredicate(String description, String predicate) {
 		this(-1, description, predicate);
 	}
-	
-	public NotificationPredicate(long id, String description, String predicate){
+
+	public NotificationPredicate(long id, String description, String predicate) {
 		mId = id;
 		mDescription = description;
 		mPredicate = predicate;
@@ -29,24 +29,24 @@ public class NotificationPredicate implements IQueryable {
 	public void setId(long id) {
 		mId = id;
 	}
-	
-	public String getDescription(){
+
+	public String getDescription() {
 		return mDescription;
 	}
-	
-	public void setDescription(String desc){
+
+	public void setDescription(String desc) {
 		mDescription = desc;
 	}
-	
-	public String getPredicate(){
+
+	public String getPredicate() {
 		return mPredicate;
 	}
-	
-	public void setPredicate(String pred){
+
+	public void setPredicate(String pred) {
 		mPredicate = pred;
 	}
-	
-	public boolean evaluate(double[] currentPrices, double threshold){
+
+	public boolean evaluate(double[] currentPrices) {
 		return false;
 	}
 

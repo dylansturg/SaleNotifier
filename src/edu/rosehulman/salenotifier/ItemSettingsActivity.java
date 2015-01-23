@@ -6,6 +6,7 @@ import java.util.List;
 import edu.rosehulman.salenotifier.db.Enumerable;
 import edu.rosehulman.salenotifier.db.Enumerable.IPredicate;
 import edu.rosehulman.salenotifier.models.Item;
+import edu.rosehulman.salenotifier.models.ItemNotification;
 import edu.rosehulman.salenotifier.models.NotificationPredicate;
 import edu.rosehulman.salenotifier.notifications.NotificationPredicateFactory;
 import edu.rosehulman.salenotifier.settings.Setting;
@@ -26,10 +27,7 @@ public class ItemSettingsActivity extends SettingsActivity {
 
 	public static final String KEY_ITEM_ID = "KEY_ITEM_ID";
 
-	private static final String NOTIFICATION_SEPARATOR = ":";
-
 	private Item mItem;
-	private long mItemId;
 
 	private LinearLayout mNotificationsContainer;
 	private List<ItemNotificationView> notificationViews;
@@ -45,14 +43,14 @@ public class ItemSettingsActivity extends SettingsActivity {
 			return;
 		}
 
-		mItemId = launcher.getLongExtra(KEY_ITEM_ID, -1);
-		mItem = itemSource.getItemById(mItemId);
+		long itemId = launcher.getLongExtra(KEY_ITEM_ID, -1);
+		mItem = itemSource.getItemById(itemId);
 		if (mItem == null) {
 			alertNonExistentItem();
 			return;
 		}
 
-		// Set mItemId before refreshSettings
+		// Set mItem before querying settings
 		refreshSettings();
 
 		mHistoryDuration = (EditText) findViewById(R.id.item_settings_history_duration);
@@ -101,17 +99,20 @@ public class ItemSettingsActivity extends SettingsActivity {
 	}
 
 	private void displayNotificationSettings() {
-		Enumerable<Setting<?>> notificationSettings = mSettings
-				.where(Setting
-						.createNamePredicate(Setting.SETTING_NAME_SPECIFIC_NOTIFICATIONS));
+		Enumerable<ItemNotification> notifications = SettingsManager
+				.getManager().getItemNotifications(mItem);
+		if (notifications == null) {
+			// None to display
+			return;
+		}
 
 		List<NotificationPredicate> availabledPreds = NotificationPredicateFactory
 				.getAvailablePredicates();
-		for (Setting<?> setting : notificationSettings) {
-			String[] options = splitNotificationValue((String) setting
-					.getValue());
+
+		for (ItemNotification notification : notifications) {
 			ItemNotificationView view = new ItemNotificationView(this,
-					availabledPreds, options[0], options[1], setting.getId());
+					availabledPreds, notification.getPredicate(),
+					notification.getThreshold(), notification.getId());
 			mNotificationsContainer.addView(view);
 			notificationViews.add(view);
 		}
@@ -125,64 +126,52 @@ public class ItemSettingsActivity extends SettingsActivity {
 		finish();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	protected void saveSettings() {
 		super.saveSettings();
 
-		List<Setting<?>> itemNotifications = mSettings
-				.where(Setting
-						.createNamePredicate(Setting.SETTING_NAME_SPECIFIC_NOTIFICATIONS));
-		List<Setting<?>> remainingNotifications = new ArrayList<Setting<?>>();
+		Enumerable<ItemNotification> itemNotifications = SettingsManager
+				.getManager().getItemNotifications(mItem);
+		if (itemNotifications == null) {
+			itemNotifications = new Enumerable<ItemNotification>();
+		}
+		List<ItemNotification> remainingNotifications = new ArrayList<ItemNotification>();
 
 		for (ItemNotificationView notificationView : notificationViews) {
-			if (notificationView.getThresholdValue().isEmpty()) {
+			if (notificationView.getThresholdValue() == null) {
 				continue;
 			}
 
-			Setting<String> notificationSetting = null;
+			ItemNotification notification = null;
 			if (notificationView.getNotificationId() >= 0) {
 				final long settingId = notificationView.getNotificationId();
-				notificationSetting = (Setting<String>) mSettings
-						.firstOrDefault(new IPredicate<Setting<?>>() {
+				notification = itemNotifications
+						.firstOrDefault(new IPredicate<ItemNotification>() {
 							@Override
-							public boolean match(Setting<?> element) {
+							public boolean match(ItemNotification element) {
 								return element.getId() == settingId;
 							}
 						});
 			}
 
-			if (notificationSetting == null) {
-				notificationSetting = new Setting<String>();
-				notificationSetting
-						.setName(Setting.SETTING_NAME_SPECIFIC_NOTIFICATIONS);
-				notificationSetting.setTarget(getSettingsTarget());
+			if (notification == null) {
+				notification = new ItemNotification();
+				notification.setItemId(mItem.getId());
 			}
 
-			remainingNotifications.add(notificationSetting);
-			String value = createNotificationValue(
-					notificationView.getNotificationPredicate(),
-					notificationView.getThresholdValue());
-			notificationSetting.setValue(value);
-
-			SettingsManager.getManager().saveSetting(notificationSetting);
+			remainingNotifications.add(notification);
+			notification.setPredicate(notificationView
+					.getNotificationPredicate());
+			notification.setThreshold(notificationView.getThresholdValue());
+			SettingsManager.getManager().saveItemNotification(notification);
 		}
 
 		itemNotifications.removeAll(remainingNotifications);
-		SettingsManager.getManager().deleteAll(itemNotifications);
-	}
-
-	private String createNotificationValue(String predicateName,
-			String thresholdValue) {
-		return predicateName + NOTIFICATION_SEPARATOR + thresholdValue;
-	}
-
-	private String[] splitNotificationValue(String value) {
-		return value.split(NOTIFICATION_SEPARATOR);
+		SettingsManager.getManager().deleteItemNotifications(itemNotifications);
 	}
 
 	@Override
 	protected String getSettingsTarget() {
-		return "" + mItemId;
+		return "" + mItem.getId();
 	}
 }
