@@ -6,6 +6,7 @@ import java.util.Map;
 import edu.rosehulman.salenotifier.models.BarcodeResult;
 import edu.rosehulman.salenotifier.models.ItemQueryConstraints;
 
+import edu.rosehulman.salenotifier.R;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;

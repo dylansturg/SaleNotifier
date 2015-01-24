@@ -3,6 +3,7 @@ package edu.rosehulman.salenotifier.models;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import edu.rosehulman.salenotifier.TrackedItemsActivity;
@@ -20,22 +21,28 @@ public class Item implements IQueryable, Parcelable {
 
 	public static final Parcelable.Creator<Item> CREATOR = new ItemCreator();
 	
-	public Item() {
-
-	}
+	public Item() { }
 	
 	public Item(String name, String upc, String imageUrl){
 		displayName = name;
 		productCode = upc;
 		setImageUrl(imageUrl);
+		priceData = new ArrayList<ItemPrice>();
 	}
 	
-	public Item(Parcel source){
+	public Item(Parcel source) {
 		mId = source.readLong();
 		displayName = source.readString();
 		productCode = source.readString();
 		priceData = new ArrayList<ItemPrice>();
 		source.readTypedList(priceData, ItemPrice.CREATOR);
+	}
+	
+	public String getLowestPriceAsString() {
+		if(priceData.isEmpty())
+			return "N/A";
+		Collections.sort(priceData);
+		return "$" + String.format("%1$,.2f", priceData.get(0).getPrice());
 	}
 
 	public long getId() {
@@ -83,6 +90,10 @@ public class Item implements IQueryable, Parcelable {
 
 	public List<ItemPrice> getPrices() {
 		return priceData;
+	}
+	
+	public void addPrice(ItemPrice ip) {
+		priceData.add(ip);
 	}
 
 	public void update() {

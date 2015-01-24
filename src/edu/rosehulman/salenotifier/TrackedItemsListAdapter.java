@@ -4,6 +4,7 @@ import java.util.List;
 
 import edu.rosehulman.salenotifier.models.Item;
 
+import edu.rosehulman.salenotifier.R;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
