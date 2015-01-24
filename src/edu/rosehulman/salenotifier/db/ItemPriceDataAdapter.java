@@ -2,9 +2,10 @@ package edu.rosehulman.salenotifier.db;
 
 import java.util.GregorianCalendar;
 
+import edu.rosehulman.salenotifier.models.ItemPrice;
+
 import android.content.ContentValues;
 import android.database.Cursor;
-import edu.rosehulman.salenotifier.models.ItemPrice;
 
 public class ItemPriceDataAdapter extends DataAdapter<ItemPrice>{
 	protected static final String TABLE_ITEM_PRICES = "itemPrices";

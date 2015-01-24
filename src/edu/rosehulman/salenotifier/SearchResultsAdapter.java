@@ -4,6 +4,7 @@ import java.util.List;
 
 import edu.rosehulman.salenotifier.models.Item;
 
+import edu.rosehulman.salenotifier.R;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,7 +32,7 @@ public class SearchResultsAdapter extends ArrayAdapter<Item> {
 		Item searchResult = getItem(position);
 		
 		((TextView)resultView.findViewById(R.id.search_result_title)).setText(searchResult.getDisplayName());
-		((TextView)resultView.findViewById(R.id.search_result_subtitle)).setText("Eventually put a price here");
+		((TextView)resultView.findViewById(R.id.search_result_subtitle)).setText(searchResult.getLowestPriceAsString());
 		
 		ImageView image = (ImageView)resultView.findViewById(R.id.search_result_image);
 		new DownloadImageTask(image, getContext().getCacheDir()).execute(searchResult.getImageUrl());

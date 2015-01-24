@@ -1,8 +1,8 @@
 package edu.rosehulman.salenotifier.db;
 
+import edu.rosehulman.salenotifier.models.Seller;
 import android.content.ContentValues;
 import android.database.Cursor;
-import edu.rosehulman.salenotifier.models.Seller;
 
 public class SellerDataAdapter extends DataAdapter<Seller> {
 	protected static final String TABLE_SELLERS = "sellers";
