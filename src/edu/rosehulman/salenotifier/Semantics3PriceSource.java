@@ -12,6 +12,9 @@ import org.json.JSONObject;
 
 import com.semantics3.api.Products;
 
+import edu.rosehulman.salenotifier.models.Item;
+import edu.rosehulman.salenotifier.models.ItemPrice;
+
 public class Semantics3PriceSource implements IPricingSource {
 
 	private static final String APP_KEY = "SEM336FC88457A9E384669666327917180A7";

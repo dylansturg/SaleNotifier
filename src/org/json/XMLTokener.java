@@ -1,5 +1,7 @@
 package org.json;
 
+import java.util.HashMap;
+
 import org.json.JSONException;
 import org.json.JSONTokener;
 
@@ -39,7 +41,7 @@ public class XMLTokener extends JSONTokener {
    /** The table of entity values. It initially contains Character values for
     * amp, apos, gt, lt, quot.
     */
-   public static final java.util.HashMap entity;
+   public static final HashMap entity;
 
    static {
        entity = new java.util.HashMap(8);

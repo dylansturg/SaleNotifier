@@ -3,6 +3,8 @@ package edu.rosehulman.salenotifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.rosehulman.salenotifier.models.Item;
+
 import android.os.AsyncTask;
 
 public class ItemSearchTask extends AsyncTask<Void, Void, List<Item>> {

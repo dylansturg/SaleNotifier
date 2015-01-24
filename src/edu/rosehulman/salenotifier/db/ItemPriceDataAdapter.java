@@ -2,7 +2,8 @@ package edu.rosehulman.salenotifier.db;
 
 import java.util.GregorianCalendar;
 
-import edu.rosehulman.salenotifier.ItemPrice;
+import edu.rosehulman.salenotifier.models.ItemPrice;
+
 import android.content.ContentValues;
 import android.database.Cursor;
 

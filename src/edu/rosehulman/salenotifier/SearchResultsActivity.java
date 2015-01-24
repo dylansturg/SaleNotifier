@@ -5,6 +5,8 @@ import java.util.List;
 
 import edu.rosehulman.salenotifier.R;
 import edu.rosehulman.salenotifier.db.SQLiteAdapter;
+import edu.rosehulman.salenotifier.models.Item;
+import edu.rosehulman.salenotifier.models.ItemQueryConstraints;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;

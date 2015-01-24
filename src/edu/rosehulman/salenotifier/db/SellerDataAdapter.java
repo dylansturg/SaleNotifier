@@ -1,6 +1,6 @@
 package edu.rosehulman.salenotifier.db;
 
-import edu.rosehulman.salenotifier.Seller;
+import edu.rosehulman.salenotifier.models.Seller;
 import android.content.ContentValues;
 import android.database.Cursor;
 

@@ -2,7 +2,7 @@ package edu.rosehulman.salenotifier.db;
 
 import java.util.List;
 
-import edu.rosehulman.salenotifier.Item;
+import edu.rosehulman.salenotifier.models.Item;
 import android.content.ContentValues;
 import android.database.Cursor;
 
