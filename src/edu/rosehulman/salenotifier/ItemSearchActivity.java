@@ -3,6 +3,7 @@ package edu.rosehulman.salenotifier;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.rosehulman.salenotifier.R;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;

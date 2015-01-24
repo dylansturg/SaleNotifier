@@ -3,8 +3,8 @@ package edu.rosehulman.salenotifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.rosehulman.salenotifier.R;
 import edu.rosehulman.salenotifier.db.SQLiteAdapter;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,19 +20,6 @@ import android.widget.Toast;
 public class SearchResultsActivity extends Activity {
 
 	public static final String KEY_SEARCH_ITEM = "KEY_SEARCH_ITEM";
-
-	private static ArrayList<Item> MOCK_SEARCH_RESULTS = new ArrayList<Item>();
-	static {
-		MOCK_SEARCH_RESULTS.add(new Item("Puppies", "imgur.com/r/aww",
-				"http://i.imgur.com/N6g331A.jpg"));
-		MOCK_SEARCH_RESULTS.add(new Item("Kittens", "imgur.com/r/aww",
-				"http://i.imgur.com/1NW6KMM.jpg"));
-		MOCK_SEARCH_RESULTS.add(new Item("Red Panda", "imgur.com/r/aww",
-				"http://i.imgur.com/dkHRzwx.jpg"));
-		MOCK_SEARCH_RESULTS.add(new Item("Foxxy", "imgur.com/r/aww",
-				"http://i.imgur.com/yw7iAbc.jpg"));
-
-	}
 
 	private ItemQueryConstraints mSearched;
 
@@ -52,12 +39,16 @@ public class SearchResultsActivity extends Activity {
 		mItemStorage = new SQLiteAdapter();
 
 		displaySearchToast();
-
+		
+		ItemSearchTask task = new ItemSearchTask(this, mSearched.getName());
+		task.execute();
+		
 		findViewById(R.id.search_results_quit).setOnClickListener(
 				new OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						onResultsLoaded(MOCK_SEARCH_RESULTS);
+						//task.cancel(true);
+						//onResultsLoaded(results);
 					}
 				});
 

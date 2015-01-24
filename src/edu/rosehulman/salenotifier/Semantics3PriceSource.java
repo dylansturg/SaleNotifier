@@ -36,7 +36,9 @@ public class Semantics3PriceSource implements IPricingSource {
 	
 	@Override
 	public List<ItemPrice> getPrices(Item item) throws ApiException {
-		return getPrices(item.getProductCode());
+		if(!item.getProductCode().isEmpty())
+			return getPricesByUpc(item.getProductCode());
+		throw new ApiException(new Exception("Unhandled Condition getPrices w/ empty item UPC"));
 	}
 	
 	/***
@@ -79,7 +81,7 @@ public class Semantics3PriceSource implements IPricingSource {
 			for(String key : uniqueUpcs.keySet()) {
 				Item toAdd = new Item(uniqueUpcs.get(key), key, null);
 				for(ItemPrice ip : l) {
-					toAdd.getPrices().add(ip);
+					toAdd.addPrice(ip);
 				}
 				prodList.add(toAdd);
 			}
@@ -96,7 +98,16 @@ public class Semantics3PriceSource implements IPricingSource {
 	 * @param upc
 	 * @return
 	 */
-	public List<ItemPrice> getPrices(String upc) throws ApiException {
+	public List<ItemPrice> getItemsByUpc(String upc) throws ApiException {
+		return getPrices(upc, false);
+	}
+	
+	/***
+	 * Find a list of items by their UPC code
+	 * @param upc
+	 * @return
+	 */
+	public List<ItemPrice> getPricesByUpc(String upc) throws ApiException {
 		return getPrices(upc, false);
 	}
 	

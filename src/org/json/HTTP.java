@@ -26,6 +26,9 @@ SOFTWARE.
 
 import java.util.Iterator;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Convert an HTTP header to a JSONObject and back.
  * @author JSON.org

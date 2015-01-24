@@ -26,6 +26,10 @@ SOFTWARE.
 
 import java.util.Iterator;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 
 /**
  * This provides static methods to convert an XML text into a JSONObject,

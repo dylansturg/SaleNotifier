@@ -26,6 +26,10 @@ SOFTWARE.
 
 import java.util.Iterator;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+
 /**
  * Convert a web browser cookie list string to a JSONObject and back.
  * @author JSON.org

@@ -3,6 +3,9 @@ package org.json;
 import java.io.IOException;
 import java.io.Writer;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /*
 Copyright (c) 2006 JSON.org
 

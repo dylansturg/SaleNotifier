@@ -6,7 +6,7 @@ import java.util.GregorianCalendar;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class ItemPrice implements IQueryable, Parcelable{
+public class ItemPrice implements IQueryable, Parcelable, Comparable<ItemPrice> {
 	private long mId = -1;
 	private String productCode;
 	private double price;
@@ -127,5 +127,14 @@ public class ItemPrice implements IQueryable, Parcelable{
 			return new ItemPrice[size];
 		}
 		
+	}
+
+	@Override
+	public int compareTo(ItemPrice another) {
+		if(this.price < another.price)
+			return -1;
+		if(this.price > another.price)
+			return 1;
+		return 0;
 	}
 }

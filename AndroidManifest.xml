@@ -15,7 +15,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".TrackedItemsActivity"
+            android:name="edu.rosehulman.salenotifier.TrackedItemsActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,11 +24,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ItemSearchActivity"
+            android:name="edu.rosehulman.salenotifier.ItemSearchActivity"
             android:label="@string/title_activity_item_search" >
         </activity>
         <activity
-            android:name=".SearchResultsActivity"
+            android:name="edu.rosehulman.salenotifier.SearchResultsActivity"
             android:label="@string/title_activity_search_results" >
         </activity>
     </application>

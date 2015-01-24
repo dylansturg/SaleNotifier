@@ -5,6 +5,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
+
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
@@ -67,7 +69,21 @@ public class Semantics3Request{
 		request.setRequestProperty("User-Agent", "Semantics3 Java Library");
 		consumer.sign(request);
 		request.connect();
-		JSONObject json = new JSONObject(new JSONTokener(request.getInputStream()));
+		
+		// Added code to fix method not found exceptions. This is because the libs
+		// are for java and the android libs are slightly different
+		
+		java.util.Scanner s = new java.util.Scanner(request.getInputStream()).useDelimiter("\\A");
+		String streamOutput = s.hasNext() ? s.next() : "";
+		
+		
+		JSONObject json;
+		try {
+			json = new JSONObject(new JSONTokener(streamOutput));
+		} catch (JSONException e) {
+			e.printStackTrace();
+			return new JSONObject();
+		}
 		
 		return json;
 	}
@@ -92,10 +108,20 @@ public class Semantics3Request{
 				}
 			} else {
 				sq = new JSONObject();
-				tmp.put((String)fields[i], sq);
+				try {
+					tmp.put((String)fields[i], sq);
+				} catch (JSONException e) {
+					e.printStackTrace();
+					return this;
+				}
 			}
 		}
-		sq.put((String)fields[fields.length-2], fields[fields.length-1]);
+		try {
+			sq.put((String)fields[fields.length-2], fields[fields.length-1]);
+		} catch (JSONException e) {
+			e.printStackTrace();
+			return this;
+		}
 		return this;
 	}
 	
@@ -107,7 +133,12 @@ public class Semantics3Request{
 		if (i == fields.length-1) {
 			subquery.remove(fields[i]);
 		} else {
-			JSONObject child = (JSONObject) subquery.get(fields[i]);
+			JSONObject child = new JSONObject();
+			try {
+				child = (JSONObject) subquery.get(fields[i]);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
 			_remove(child,i+1,fields);
 			if (child.length() == 0) {
 				subquery.remove(fields[i]);
@@ -141,12 +172,16 @@ public class Semantics3Request{
 				
 		}
 		this.queryResult = fetch(endpoint,q.toString());
-		if (!this.queryResult.getString("code").equals("OK")) {
-			throw new Semantics3Exception(
-					this.queryResult.getString("code"),
-					this.queryResult.getString("message")
-				);
-			
+		try {
+			if (!this.queryResult.getString("code").equals("OK")) {
+				throw new Semantics3Exception(
+						this.queryResult.getString("code"),
+						this.queryResult.getString("message")
+					);
+				
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
 		}
 	}
 	

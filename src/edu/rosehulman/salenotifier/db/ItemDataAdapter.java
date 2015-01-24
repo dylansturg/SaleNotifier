@@ -2,10 +2,9 @@ package edu.rosehulman.salenotifier.db;
 
 import java.util.List;
 
+import edu.rosehulman.salenotifier.Item;
 import android.content.ContentValues;
 import android.database.Cursor;
-
-import edu.rosehulman.salenotifier.Item;
 
 public class ItemDataAdapter extends DataAdapter<Item> {
 	protected static final String TABLE_ITEMS = "items";
