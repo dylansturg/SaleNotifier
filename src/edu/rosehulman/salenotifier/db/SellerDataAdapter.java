@@ -3,7 +3,6 @@ package edu.rosehulman.salenotifier.db;
 import edu.rosehulman.salenotifier.models.Seller;
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteQuery;
 import android.database.sqlite.SQLiteQueryBuilder;
 
 public class SellerDataAdapter extends DataAdapter<Seller> {

@@ -3,7 +3,6 @@ package edu.rosehulman.salenotifier.db;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import edu.rosehulman.salenotifier.models.Item;
 import edu.rosehulman.salenotifier.models.ItemPrice;
 import edu.rosehulman.salenotifier.models.Seller;
 
@@ -113,13 +112,16 @@ public class ItemPriceDataAdapter extends DataAdapter<ItemPrice> {
 	@Override
 	String[] createUniqueQuery(ItemPrice item) {
 		String whereClause = DB_KEY_ID + " = ?" + " OR (" + DB_KEY_ITEM_ID
-				+ " = ?" + " AND " + DB_KEY_DATE + " = ?" + DB_KEY_SELLER_ID
-				+ " = ?" + " AND " + DB_KEY_PRICE + " = ?)";
+				+ " = ?" + " AND " + DB_KEY_DATE + " = ?" + " AND "
+				+ DB_KEY_SELLER_ID + " = ?" + " AND " + DB_KEY_PRICE + " = ?)";
 		String qs = SQLiteQueryBuilder.buildQueryString(false,
 				TABLE_ITEM_PRICES, null, whereClause, null, null, null, null);
-		return new String[] { qs, Long.toString(item.getId()),
+		return new String[] {
+				qs,
+				Long.toString(item.getId()),
 				Long.toString(item.getItemId()),
-				Long.toString(item.getDate().getTimeInMillis()),
+				Long.toString(item.getDate() != null ? item.getDate()
+						.getTimeInMillis() : 0),
 				Long.toString(item.getSellerId()),
 				Double.toString(item.getPrice()) };
 	}

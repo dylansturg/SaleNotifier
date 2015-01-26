@@ -79,6 +79,14 @@ public class ItemDataAdapter extends DataAdapter<Item> {
 
 	@Override
 	protected boolean update(Item item) {
+		if (item.getId() < 0) {
+			List<Item> potentialExisting = getAll(DB_KEY_PRODUCT_CODE + " = "
+					+ item.getProductCode(), null, null);
+			if (potentialExisting != null && potentialExisting.size() > 0) {
+				Item potentialItem = potentialExisting.get(0);
+				item.setId(potentialItem.getId());
+			}
+		}
 		boolean updated = super.update(item);
 		updateItemPrices(item);
 		return updated;
@@ -92,11 +100,13 @@ public class ItemDataAdapter extends DataAdapter<Item> {
 			for (ItemPrice itemPrice : prices) {
 				Seller itemSeller = itemPrice.getSeller();
 				if (itemSeller != null) {
-					sellerSource.getOrCreate(itemSeller);
+					itemSeller = sellerSource.getOrCreate(itemSeller);
 					itemPrice.setSellerId(itemSeller.getId());
 				}
 
 				itemPrice.setItemId(item.getId());
+				ItemPrice price = priceSource.getOrCreate(itemPrice);
+				itemPrice.setId(price.getId());
 				priceSource.update(itemPrice);
 			}
 		}

@@ -21,7 +21,7 @@ public class ItemPrice implements IQueryable, Parcelable, Comparable<ItemPrice> 
 	private Seller mSeller;
 	private long mSellerId = -1;
 
-	private GregorianCalendar mFoundDate;
+	private GregorianCalendar mFoundDate = new GregorianCalendar();
 	private String mType;
 	private String mBuyLocation;
 
