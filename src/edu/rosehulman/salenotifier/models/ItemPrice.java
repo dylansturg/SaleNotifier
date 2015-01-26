@@ -15,10 +15,10 @@ public class ItemPrice implements IQueryable, Parcelable, Comparable<ItemPrice> 
 	private long mId = -1;
 
 	private Item mItem;
-	private long mItemId;
+	private long mItemId = -1;
 
 	private Seller mSeller;
-	private long mSellerId;
+	private long mSellerId = -1;
 
 	private GregorianCalendar mFoundDate;
 	private String mType;
@@ -31,6 +31,10 @@ public class ItemPrice implements IQueryable, Parcelable, Comparable<ItemPrice> 
 	private SQLiteAdapter mDataSource;
 
 	public static final Parcelable.Creator<ItemPrice> CREATOR = new ItemPriceCreator();
+
+	public ItemPrice() {
+		// Default setup
+	}
 
 	public ItemPrice(Item item, Seller seller, double price,
 			GregorianCalendar foundDate, String type, String location,
@@ -63,7 +67,11 @@ public class ItemPrice implements IQueryable, Parcelable, Comparable<ItemPrice> 
 		mSeller.setName(seller);
 	}
 
-	public ItemPrice() {
+	public ItemPrice(double price, String urlSource) {
+		mPrice = price;
+
+		mType = TYPE_ONLINE;
+		mBuyLocation = urlSource;
 	}
 
 	public ItemPrice(Parcel source) {
@@ -83,6 +91,8 @@ public class ItemPrice implements IQueryable, Parcelable, Comparable<ItemPrice> 
 		mPrice = source.readDouble();
 	}
 
+	// Section: Seller
+
 	public Seller getSeller() {
 		if (mSeller == null) {
 			mSeller = getDataSource().getSeller(mSellerId);
@@ -90,11 +100,18 @@ public class ItemPrice implements IQueryable, Parcelable, Comparable<ItemPrice> 
 		return mSeller;
 	}
 
-	public Item getItem() {
-		if (mItem == null) {
-			mItem = getDataSource().getItemById(mItemId);
-		}
-		return mItem;
+	public void setSeller(Seller seller) {
+		mSeller = seller;
+		mSellerId = seller.getId();
+	}
+
+	public long getSellerId() {
+		return mSellerId;
+	}
+
+	public void setSellerId(long id) {
+		mSellerId = id;
+		mSeller = null;
 	}
 
 	public String getSellerName() {
@@ -105,24 +122,35 @@ public class ItemPrice implements IQueryable, Parcelable, Comparable<ItemPrice> 
 		return seller.getName();
 	}
 
+	// Section: Item
+
+	public Item getItem() {
+		if (mItem == null) {
+			mItem = getDataSource().getItemById(mItemId);
+		}
+		return mItem;
+	}
+
+	public void setItem(Item item) {
+		mItem = item;
+		mItemId = item.getId();
+	}
+
+	public long getItemId() {
+		return mItemId;
+	}
+
+	public void setItemId(long id) {
+		mItemId = id;
+		mItem = null;
+	}
+
 	public String getName() {
 		Item item = getItem();
 		if (item == null) {
 			return null;
 		}
 		return item.getDisplayName();
-	}
-
-	public String getUrlSource() {
-		return mBuyLocation;
-	}
-
-	public long getId() {
-		return mId;
-	}
-
-	public void setId(long id) {
-		mId = id;
 	}
 
 	public String getProductCode() {
@@ -143,6 +171,24 @@ public class ItemPrice implements IQueryable, Parcelable, Comparable<ItemPrice> 
 		}
 	}
 
+	// Section: Local Fields
+
+	public long getId() {
+		return mId;
+	}
+
+	public void setId(long id) {
+		mId = id;
+	}
+
+	public String getUrlSource() {
+		return mBuyLocation;
+	}
+
+	public String getType() {
+		return mType;
+	}
+
 	public double getPrice() {
 		return mPrice;
 	}
@@ -153,15 +199,6 @@ public class ItemPrice implements IQueryable, Parcelable, Comparable<ItemPrice> 
 
 	public GregorianCalendar getDate() {
 		return mFoundDate;
-	}
-
-	public long getSellerId() {
-		return mSellerId;
-	}
-
-	public void setSellerId(long id) {
-		mSellerId = id;
-		mSeller = null;
 	}
 
 	public IPricingSource getPricingSource() {
