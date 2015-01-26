@@ -63,4 +63,9 @@ public class ItemPriceDataAdapter extends DataAdapter<ItemPrice>{
 		result.setSellerId(vals.getLong(vals.getColumnIndex(DB_KEY_SELLER_ID)));
 		return result;
 	}
+	@Override
+	String[] createUniqueQuery(ItemPrice item) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

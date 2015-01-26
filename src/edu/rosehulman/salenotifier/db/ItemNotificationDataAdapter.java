@@ -62,4 +62,10 @@ public class ItemNotificationDataAdapter extends DataAdapter<ItemNotification> {
 		return result;
 	}
 
+	@Override
+	String[] createUniqueQuery(ItemNotification item) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

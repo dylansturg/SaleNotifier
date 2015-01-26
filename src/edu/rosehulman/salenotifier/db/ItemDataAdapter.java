@@ -43,6 +43,25 @@ public class ItemDataAdapter extends DataAdapter<Item> {
 	}
 
 	@Override
+	protected boolean insert(Item item) {
+		boolean inserted = super.insert(item);
+
+		return inserted;
+	}
+
+	@Override
+	protected boolean update(Item item) {
+		// TODO Auto-generated method stub
+		return super.update(item);
+	}
+
+	@Override
+	protected boolean delete(long id) {
+		// TODO Auto-generated method stub
+		return super.delete(id);
+	}
+
+	@Override
 	ContentValues toContentValues(Item item) {
 		ContentValues values = new ContentValues();
 		values.put(DB_KEY_DISPLAY_NAME,
@@ -64,5 +83,11 @@ public class ItemDataAdapter extends DataAdapter<Item> {
 		result.setProductCode(vals.getString(vals
 				.getColumnIndex(DB_KEY_PRODUCT_CODE)));
 		return result;
+	}
+
+	@Override
+	String[] createUniqueQuery(Item item) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

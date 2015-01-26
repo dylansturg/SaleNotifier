@@ -31,9 +31,35 @@ public abstract class DataAdapter<T extends IQueryable> {
 
 	abstract T constructItem(Cursor vals);
 
+	/**
+	 * 
+	 * @param item
+	 * @return array of query string (index 0) along with selection args (indices 1+)
+	 */
+	abstract String[] createUniqueQuery(T item);
+
 	protected DataAdapter() {
 		dbOpenHelper = SaleNotifierSQLHelper.getInstance();
 		db = dbOpenHelper.getWritableDatabase();
+	}
+
+	protected T getOrCreate(T item) {
+		String[] findExists = createUniqueQuery(item);
+		if (findExists != null && findExists.length > 0) {
+			String[] selectionArgs = new String[findExists.length - 1];
+			if (findExists.length > 1) {
+				System.arraycopy(findExists, 1, selectionArgs, 0,
+						findExists.length - 1);
+				Cursor existingItem = db.rawQuery(findExists[0], selectionArgs);
+				if (existingItem.moveToFirst()) {
+					return constructItem(existingItem);
+				}
+			}
+		}
+
+		// Fall through means the item couldn't be found in the database
+		insert(item);
+		return item;
 	}
 
 	/**
