@@ -87,7 +87,6 @@ public class Item implements IQueryable, Parcelable {
 					+ " into a valid Image URL.");
 			imageUrl = null;
 		}
-
 	}
 
 	public List<ItemPrice> getPrices() {
@@ -103,7 +102,7 @@ public class Item implements IQueryable, Parcelable {
 		}
 
 		Collections.sort(priceData, new ItemPriceDateSort());
-		
+
 		for (ItemPrice price : priceData) {
 			if (!seenIds.contains(price.getId())) {
 				currents.add(price);
@@ -114,11 +113,10 @@ public class Item implements IQueryable, Parcelable {
 	}
 
 	public void addPrice(ItemPrice ip) {
+		if (priceData == null) {
+			priceData = new ArrayList<ItemPrice>();
+		}
 		priceData.add(ip);
-	}
-
-	public void update() {
-		// TODO Implement db updates
 	}
 
 	@Override

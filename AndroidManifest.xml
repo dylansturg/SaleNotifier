@@ -55,6 +55,10 @@
             android:label="@string/title_activity_item_settings"
             android:windowSoftInputMode="stateUnchanged" >
         </activity>
+        <activity
+            android:name=".ItemDatabaseContentActivity"
+            android:label="@string/title_activity_item_database_content" >
+        </activity>
     </application>
 
 </manifest>

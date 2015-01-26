@@ -1,6 +1,7 @@
 package edu.rosehulman.salenotifier.db;
 
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import edu.rosehulman.salenotifier.models.Item;
 import edu.rosehulman.salenotifier.models.ItemPrice;
@@ -54,6 +55,31 @@ public class ItemPriceDataAdapter extends DataAdapter<ItemPrice> {
 	@Override
 	boolean doesItemExist(ItemPrice item) {
 		return item.getId() >= 0;
+	}
+
+	@Override
+	protected ItemPrice getById(long id) {
+		ItemPrice result = super.getById(id);
+		getItemPriceSeller(result);
+		return result;
+	}
+
+	@Override
+	protected List<ItemPrice> getAll(String where, String groupBy, String order) {
+		// TODO Auto-generated method stub
+		List<ItemPrice> results = super.getAll(where, groupBy, order);
+		for (ItemPrice itemPrice : results) {
+			getItemPriceSeller(itemPrice);
+		}
+		return results;
+	}
+
+	private void getItemPriceSeller(ItemPrice item) {
+		SellerDataAdapter sellerSource = new SellerDataAdapter();
+		Seller expectedSeller = sellerSource.getById(item.getSellerId());
+		if (expectedSeller != null) {
+			item.setSeller(expectedSeller);
+		}
 	}
 
 	@Override

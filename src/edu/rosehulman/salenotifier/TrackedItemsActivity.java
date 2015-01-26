@@ -71,7 +71,9 @@ public class TrackedItemsActivity extends StorageActivity {
 		case R.id.context_tracked_delete:
 			confirmDeletion(info.id, info.position);
 			return true;
-
+		case R.id.context_tracked_detailed:
+			launchDetailedItem(info.id);
+			return true;
 		default:
 			return super.onContextItemSelected(item);
 		}
@@ -106,6 +108,14 @@ public class TrackedItemsActivity extends StorageActivity {
 		Intent itemSettings = new Intent(this, ItemSettingsActivity.class);
 		itemSettings.putExtra(ItemSettingsActivity.KEY_ITEM_ID, id);
 		startActivity(itemSettings);
+	}
+
+	private void launchDetailedItem(long id) {
+		Intent itemDatabaseDetails = new Intent(this,
+				ItemDatabaseContentActivity.class);
+		itemDatabaseDetails.putExtra(ItemDatabaseContentActivity.KEY_ITEM_ID,
+				id);
+		startActivity(itemDatabaseDetails);
 	}
 
 	private void launchSettings() {

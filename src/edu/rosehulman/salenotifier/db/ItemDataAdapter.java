@@ -45,6 +45,32 @@ public class ItemDataAdapter extends DataAdapter<Item> {
 	}
 
 	@Override
+	protected Item getById(long id) {
+		Item result = super.getById(id);
+		addPricesToItem(result);
+		return result;
+	}
+
+	@Override
+	protected List<Item> getAll(String where, String groupBy, String order) {
+		List<Item> results = super.getAll(where, groupBy, order);
+		for (Item item : results) {
+			addPricesToItem(item);
+		}
+		return results;
+	}
+
+	private void addPricesToItem(Item item) {
+		ItemPriceDataAdapter priceSource = new ItemPriceDataAdapter();
+		List<ItemPrice> prices = priceSource.getAll(
+				ItemPriceDataAdapter.DB_KEY_ITEM_ID + " = " + item.getId(),
+				null, null);
+		for (ItemPrice itemPrice : prices) {
+			item.addPrice(itemPrice);
+		}
+	}
+
+	@Override
 	protected boolean insert(Item item) {
 		boolean inserted = super.insert(item);
 		updateItemPrices(item);
@@ -67,9 +93,9 @@ public class ItemDataAdapter extends DataAdapter<Item> {
 				Seller itemSeller = itemPrice.getSeller();
 				if (itemSeller != null) {
 					sellerSource.getOrCreate(itemSeller);
+					itemPrice.setSellerId(itemSeller.getId());
 				}
 
-				itemPrice.setSellerId(itemSeller.getId());
 				itemPrice.setItemId(item.getId());
 				priceSource.update(itemPrice);
 			}
@@ -86,7 +112,7 @@ public class ItemDataAdapter extends DataAdapter<Item> {
 				priceSource.delete(itemPrice.getId());
 			}
 		}
-		
+
 		return super.delete(id);
 	}
 

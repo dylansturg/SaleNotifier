@@ -1,5 +1,6 @@
 package edu.rosehulman.salenotifier.models;
 
+import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 
 import edu.rosehulman.salenotifier.IPricingSource;
@@ -277,5 +278,17 @@ public class ItemPrice implements IQueryable, Parcelable, Comparable<ItemPrice> 
 	@Override
 	public int compareTo(ItemPrice another) {
 		return Double.compare(getPrice(), another.getPrice());
+	}
+
+	@Override
+	public String toString() {
+		String format = "ItemPrice: %d for Item (%d) (%s) by Seller (%d) (%s) of type %s available %s for %f on %s";
+		String formattedDate = new SimpleDateFormat().format(mFoundDate
+				.getTime());
+		String priceDescription = String.format(format, mId, mItemId,
+				getItem() != null ? mItem.getDisplayName() : "none", mSellerId,
+				getSeller() != null ? mSeller.getName() : "none", mType,
+				mBuyLocation, mPrice, formattedDate);
+		return priceDescription;
 	}
 }
