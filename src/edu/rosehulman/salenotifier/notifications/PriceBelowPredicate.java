@@ -23,31 +23,9 @@ public class PriceBelowPredicate implements INotificationPredicate {
 					"Attempt to evaluate PriceBelowPredicate on null Item");
 		}
 
-		List<ItemPrice> prices = item.getPrices();
-		if (prices == null) {
+		List<ItemPrice> currentPrices = item.getCurrentPrices();
+		if (currentPrices == null || currentPrices.size() == 0) {
 			return false;
-		}
-		Collections.sort(prices, new Comparator<ItemPrice>() {
-			@Override
-			public int compare(ItemPrice lhs, ItemPrice rhs) {
-				int sellerComp = Double.compare(lhs.getSellerId(),
-						rhs.getSellerId());
-				if (sellerComp == 0) {
-					return lhs.getDate().compareTo(rhs.getDate());
-				}
-				return sellerComp;
-			}
-		});
-
-		List<Long> seenSellers = new ArrayList<Long>();
-		List<ItemPrice> currentPrices = new ArrayList<ItemPrice>();
-		for (int i = 0; i < prices.size(); i++) {
-			long seller = prices.get(i).getSellerId();
-			if (seenSellers.contains(seller)) {
-				continue;
-			}
-			seenSellers.add(seller);
-			currentPrices.add(prices.get(i));
 		}
 
 		for (ItemPrice itemPrice : currentPrices) {

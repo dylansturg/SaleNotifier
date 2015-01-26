@@ -185,10 +185,6 @@ public class ItemPrice implements IQueryable, Parcelable, Comparable<ItemPrice> 
 		return mBuyLocation;
 	}
 
-	public String getType() {
-		return mType;
-	}
-
 	public double getPrice() {
 		return mPrice;
 	}
@@ -199,6 +195,31 @@ public class ItemPrice implements IQueryable, Parcelable, Comparable<ItemPrice> 
 
 	public GregorianCalendar getDate() {
 		return mFoundDate;
+	}
+
+	public void setDate(GregorianCalendar date) {
+		mFoundDate = date;
+	}
+
+	public void setDate(long timeInMilis) {
+		mFoundDate = new GregorianCalendar();
+		mFoundDate.setTimeInMillis(timeInMilis);
+	}
+
+	public String getType() {
+		return mType;
+	}
+
+	public void setType(String type) {
+		mType = type;
+	}
+
+	public String getBuyLocation() {
+		return mBuyLocation;
+	}
+
+	public void setBuyLocation(String location) {
+		mBuyLocation = location;
 	}
 
 	public IPricingSource getPricingSource() {

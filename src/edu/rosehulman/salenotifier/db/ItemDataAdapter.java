@@ -3,6 +3,8 @@ package edu.rosehulman.salenotifier.db;
 import java.util.List;
 
 import edu.rosehulman.salenotifier.models.Item;
+import edu.rosehulman.salenotifier.models.ItemPrice;
+import edu.rosehulman.salenotifier.models.Seller;
 import android.content.ContentValues;
 import android.database.Cursor;
 
@@ -45,19 +47,46 @@ public class ItemDataAdapter extends DataAdapter<Item> {
 	@Override
 	protected boolean insert(Item item) {
 		boolean inserted = super.insert(item);
-
+		updateItemPrices(item);
 		return inserted;
 	}
 
 	@Override
 	protected boolean update(Item item) {
-		// TODO Auto-generated method stub
-		return super.update(item);
+		boolean updated = super.update(item);
+		updateItemPrices(item);
+		return updated;
+	}
+
+	private void updateItemPrices(Item item) {
+		ItemPriceDataAdapter priceSource = new ItemPriceDataAdapter();
+		SellerDataAdapter sellerSource = new SellerDataAdapter();
+		List<ItemPrice> prices = item.getPrices();
+		if (prices != null) {
+			for (ItemPrice itemPrice : prices) {
+				Seller itemSeller = itemPrice.getSeller();
+				if (itemSeller != null) {
+					sellerSource.getOrCreate(itemSeller);
+				}
+
+				itemPrice.setSellerId(itemSeller.getId());
+				itemPrice.setItemId(item.getId());
+				priceSource.update(itemPrice);
+			}
+		}
 	}
 
 	@Override
 	protected boolean delete(long id) {
-		// TODO Auto-generated method stub
+		ItemPriceDataAdapter priceSource = new ItemPriceDataAdapter();
+		List<ItemPrice> associatedPrices = priceSource.getAll(
+				ItemPriceDataAdapter.DB_KEY_ITEM_ID + " = " + id, null, null);
+		if (associatedPrices != null && associatedPrices.size() > 0) {
+			for (ItemPrice itemPrice : associatedPrices) {
+				priceSource.delete(itemPrice.getId());
+			}
+		}
+		
 		return super.delete(id);
 	}
 
