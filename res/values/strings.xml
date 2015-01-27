@@ -53,9 +53,6 @@
     <string name="settings_data_sources">Data Sources</string>
 
     <string-array name="settings_data_sources_options">
-        <item>Amazon</item>
-        <item>Ebay</item>
-        <item>Walmart</item>
         <item>Semantics3</item>
     </string-array>
 
@@ -65,16 +62,17 @@
     <string name="action_settings_save">Save and Close</string>
     <string name="action_settings_close">Discard and Close</string>
     <string name="toast_settings_saved">Your settings were successfully saved.</string>
-    
     <string name="item_settings_title_placeholder">Item Title Placeholder</string>
     <string name="item_settings_notification_hint">Threshold</string>
     <string name="item_settings_storage">Price Storage</string>
     <string name="item_settings_no_item">Cannot create settings for untracked item.</string>
+
     <string-array name="item_settings_notification_types">
         <item>Price Below</item>
         <item>Price Above</item>
         <item>Average Price Below</item>
     </string-array>
+
     <string name="item_settings_add_description">Add a notification</string>
     <string name="item_settings_remove_notification">Delete Notification</string>
 
