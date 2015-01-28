@@ -104,9 +104,9 @@ public class Item implements IQueryable, Parcelable {
 		Collections.sort(priceData, new ItemPriceDateSort());
 
 		for (ItemPrice price : priceData) {
-			if (!seenIds.contains(price.getId())) {
+			if (!seenIds.contains(price.getSellerId())) {
 				currents.add(price);
-				seenIds.add(price.getId());
+				seenIds.add(price.getSellerId());
 			}
 		}
 		return currents;
