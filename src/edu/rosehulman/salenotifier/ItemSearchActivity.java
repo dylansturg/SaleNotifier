@@ -34,6 +34,8 @@ public class ItemSearchActivity extends Activity implements OnClickListener {
 
 	public static final String KEY_DISTANCE_UNIT = "KEY_DISTANCE_UNIT";
 	public static final int RESULT_BARCODE_SCAN = 0x80085;
+	private static final int REQUEST_SEARCH = 0x5a1e;
+	protected static final String KEY_SEARCH_FINISHED = "KEY_SEARCH_FINISHED";
 
 	private Spinner mDistanceUnitPicker;
 	private ArrayAdapter<CharSequence> mDistanceAdapter;
@@ -114,10 +116,18 @@ public class ItemSearchActivity extends Activity implements OnClickListener {
 			return;
 		}
 
-		if (requestCode == RESULT_BARCODE_SCAN) {
+		switch (requestCode) {
+		case RESULT_BARCODE_SCAN:
 			BarcodeResult result = data
 					.getParcelableExtra(BarcodeScannerActivity.KEY_BARCODE_RESULT);
 			mProductCode.setText(result.getContent());
+			break;
+		case REQUEST_SEARCH:
+			boolean searchFinished = data.getBooleanExtra(KEY_SEARCH_FINISHED, false);
+			if(searchFinished){
+				finish();
+			}
+			break;
 		}
 	}
 
@@ -132,8 +142,7 @@ public class ItemSearchActivity extends Activity implements OnClickListener {
 		Intent launchSearch = new Intent(this, SearchResultsActivity.class);
 		launchSearch.putExtra(SearchResultsActivity.KEY_SEARCH_ITEM,
 				searchQuery);
-		startActivity(launchSearch);
-		finish();
+		startActivityForResult(launchSearch, REQUEST_SEARCH);
 	}
 
 	private ItemQueryConstraints buildSearchItem() {
