@@ -3,12 +3,19 @@ package edu.rosehulman.salenotifier;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.location.LocationServices;
+
 import edu.rosehulman.salenotifier.models.BarcodeResult;
 import edu.rosehulman.salenotifier.models.ItemQueryConstraints;
 
 import edu.rosehulman.salenotifier.R;
 import android.app.Activity;
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -20,7 +27,8 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-public class ItemSearchActivity extends Activity implements OnClickListener {
+public class ItemSearchActivity extends Activity implements OnClickListener,
+		ConnectionCallbacks, OnConnectionFailedListener {
 
 	private static Map<CharSequence, Double> DistanceUnitConversions = new HashMap<CharSequence, Double>();
 	static {
@@ -45,6 +53,9 @@ public class ItemSearchActivity extends Activity implements OnClickListener {
 
 	private int mCurrentDistanceUnit = 0;
 	private String mBarcodeType;
+
+	private GoogleApiClient mGoogleApiClient;
+	private Location mCurrentLocation;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +98,11 @@ public class ItemSearchActivity extends Activity implements OnClickListener {
 		mScanButton.setOnClickListener(this);
 		mSearchButton = (Button) findViewById(R.id.item_search);
 		mSearchButton.setOnClickListener(this);
+
+		mGoogleApiClient = new GoogleApiClient.Builder(this)
+				.addConnectionCallbacks(this)
+				.addOnConnectionFailedListener(this)
+				.addApi(LocationServices.API).build();
 	}
 
 	@Override
@@ -142,6 +158,7 @@ public class ItemSearchActivity extends Activity implements OnClickListener {
 		query.setProductCode(mProductCode.getText().toString());
 		query.setProductCodeType(mBarcodeType);
 		query.setSearchRadius(parseSearchRadius());
+		query.setSearchLocation(mCurrentLocation);
 		return query;
 	}
 
@@ -175,5 +192,21 @@ public class ItemSearchActivity extends Activity implements OnClickListener {
 		mDistance.setText("" + distanceConverted);
 		mCurrentDistanceUnit = unitPosition;
 		return true;
+	}
+
+	@Override
+	public void onConnectionFailed(ConnectionResult arg0) {
+		// Ignore
+	}
+
+	@Override
+	public void onConnected(Bundle arg0) {
+		mCurrentLocation = LocationServices.FusedLocationApi
+				.getLastLocation(mGoogleApiClient);
+	}
+
+	@Override
+	public void onConnectionSuspended(int arg0) {
+		// Ignore
 	}
 }
