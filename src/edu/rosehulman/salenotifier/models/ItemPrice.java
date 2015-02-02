@@ -75,6 +75,11 @@ public class ItemPrice implements IQueryable, Parcelable, Comparable<ItemPrice> 
 		mBuyLocation = urlSource;
 	}
 
+	public ItemPrice(long id, double price, String urlSource) {
+		this(price, urlSource);
+		mId = id;
+	}
+
 	public ItemPrice(Parcel source) {
 		mId = source.readLong();
 		mItem = source.readParcelable(null);
