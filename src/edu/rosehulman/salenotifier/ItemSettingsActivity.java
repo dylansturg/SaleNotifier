@@ -82,6 +82,7 @@ public class ItemSettingsActivity extends SettingsActivity {
 		switch (item.getItemId()) {
 		case R.id.action_settings_save:
 			saveSettings();
+			finish();
 			return true;
 		case R.id.action_settings_close:
 			finish();
@@ -100,7 +101,7 @@ public class ItemSettingsActivity extends SettingsActivity {
 
 	private void displayNotificationSettings() {
 		Enumerable<ItemNotification> notifications = SettingsManager
-				.getManager().getItemNotifications(mItem);
+				.getManager().getItemNotifications(mItem, false);
 		if (notifications == null) {
 			// None to display
 			return;
@@ -131,7 +132,7 @@ public class ItemSettingsActivity extends SettingsActivity {
 		super.saveSettings();
 
 		Enumerable<ItemNotification> itemNotifications = SettingsManager
-				.getManager().getItemNotifications(mItem);
+				.getManager().getItemNotifications(mItem, false);
 		if (itemNotifications == null) {
 			itemNotifications = new Enumerable<ItemNotification>();
 		}

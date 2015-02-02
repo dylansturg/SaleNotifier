@@ -72,6 +72,21 @@ public class SettingsManager {
 		return sqlSource.getSettingsForTarget(KEY_APP_SETTINGS);
 	}
 
+	public Enumerable<ItemNotification> getItemNotifications(Item item,
+			boolean respectAllowNotifications) {
+		if (item == null) {
+			throw new IllegalArgumentException(
+					"Attempt to get notifications for null Item");
+		}
+
+		if (respectAllowNotifications
+				&& (!appAllowsNotifications() || !itemAllowsNotifications(item))) {
+			return null;
+		}
+
+		return sqlSource.getNotificationsForItem(item);
+	}
+
 	/**
 	 * Get the collection of notifications registered for the item. May be null.
 	 * 
@@ -79,16 +94,7 @@ public class SettingsManager {
 	 * @return collection of notification
 	 */
 	public Enumerable<ItemNotification> getItemNotifications(Item item) {
-		if (item == null) {
-			throw new IllegalArgumentException(
-					"Attempt to get notifications for null Item");
-		}
-
-		if (!appAllowsNotifications() || !itemAllowsNotifications(item)) {
-			return null;
-		}
-
-		return sqlSource.getNotificationsForItem(item);
+		return getItemNotifications(item, true);
 	}
 
 	public void saveItemNotification(ItemNotification notification) {

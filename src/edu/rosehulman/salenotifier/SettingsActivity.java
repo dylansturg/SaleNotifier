@@ -33,6 +33,13 @@ public abstract class SettingsActivity extends StorageActivity {
 
 	protected abstract String getSettingsTarget();
 
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+
+		saveSettings();
+	}
+
 	protected void refreshSettings() {
 		mSettings = SettingsManager.getManager().getSettingsForTarget(
 				getSettingsTarget());

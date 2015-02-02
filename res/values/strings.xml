@@ -54,9 +54,6 @@
     <string name="settings_data_sources">Data Sources</string>
 
     <string-array name="settings_data_sources_options">
-        <item>Amazon</item>
-        <item>Ebay</item>
-        <item>Walmart</item>
         <item>Semantics3</item>
     </string-array>
 
