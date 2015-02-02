@@ -8,6 +8,11 @@
         android:minSdkVersion="15"
         android:targetSdkVersion="18" />
 
+    <instrumentation
+        android:name="android.test.InstrumentationTestRunner"
+        android:label="SaleNotifier Tests"
+        android:targetPackage="edu.rosehulman.salenotifier" />
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
 
@@ -16,6 +21,8 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+        <uses-library android:name="android.test.runner" />
+
         <activity
             android:name=".TrackedItemsActivity"
             android:label="@string/app_name" >
@@ -27,8 +34,8 @@
         </activity>
         <activity
             android:name=".ItemSearchActivity"
-            android:windowSoftInputMode="stateUnchanged"
-            android:label="@string/title_activity_item_search" >
+            android:label="@string/title_activity_item_search"
+            android:windowSoftInputMode="stateUnchanged" >
         </activity>
         <activity
             android:name=".SearchResultsActivity"
@@ -40,13 +47,17 @@
         </activity>
         <activity
             android:name=".AppSettingsActivity"
-            android:windowSoftInputMode="stateUnchanged"
-            android:label="@string/title_activity_app_settings" >
+            android:label="@string/title_activity_app_settings"
+            android:windowSoftInputMode="stateUnchanged" >
         </activity>
         <activity
             android:name=".ItemSettingsActivity"
-            android:windowSoftInputMode="stateUnchanged"
-            android:label="@string/title_activity_item_settings" >
+            android:label="@string/title_activity_item_settings"
+            android:windowSoftInputMode="stateUnchanged" >
+        </activity>
+        <activity
+            android:name=".ItemDatabaseContentActivity"
+            android:label="@string/title_activity_item_database_content" >
         </activity>
     </application>
 

@@ -52,4 +52,10 @@ public class NotificationPredicateDataAdapter extends
 		return null;
 	}
 
+	@Override
+	String[] createUniqueQuery(NotificationPredicate item) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

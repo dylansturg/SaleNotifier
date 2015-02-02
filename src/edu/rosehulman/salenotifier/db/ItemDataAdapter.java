@@ -3,6 +3,8 @@ package edu.rosehulman.salenotifier.db;
 import java.util.List;
 
 import edu.rosehulman.salenotifier.models.Item;
+import edu.rosehulman.salenotifier.models.ItemPrice;
+import edu.rosehulman.salenotifier.models.Seller;
 import android.content.ContentValues;
 import android.database.Cursor;
 
@@ -43,6 +45,88 @@ public class ItemDataAdapter extends DataAdapter<Item> {
 	}
 
 	@Override
+	protected Item getById(long id) {
+		Item result = super.getById(id);
+		addPricesToItem(result);
+		return result;
+	}
+
+	@Override
+	protected List<Item> getAll(String where, String groupBy, String order) {
+		List<Item> results = super.getAll(where, groupBy, order);
+		for (Item item : results) {
+			addPricesToItem(item);
+		}
+		return results;
+	}
+
+	private void addPricesToItem(Item item) {
+		ItemPriceDataAdapter priceSource = new ItemPriceDataAdapter();
+		List<ItemPrice> prices = priceSource.getAll(
+				ItemPriceDataAdapter.DB_KEY_ITEM_ID + " = " + item.getId(),
+				null, null);
+		for (ItemPrice itemPrice : prices) {
+			item.addPrice(itemPrice);
+		}
+	}
+
+	@Override
+	protected boolean insert(Item item) {
+		boolean inserted = super.insert(item);
+		updateItemPrices(item);
+		return inserted;
+	}
+
+	@Override
+	protected boolean update(Item item) {
+		if (item.getId() < 0) {
+			List<Item> potentialExisting = getAll(DB_KEY_PRODUCT_CODE + " = "
+					+ item.getProductCode(), null, null);
+			if (potentialExisting != null && potentialExisting.size() > 0) {
+				Item potentialItem = potentialExisting.get(0);
+				item.setId(potentialItem.getId());
+			}
+		}
+		boolean updated = super.update(item);
+		updateItemPrices(item);
+		return updated;
+	}
+
+	private void updateItemPrices(Item item) {
+		ItemPriceDataAdapter priceSource = new ItemPriceDataAdapter();
+		SellerDataAdapter sellerSource = new SellerDataAdapter();
+		List<ItemPrice> prices = item.getPrices();
+		if (prices != null) {
+			for (ItemPrice itemPrice : prices) {
+				Seller itemSeller = itemPrice.getSeller();
+				if (itemSeller != null) {
+					itemSeller = sellerSource.getOrCreate(itemSeller);
+					itemPrice.setSellerId(itemSeller.getId());
+				}
+
+				itemPrice.setItemId(item.getId());
+				ItemPrice price = priceSource.getOrCreate(itemPrice);
+				itemPrice.setId(price.getId());
+				priceSource.update(itemPrice);
+			}
+		}
+	}
+
+	@Override
+	protected boolean delete(long id) {
+		ItemPriceDataAdapter priceSource = new ItemPriceDataAdapter();
+		List<ItemPrice> associatedPrices = priceSource.getAll(
+				ItemPriceDataAdapter.DB_KEY_ITEM_ID + " = " + id, null, null);
+		if (associatedPrices != null && associatedPrices.size() > 0) {
+			for (ItemPrice itemPrice : associatedPrices) {
+				priceSource.delete(itemPrice.getId());
+			}
+		}
+
+		return super.delete(id);
+	}
+
+	@Override
 	ContentValues toContentValues(Item item) {
 		ContentValues values = new ContentValues();
 		values.put(DB_KEY_DISPLAY_NAME,
@@ -64,5 +148,11 @@ public class ItemDataAdapter extends DataAdapter<Item> {
 		result.setProductCode(vals.getString(vals
 				.getColumnIndex(DB_KEY_PRODUCT_CODE)));
 		return result;
+	}
+
+	@Override
+	String[] createUniqueQuery(Item item) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
