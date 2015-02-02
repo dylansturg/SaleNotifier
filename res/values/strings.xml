@@ -12,6 +12,7 @@
     <string name="context_menu_history">View History</string>
     <string name="context_menu_options">Options</string>
     <string name="context_menu_delete">Delete</string>
+    <string name="context_menu_detailed">Database Details (Dev Only)</string>
     <string name="dialog_delete_title">Confirm Delete</string>
     <string name="dialog_delete_message">Are you sure you want to delete %s?</string>
     <string name="dialog_delete_positive">Delete</string>
@@ -75,5 +76,6 @@
 
     <string name="item_settings_add_description">Add a notification</string>
     <string name="item_settings_remove_notification">Delete Notification</string>
+    <string name="title_activity_item_database_content">ItemDatabaseContentActivity</string>
 
 </resources>

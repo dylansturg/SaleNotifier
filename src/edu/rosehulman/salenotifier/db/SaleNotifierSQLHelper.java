@@ -7,20 +7,26 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 public class SaleNotifierSQLHelper extends SQLiteOpenHelper {
-
-	private static final int DATABASE_VERSION = 4;
+	
+	private static final int DATABASE_VERSION = 5;
 	private static final String DATABASE_NAME = "sale_notifier.db";
 
 	private static final String[] CREATE_TABLE_STATEMENTS = {
-			ItemDataAdapter.CREATE_TABLE, ItemPriceDataAdapter.CREATE_TABLE,
-			SellerDataAdapter.CREATE_TABLE, SettingDataAdapter.CREATE_TABLE,
-			ItemNotificationDataAdapter.CREATE_TABLE, };
-
-	private static final String[] TABLE_NAMES = { ItemDataAdapter.TABLE_ITEMS,
-			ItemPriceDataAdapter.TABLE_ITEM_PRICES,
-			SellerDataAdapter.TABLE_SELLERS, SettingDataAdapter.TABLE_SETTINGS,
-			ItemNotificationDataAdapter.TABLE_ITEM_NOTIFICATIONS, };
-
+		ItemDataAdapter.CREATE_TABLE,
+		ItemPriceDataAdapter.CREATE_TABLE,
+		SellerDataAdapter.CREATE_TABLE,
+		SettingDataAdapter.CREATE_TABLE,
+		ItemNotificationDataAdapter.CREATE_TABLE,
+	};
+	
+	private static final String[] TABLE_NAMES = {
+		ItemDataAdapter.TABLE_ITEMS,
+		ItemPriceDataAdapter.TABLE_ITEM_PRICES,
+		SellerDataAdapter.TABLE_SELLERS,
+		SettingDataAdapter.TABLE_SETTINGS,
+		ItemNotificationDataAdapter.TABLE_ITEM_NOTIFICATIONS,
+	};
+	
 	private static SaleNotifierSQLHelper instance = null;
 
 	public static synchronized void init(Context context) {

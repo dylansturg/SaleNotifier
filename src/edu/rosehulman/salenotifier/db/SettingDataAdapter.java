@@ -66,4 +66,10 @@ public class SettingDataAdapter extends DataAdapter<Setting<?>> {
 		return SettingFactory.constructSetting(id, target, name, blobType, blobValue);
 	}
 
+	@Override
+	String[] createUniqueQuery(Setting<?> item) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
