@@ -20,7 +20,7 @@ public class AppSettingsActivity extends SettingsActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_app_settings);
-		
+
 		refreshSettings();
 
 		mHistoryDuration = (EditText) findViewById(R.id.app_settings_history_duration);
@@ -42,6 +42,7 @@ public class AppSettingsActivity extends SettingsActivity {
 		switch (item.getItemId()) {
 		case R.id.action_settings_save:
 			saveSettings();
+			finish();
 			return true;
 		case R.id.action_settings_close:
 			finish();
