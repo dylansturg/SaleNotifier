@@ -10,7 +10,7 @@ public class SaleNotifierSQLHelper extends SQLiteOpenHelper {
 	
 	private static final int DATABASE_VERSION = 5;
 	private static final String DATABASE_NAME = "sale_notifier.db";
-	
+
 	private static final String[] CREATE_TABLE_STATEMENTS = {
 		ItemDataAdapter.CREATE_TABLE,
 		ItemPriceDataAdapter.CREATE_TABLE,
@@ -28,25 +28,27 @@ public class SaleNotifierSQLHelper extends SQLiteOpenHelper {
 	};
 	
 	private static SaleNotifierSQLHelper instance = null;
-	
-	public static synchronized void init(Context context){
+
+	public static synchronized void init(Context context) {
 		instance = new SaleNotifierSQLHelper(context);
 	}
-	
-	public static synchronized boolean isInit(){
+
+	public static synchronized boolean isInit() {
 		return instance != null;
 	}
-	
-	public static synchronized SaleNotifierSQLHelper getInstance(){
-		if(instance == null){
-			Log.d(TrackedItemsActivity.LOG_TAG, "Tried to access SaleNotifierSQLHelper.getInstance with calling init first");
-			throw new IllegalStateException("Tried to access SaleNotifierSQLHelper.getInstance with calling init first");
+
+	public static synchronized SaleNotifierSQLHelper getInstance() {
+		if (instance == null) {
+			Log.d(TrackedItemsActivity.LOG_TAG,
+					"Tried to access SaleNotifierSQLHelper.getInstance with calling init first");
+			throw new IllegalStateException(
+					"Tried to access SaleNotifierSQLHelper.getInstance with calling init first");
 		}
 		return instance;
 	}
 
-	private SaleNotifierSQLHelper(Context context){
-		super(context,  DATABASE_NAME, null, DATABASE_VERSION);
+	private SaleNotifierSQLHelper(Context context) {
+		super(context, DATABASE_NAME, null, DATABASE_VERSION);
 	}
 
 	@Override
@@ -56,12 +58,24 @@ public class SaleNotifierSQLHelper extends SQLiteOpenHelper {
 		}
 	}
 
-	/* For now, drop and recreate entire set of tables.  We aren't worried about data persistence between upgrades at this moment.
-	 * (non-Javadoc)
-	 * @see android.database.sqlite.SQLiteOpenHelper#onUpgrade(android.database.sqlite.SQLiteDatabase, int, int)
+	/*
+	 * For now, drop and recreate entire set of tables. We aren't worried about
+	 * data persistence between upgrades at this moment. (non-Javadoc)
+	 * 
+	 * @see
+	 * android.database.sqlite.SQLiteOpenHelper#onUpgrade(android.database.sqlite
+	 * .SQLiteDatabase, int, int)
 	 */
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+		for (String tableName : TABLE_NAMES) {
+			db.execSQL("DROP TABLE IF EXISTS " + tableName);
+		}
+		onCreate(db);
+	}
+
+	@Override
+	public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		for (String tableName : TABLE_NAMES) {
 			db.execSQL("DROP TABLE IF EXISTS " + tableName);
 		}

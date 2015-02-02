@@ -3,13 +3,21 @@ package edu.rosehulman.salenotifier;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.location.LocationServices;
+
 import edu.rosehulman.salenotifier.models.BarcodeResult;
 import edu.rosehulman.salenotifier.models.ItemQueryConstraints;
 
 import edu.rosehulman.salenotifier.R;
 import android.app.Activity;
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -20,7 +28,8 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-public class ItemSearchActivity extends Activity implements OnClickListener {
+public class ItemSearchActivity extends Activity implements OnClickListener,
+		ConnectionCallbacks, OnConnectionFailedListener {
 
 	private static Map<CharSequence, Double> DistanceUnitConversions = new HashMap<CharSequence, Double>();
 	static {
@@ -34,6 +43,8 @@ public class ItemSearchActivity extends Activity implements OnClickListener {
 
 	public static final String KEY_DISTANCE_UNIT = "KEY_DISTANCE_UNIT";
 	public static final int RESULT_BARCODE_SCAN = 0x80085;
+	private static final int REQUEST_SEARCH = 0x5a1e;
+	protected static final String KEY_SEARCH_FINISHED = "KEY_SEARCH_FINISHED";
 
 	private Spinner mDistanceUnitPicker;
 	private ArrayAdapter<CharSequence> mDistanceAdapter;
@@ -45,6 +56,9 @@ public class ItemSearchActivity extends Activity implements OnClickListener {
 
 	private int mCurrentDistanceUnit = 0;
 	private String mBarcodeType;
+
+	private GoogleApiClient mGoogleApiClient;
+	private Location mCurrentLocation;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +101,12 @@ public class ItemSearchActivity extends Activity implements OnClickListener {
 		mScanButton.setOnClickListener(this);
 		mSearchButton = (Button) findViewById(R.id.item_search);
 		mSearchButton.setOnClickListener(this);
+
+		mGoogleApiClient = new GoogleApiClient.Builder(this)
+				.addConnectionCallbacks(this)
+				.addOnConnectionFailedListener(this)
+				.addApi(LocationServices.API).build();
+		mGoogleApiClient.connect();
 	}
 
 	@Override
@@ -114,10 +134,18 @@ public class ItemSearchActivity extends Activity implements OnClickListener {
 			return;
 		}
 
-		if (requestCode == RESULT_BARCODE_SCAN) {
+		switch (requestCode) {
+		case RESULT_BARCODE_SCAN:
 			BarcodeResult result = data
 					.getParcelableExtra(BarcodeScannerActivity.KEY_BARCODE_RESULT);
 			mProductCode.setText(result.getContent());
+			break;
+		case REQUEST_SEARCH:
+			boolean searchFinished = data.getBooleanExtra(KEY_SEARCH_FINISHED, false);
+			if(searchFinished){
+				finish();
+			}
+			break;
 		}
 	}
 
@@ -132,8 +160,7 @@ public class ItemSearchActivity extends Activity implements OnClickListener {
 		Intent launchSearch = new Intent(this, SearchResultsActivity.class);
 		launchSearch.putExtra(SearchResultsActivity.KEY_SEARCH_ITEM,
 				searchQuery);
-		startActivity(launchSearch);
-		finish();
+		startActivityForResult(launchSearch, REQUEST_SEARCH);
 	}
 
 	private ItemQueryConstraints buildSearchItem() {
@@ -142,6 +169,7 @@ public class ItemSearchActivity extends Activity implements OnClickListener {
 		query.setProductCode(mProductCode.getText().toString());
 		query.setProductCodeType(mBarcodeType);
 		query.setSearchRadius(parseSearchRadius());
+		query.setSearchLocation(mCurrentLocation);
 		return query;
 	}
 
@@ -175,5 +203,28 @@ public class ItemSearchActivity extends Activity implements OnClickListener {
 		mDistance.setText("" + distanceConverted);
 		mCurrentDistanceUnit = unitPosition;
 		return true;
+	}
+
+	@Override
+	public void onConnectionFailed(ConnectionResult arg0) {
+		// Ignore
+		Log.d(TrackedItemsActivity.LOG_TAG, "Google APIs failed to connect");
+	}
+
+	@Override
+	public void onConnected(Bundle arg0) {
+		mCurrentLocation = LocationServices.FusedLocationApi
+				.getLastLocation(mGoogleApiClient);
+		if (mCurrentLocation != null) {
+			Log.d(TrackedItemsActivity.LOG_TAG, "Received a lastLocation at: "
+					+ mCurrentLocation.getLatitude() + " (lat), "
+					+ mCurrentLocation.getLongitude() + " (long");
+		}
+	}
+
+	@Override
+	public void onConnectionSuspended(int arg0) {
+		// Ignore
+		Log.d(TrackedItemsActivity.LOG_TAG, "Google APIs connection suspended");
 	}
 }
