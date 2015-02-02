@@ -6,14 +6,12 @@ import android.content.Intent;
 
 public class SaleNotifierBootReceiver extends BroadcastReceiver {
 
-	public SaleNotifierBootReceiver() {
-		// TODO Auto-generated constructor stub
-	}
+	private SaleNotifierWakefulReceiver alarm = new SaleNotifierWakefulReceiver();
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		// TODO Auto-generated method stub
-
+		if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
+			alarm.setupRegularAlarm(context);
+		}
 	}
-
 }

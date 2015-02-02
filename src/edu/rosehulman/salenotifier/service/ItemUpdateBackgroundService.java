@@ -12,16 +12,19 @@ import android.util.Log;
 
 public class ItemUpdateBackgroundService extends IntentService {
 
-	public ItemUpdateBackgroundService(String name) {
-		super(name);
-		// TODO Auto-generated constructor stub
+	public ItemUpdateBackgroundService() {
+		super("ItemUpdateBackgroundService");
 	}
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
+		Log.d(TrackedItemsActivity.LOG_TAG,
+				"ItemUpdateBackgroundService starting");
 
 		if (!SaleNotifierSQLHelper.isInit()) {
 			SaleNotifierSQLHelper.init(this);
+			Log.d(TrackedItemsActivity.LOG_TAG,
+					"ItemUpdateBackgroundService init database");
 		}
 
 		SQLiteAdapter dataSource = new SQLiteAdapter();
@@ -33,6 +36,8 @@ public class ItemUpdateBackgroundService extends IntentService {
 							+ storedItems.size());
 		}
 
+		Log.d(TrackedItemsActivity.LOG_TAG,
+				"ItemUpdateBackgroundService finishing");
 		stopSelf();
 
 	}
