@@ -6,6 +6,7 @@ import edu.rosehulman.salenotifier.R;
 import edu.rosehulman.salenotifier.db.SQLiteAdapter;
 import edu.rosehulman.salenotifier.db.SaleNotifierSQLHelper;
 import edu.rosehulman.salenotifier.models.Item;
+import edu.rosehulman.salenotifier.models.NotificationPredicate;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -38,6 +39,13 @@ public class TrackedItemsActivity extends StorageActivity {
 		listView.setAdapter(listAdapter);
 
 		registerForContextMenu(listView);
+	}
+	
+	@Override
+	public void onBackPressed() {
+		Item i = new Item("Tea Kettle", "upc", null);
+		NotificationPredicate np = new NotificationPredicate("Price Below", "PriceBelow");
+		new NotificationFactory(this).create(20.00d, i, np);
 	}
 
 	@Override
