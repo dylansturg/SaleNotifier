@@ -1,5 +1,7 @@
 package edu.rosehulman.salenotifier;
 
+import java.util.HashMap;
+
 import edu.rosehulman.salenotifier.models.Item;
 import edu.rosehulman.salenotifier.models.NotificationPredicate;
 import android.app.NotificationManager;
@@ -11,6 +13,7 @@ import android.support.v4.app.TaskStackBuilder;
 
 public class NotificationFactory {
 
+	private static HashMap<String, Integer> mapping = new HashMap<String, Integer>();
 	private static int mId = 0;
 	private Context ctx;
 	
@@ -18,11 +21,11 @@ public class NotificationFactory {
 		this.ctx = ctx;
 	}
 	
-	public int create(double amount, Item i, NotificationPredicate pred) {
+	public int create(double amount, Item item, NotificationPredicate pred) {
 		NotificationCompat.Builder mBuilder =
 		        new NotificationCompat.Builder(ctx)
 		        .setSmallIcon(R.drawable.ic_launcher)
-		        .setContentTitle(i.getDisplayName())
+		        .setContentTitle(item.getDisplayName())
 		        .setContentText(pred.getDescription() + " " + amount);
 		
 		// TODO: change this to go straight to the items listings
@@ -46,9 +49,33 @@ public class NotificationFactory {
 		NotificationManager mNotificationManager =
 		    (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
 		// mId allows you to update the notification later on.
-		int thisId = mId++;
-		mNotificationManager.notify(thisId, mBuilder.build());
-		return thisId;
+		
+		
+		NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
+		String[] deals = new String[2];
+		
+		deals[0] = "Tea Kettle for 15.95";
+		deals[1] = "Tea Kettle for 19.75";
+		
+		// Sets a title for the Inbox in expanded layout
+		inboxStyle.setBigContentTitle("Found Deals");
+		// Moves events into the expanded layout
+		for (int i=0; i < deals.length; i++) {
+			inboxStyle.addLine(deals[i]);
+		}
+		// Moves the expanded layout object into the notification object.
+		mBuilder.setStyle(inboxStyle);
+
+		
+		int notifId = getOrCreateNotificationId(item.getDisplayName());
+		mNotificationManager.notify(notifId, mBuilder.build());
+		return notifId;
+	}
+	
+	private int getOrCreateNotificationId(String itemName) {
+		if(!mapping.containsKey(itemName))
+			mapping.put(itemName, mId++);
+		return mapping.get(itemName);
 	}
 	
 }

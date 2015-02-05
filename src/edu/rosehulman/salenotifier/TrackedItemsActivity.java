@@ -27,7 +27,7 @@ public class TrackedItemsActivity extends StorageActivity {
 
 	private ListView listView;
 	private TrackedItemsListAdapter listAdapter;
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
