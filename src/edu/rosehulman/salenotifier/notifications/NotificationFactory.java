@@ -1,7 +1,11 @@
-package edu.rosehulman.salenotifier;
+package edu.rosehulman.salenotifier.notifications;
 
 import java.util.HashMap;
 
+import edu.rosehulman.salenotifier.ItemSearchActivity;
+import edu.rosehulman.salenotifier.R;
+import edu.rosehulman.salenotifier.TrackedItemsActivity;
+import edu.rosehulman.salenotifier.R.drawable;
 import edu.rosehulman.salenotifier.models.Item;
 import edu.rosehulman.salenotifier.models.NotificationPredicate;
 import android.app.NotificationManager;
@@ -26,10 +30,10 @@ public class NotificationFactory {
 		        new NotificationCompat.Builder(ctx)
 		        .setSmallIcon(R.drawable.ic_launcher)
 		        .setContentTitle(item.getDisplayName())
-		        .setContentText(pred.getDescription() + " " + amount);
+		        .setContentText(pred.getDescription() + " $" + String.format("%.2f", amount));
 		
 		// TODO: change this to go straight to the items listings
-		Intent resultIntent = new Intent(ctx, TrackedItemsActivity.class);
+		Intent resultIntent = new Intent(ctx, ItemSearchActivity.class);
 
 		// The stack builder object will contain an artificial back stack for the
 		// started Activity.
@@ -37,7 +41,8 @@ public class NotificationFactory {
 		// your application to the Home screen.
 		TaskStackBuilder stackBuilder = TaskStackBuilder.create(ctx);
 		// Adds the back stack for the Intent (but not the Intent itself)
-		stackBuilder.addParentStack(TrackedItemsActivity.class);
+		
+		stackBuilder.addParentStack(ItemSearchActivity.class);
 		// Adds the Intent that starts the Activity to the top of the stack
 		stackBuilder.addNextIntent(resultIntent);
 		PendingIntent resultPendingIntent =
@@ -50,25 +55,23 @@ public class NotificationFactory {
 		    (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
 		// mId allows you to update the notification later on.
 		
-		
 		NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
 		String[] deals = new String[2];
 		
-		deals[0] = "Tea Kettle for 15.95";
-		deals[1] = "Tea Kettle for 19.75";
+		deals[0] = "$15.95 at Amazon.com";
+		deals[1] = "$19.75 at Ebay.com";
 		
 		// Sets a title for the Inbox in expanded layout
-		inboxStyle.setBigContentTitle("Found Deals");
+		inboxStyle.setBigContentTitle("Tea Kettle");
 		// Moves events into the expanded layout
 		for (int i=0; i < deals.length; i++) {
 			inboxStyle.addLine(deals[i]);
 		}
 		// Moves the expanded layout object into the notification object.
 		mBuilder.setStyle(inboxStyle);
-
 		
 		int notifId = getOrCreateNotificationId(item.getDisplayName());
-		mNotificationManager.notify(notifId, mBuilder.build());
+		mNotificationManager.notify(mId++, mBuilder.build());
 		return notifId;
 	}
 	

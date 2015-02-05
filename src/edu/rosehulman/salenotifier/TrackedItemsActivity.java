@@ -3,10 +3,9 @@ package edu.rosehulman.salenotifier;
 import java.util.List;
 
 import edu.rosehulman.salenotifier.R;
-import edu.rosehulman.salenotifier.db.SQLiteAdapter;
-import edu.rosehulman.salenotifier.db.SaleNotifierSQLHelper;
 import edu.rosehulman.salenotifier.models.Item;
 import edu.rosehulman.salenotifier.models.NotificationPredicate;
+import edu.rosehulman.salenotifier.notifications.NotificationFactory;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
