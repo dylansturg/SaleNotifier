@@ -5,7 +5,6 @@ import java.util.List;
 import edu.rosehulman.salenotifier.R;
 import edu.rosehulman.salenotifier.models.Item;
 import edu.rosehulman.salenotifier.models.NotificationPredicate;
-import edu.rosehulman.salenotifier.notifications.NotificationFactory;
 import edu.rosehulman.salenotifier.notifications.NotificationLauncher;
 import android.app.AlertDialog;
 import android.app.Dialog;
