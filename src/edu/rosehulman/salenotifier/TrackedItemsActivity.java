@@ -6,6 +6,7 @@ import edu.rosehulman.salenotifier.R;
 import edu.rosehulman.salenotifier.models.Item;
 import edu.rosehulman.salenotifier.models.NotificationPredicate;
 import edu.rosehulman.salenotifier.notifications.NotificationFactory;
+import edu.rosehulman.salenotifier.notifications.NotificationLauncher;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -43,8 +44,7 @@ public class TrackedItemsActivity extends StorageActivity {
 	@Override
 	public void onBackPressed() {
 		Item i = new Item("Tea Kettle", "upc", null);
-		NotificationPredicate np = new NotificationPredicate("Price Below", "PriceBelow");
-		new NotificationFactory(this).create(20.00d, i, np);
+		NotificationLauncher.launch(this, i, "Prices Below $20.00");
 	}
 
 	@Override
