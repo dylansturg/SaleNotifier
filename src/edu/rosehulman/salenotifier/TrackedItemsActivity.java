@@ -6,6 +6,7 @@ import edu.rosehulman.salenotifier.R;
 import edu.rosehulman.salenotifier.db.SQLiteAdapter;
 import edu.rosehulman.salenotifier.db.SaleNotifierSQLHelper;
 import edu.rosehulman.salenotifier.models.Item;
+import edu.rosehulman.salenotifier.service.SaleNotifierWakefulReceiver;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -38,6 +39,9 @@ public class TrackedItemsActivity extends StorageActivity {
 		listView.setAdapter(listAdapter);
 
 		registerForContextMenu(listView);
+
+		// Doesn't create a new alarm if it is already set
+		new SaleNotifierWakefulReceiver().setupRegularAlarm(this);
 	}
 
 	@Override
