@@ -4,6 +4,7 @@ import java.util.List;
 
 import edu.rosehulman.salenotifier.IItemSourceAdapter;
 import edu.rosehulman.salenotifier.models.Item;
+import edu.rosehulman.salenotifier.models.ItemPrice;
 import edu.rosehulman.salenotifier.models.Seller;
 
 public class SQLiteAdapter implements IItemSourceAdapter {
@@ -57,6 +58,19 @@ public class SQLiteAdapter implements IItemSourceAdapter {
 	public Seller getSeller(long id) {
 		SellerDataAdapter sellerDb = new SellerDataAdapter();
 		return sellerDb.getById(id);
+	}
+
+	@Override
+	public void deleteItemPrice(ItemPrice price) {
+		if (price != null) {
+			deleteItem(price.getId());
+		}
+	}
+
+	@Override
+	public void deleteItemPrice(long id) {
+		ItemPriceDataAdapter priceDb = new ItemPriceDataAdapter();
+		priceDb.delete(id);
 	}
 
 }

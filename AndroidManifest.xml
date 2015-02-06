@@ -79,6 +79,7 @@
         </receiver>
 
         <service android:name="edu.rosehulman.salenotifier.service.ItemUpdateBackgroundService" />
+        <service android:name="edu.rosehulman.salenotifier.service.DeletePricesBackgroundService" />
     </application>
 
 </manifest>

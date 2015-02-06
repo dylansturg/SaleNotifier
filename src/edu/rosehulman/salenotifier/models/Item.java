@@ -119,10 +119,28 @@ public class Item implements IQueryable, Parcelable {
 		priceData.add(ip);
 	}
 
+	public void removePrice(ItemPrice ip) {
+		if (priceData == null) {
+			return;
+		}
+		priceData.remove(ip);
+	}
+
+	public void removeAllPrices(List<ItemPrice> prices) {
+		if (priceData == null) {
+			return;
+		}
+		priceData.removeAll(prices);
+	}
+
+	public void setPrices(List<ItemPrice> prices) {
+		priceData = prices;
+	}
+
 	@Override
 	public String toString() {
-		return "" + mId + " " + displayName + " image: "
-				+ imageUrl.toExternalForm() + " upc: " + productCode;
+		return "" + mId + " " + displayName + " image: " + imageUrl != null ? imageUrl
+				.toExternalForm() : "null" + " upc: " + productCode;
 	}
 
 	@Override
