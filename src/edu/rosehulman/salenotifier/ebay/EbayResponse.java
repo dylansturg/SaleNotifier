@@ -43,7 +43,6 @@ public class EbayResponse {
 			return;
 		}
 
-		int itemCount = mResponseItems.size();
 		for (EbayItem item : mResponseItems) {
 			if (item.UPC == null || item.UPC.isEmpty()) {
 				EbayProductDetailsRequest detailsRequest = new EbayProductDetailsRequest(
@@ -76,8 +75,6 @@ public class EbayResponse {
 				}
 				parsedResultItems.add(parsedItem);
 			}
-			int parsedCount = parsedResultItems.size();
-
 			mResponseItems = parsedResultItems;
 
 		} catch (JSONException jsonFailure) {
