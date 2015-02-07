@@ -1,5 +1,6 @@
 package edu.rosehulman.salenotifier.ebay;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.rosehulman.salenotifier.ApiException;
@@ -45,7 +46,9 @@ public class SearchEbayItemsTask extends
 		try {
 			List<Item> searchResults = ebayPriceSource.search(mContext,
 					params[0]);
-			int resultCount = searchResults.size();
+			if (searchResults == null) {
+				return new ArrayList<Item>();
+			}
 			return searchResults;
 		} catch (ApiException e) {
 			Log.e(TrackedItemsActivity.LOG_TAG, "SearchEbayItemTask failed", e);

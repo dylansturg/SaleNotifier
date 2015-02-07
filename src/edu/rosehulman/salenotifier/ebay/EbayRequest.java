@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -28,9 +30,21 @@ import android.util.Log;
 
 public class EbayRequest {
 
+	private enum RequestType {
+		Keywords, Product
+	}
+
+	private static final Map<RequestType, String> API_OPERATIONS = new HashMap<RequestType, String>();
+	static {
+		API_OPERATIONS.put(RequestType.Keywords, "findItemsByKeywords");
+		API_OPERATIONS.put(RequestType.Product, "findItemsByProduct");
+	}
+
 	String APIKey;
 	private ItemQueryConstraints mQuery;
 	private Context mContext;
+
+	private RequestType mRequestType;
 
 	public EbayRequest(Context context, ItemQueryConstraints query) {
 		APIKey = context.getString(R.string.EbayAPIKey);
@@ -39,7 +53,14 @@ public class EbayRequest {
 	}
 
 	protected String getOperationName() {
-		return "findItemsByKeywords";
+		if (mQuery.getProductCode() != null
+				&& !mQuery.getProductCode().isEmpty()) {
+			mRequestType = RequestType.Product;
+		} else {
+			mRequestType = RequestType.Keywords;
+		}
+
+		return API_OPERATIONS.get(mRequestType);
 	}
 
 	public List<EbayItem> evaluateRequest() {
@@ -109,7 +130,15 @@ public class EbayRequest {
 
 	private int appendSearchCriteria(Uri.Builder builder, int filterIndex) {
 
-		builder.appendQueryParameter("keywords", mQuery.getName());
+		switch (mRequestType) {
+		case Keywords:
+			filterIndex = appendKeywordSearchCriteria(builder, filterIndex);
+			break;
+		case Product:
+			filterIndex = appendProductSearchCriteria(builder, filterIndex);
+			break;
+		}
+
 		String itemFilter = String.format("itemFilter(%d)", filterIndex);
 		builder.appendQueryParameter(itemFilter + ".name", "ListingType");
 		builder.appendQueryParameter(itemFilter + ".value", "FixedPrice");
@@ -117,6 +146,53 @@ public class EbayRequest {
 
 		filterIndex++;
 		return filterIndex;
+	}
+
+	private int appendKeywordSearchCriteria(Uri.Builder builder, int filterIndex) {
+		builder.appendQueryParameter("keywords", mQuery.getName());
+		return filterIndex;
+	}
+
+	private int appendProductSearchCriteria(Uri.Builder builder, int filterIndex) {
+		String codeType = "";
+		if (mQuery.getProductCodeType() != null
+				&& !mQuery.getProductCodeType().isEmpty()) {
+			codeType = mQuery.getProductCodeType();
+		} else {
+			codeType = estimateProductCodeType(mQuery.getProductCode());
+		}
+
+		builder.appendQueryParameter("productId.@type", codeType);
+		builder.appendQueryParameter("productId", mQuery.getProductCode());
+		return filterIndex;
+	}
+
+	private String estimateProductCodeType(String productCode) {
+		if (productCode == null || productCode.isEmpty()) {
+			throw new IllegalArgumentException(
+					"EbayReqeust attemping to guess a product code type for a null/empty product code");
+		}
+
+		int length = productCode.length();
+		boolean containsAlpha = productCode.matches("[0-9]+");
+
+		if (containsAlpha) {
+			// Hell if I know what it is...
+			// TODO revert to a keyword search
+		} else {
+			/*
+			 * UPC = 12 digits EAN = 12 or 13 digits ISBN = 10 or 13 digits If
+			 * we assume no one scans a EAN, then it'll be ok... mostly
+			 */
+			if (length == 12) {
+				return "UPC";
+			} else {
+				return "ISBN";
+			}
+		}
+
+		// TODO revert to a keyword search
+		return "";
 	}
 
 	private int appendLocalSearchParameters(Uri.Builder builder, int filterIndex) {

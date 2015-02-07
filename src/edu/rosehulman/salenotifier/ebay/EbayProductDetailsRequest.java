@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -31,7 +34,16 @@ public class EbayProductDetailsRequest {
 			+ "<ePID>%s</ePID>"
 			+ "</productIdentifier>"
 			+ "<datasetPropertyName>UPC</datasetPropertyName>"
+			+ "<datasetPropertyName>ISBN</datasetPropertyName>"
+			+ "<datasetPropertyName>EAN</datasetPropertyName>"
 			+ "</productDetailsRequest>" + "</getProductDetailsRequest>";
+
+	private static final ArrayList<String> ALLOWED_PRODUCT_CODE_TYPES = new ArrayList<String>();
+	static {
+		ALLOWED_PRODUCT_CODE_TYPES.add("UPC");
+		ALLOWED_PRODUCT_CODE_TYPES.add("ISBN");
+		ALLOWED_PRODUCT_CODE_TYPES.add("EAN");
+	}
 
 	private Context mContext;
 	private EbayItem mSearchItem;
@@ -129,13 +141,14 @@ public class EbayProductDetailsRequest {
 			if (product.has("productDetails")) {
 				JSONArray details = product.getJSONArray("productDetails");
 
+				Map<String, String> availableProductCodes = new HashMap<String, String>();
 				int detailsCount = details.length();
 				for (int i = 0; i < detailsCount; i++) {
 					JSONObject propertyDetails = details.getJSONObject(i);
 					if (propertyDetails.has("propertyName")) {
 						String propertyName = propertyDetails.getJSONArray(
 								"propertyName").getString(0);
-						if (propertyName.contains("UPC")) {
+						if (ALLOWED_PRODUCT_CODE_TYPES.contains(propertyName)) {
 							if (propertyDetails.has("value")) {
 								JSONObject propertyValue = propertyDetails
 										.getJSONArray("value").getJSONObject(0);
@@ -144,15 +157,23 @@ public class EbayProductDetailsRequest {
 											.getJSONArray("text")
 											.getJSONObject(0);
 									if (upcText.has("value")) {
-										mSearchItem.UPC = upcText.getJSONArray(
-												"value").getString(0);
+										availableProductCodes.put(propertyName,
+												upcText.getJSONArray("value")
+														.getString(0));
 									}
 								}
 							}
 						}
 					}
 				}
-
+				if (availableProductCodes.size() > 0) {
+					for (String key : ALLOWED_PRODUCT_CODE_TYPES) {
+						if (availableProductCodes.containsKey(key)) {
+							mSearchItem.UPC = availableProductCodes.get(key);
+							break;
+						}
+					}
+				}
 			}
 
 		} catch (JSONException e) {

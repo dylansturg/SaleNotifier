@@ -139,10 +139,12 @@ public class ItemSearchActivity extends Activity implements OnClickListener,
 			BarcodeResult result = data
 					.getParcelableExtra(BarcodeScannerActivity.KEY_BARCODE_RESULT);
 			mProductCode.setText(result.getContent());
+			mBarcodeType = result.getFormat();
 			break;
 		case REQUEST_SEARCH:
-			boolean searchFinished = data.getBooleanExtra(KEY_SEARCH_FINISHED, false);
-			if(searchFinished){
+			boolean searchFinished = data.getBooleanExtra(KEY_SEARCH_FINISHED,
+					false);
+			if (searchFinished) {
 				finish();
 			}
 			break;
