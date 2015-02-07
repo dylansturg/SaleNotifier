@@ -100,7 +100,7 @@ public class EbayRequest {
 
 		int filterIndex = 0;
 		filterIndex = appendSearchCriteria(builder, filterIndex);
-		filterIndex = appendLocalSearchParameters(builder, filterIndex);
+		// filterIndex = appendLocalSearchParameters(builder, filterIndex);
 
 		Uri serviceRequest = builder.build();
 
@@ -115,7 +115,8 @@ public class EbayRequest {
 		builder.appendQueryParameter(itemFilter + ".value", "FixedPrice");
 		builder.appendQueryParameter("sortOrder", "BestMatch");
 
-		return filterIndex++;
+		filterIndex++;
+		return filterIndex;
 	}
 
 	private int appendLocalSearchParameters(Uri.Builder builder, int filterIndex) {

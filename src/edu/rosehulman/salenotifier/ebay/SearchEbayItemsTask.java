@@ -45,6 +45,7 @@ public class SearchEbayItemsTask extends
 		try {
 			List<Item> searchResults = ebayPriceSource.search(mContext,
 					params[0]);
+			int resultCount = searchResults.size();
 			return searchResults;
 		} catch (ApiException e) {
 			Log.e(TrackedItemsActivity.LOG_TAG, "SearchEbayItemTask failed", e);

@@ -105,6 +105,10 @@ public class EbayPricingSource implements IPricingSource {
 	}
 
 	private List<Item> consolidateEbayResponse(List<EbayItem> response) {
+		if(response == null){
+			return null;
+		}
+		
 		Enumerable<Item> items = new Enumerable<Item>();
 
 		for (EbayItem ebayItem : response) {

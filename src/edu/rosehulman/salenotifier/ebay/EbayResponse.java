@@ -87,16 +87,18 @@ public class EbayResponse {
 		EbayItem result = new EbayItem();
 
 		if (itemJson.has("title")) {
-			result.title = itemJson.getString("title");
+			result.title = itemJson.getJSONArray("title").getString(0);
 		}
 		if (itemJson.has("globalId")) {
-			result.globalId = itemJson.getString("globalId");
+			result.globalId = itemJson.getJSONArray("globalId").getString(0);
 		}
 		if (itemJson.has("galleryURL")) {
-			result.galleryURL = itemJson.getString("galleryURL");
+			result.galleryURL = itemJson.getJSONArray("galleryURL")
+					.getString(0);
 		}
 		if (itemJson.has("viewItemURL")) {
-			result.viewItemURL = itemJson.getString("viewItemURL");
+			result.viewItemURL = itemJson.getJSONArray("viewItemURL")
+					.getString(0);
 		}
 		if (itemJson.has("productId")) {
 			JSONObject productDetails = itemJson.getJSONArray("productId")
@@ -107,7 +109,7 @@ public class EbayResponse {
 			}
 		}
 		if (itemJson.has("location")) {
-			result.location = itemJson.getString("location");
+			result.location = itemJson.getJSONArray("location").getString(0);
 		}
 		if (itemJson.has("sellingStatus")) {
 			JSONObject sellingStats = itemJson.getJSONArray("sellingStatus")
@@ -128,10 +130,12 @@ public class EbayResponse {
 			JSONObject listingInfo = itemJson.getJSONArray("listingInfo")
 					.getJSONObject(0);
 			if (listingInfo.has("startTime")) {
-				result.startTime = listingInfo.getString("startTime");
+				result.startTime = listingInfo.getJSONArray("startTime")
+						.getString(0);
 			}
 			if (listingInfo.has("endTime")) {
-				result.endTime = listingInfo.getString("endTime");
+				result.endTime = listingInfo.getJSONArray("endTime").getString(
+						0);
 			}
 		}
 

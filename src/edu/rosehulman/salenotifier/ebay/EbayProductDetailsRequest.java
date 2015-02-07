@@ -58,7 +58,6 @@ public class EbayProductDetailsRequest {
 			String responseContent = EntityUtils.toString(response.getEntity(),
 					"UTF-8");
 			parseProductDetailsResponse(responseContent);
-
 		} catch (URISyntaxException e) {
 			Log.d(TrackedItemsActivity.LOG_TAG,
 					"Failed to parse eBay Product Details URI");
@@ -118,8 +117,8 @@ public class EbayProductDetailsRequest {
 					JSONObject thumbnail = stockPhoto.getJSONArray("thumbnail")
 							.getJSONObject(0);
 					if (thumbnail.has("value")) {
-						mSearchItem.stockThumbnailURL = thumbnail
-								.getString("value");
+						mSearchItem.stockThumbnailURL = thumbnail.getJSONArray(
+								"value").getString(0);
 					}
 				}
 			}
@@ -136,7 +135,7 @@ public class EbayProductDetailsRequest {
 					if (propertyDetails.has("propertyName")) {
 						String propertyName = propertyDetails.getJSONArray(
 								"propertyName").getString(0);
-						if (propertyName.equalsIgnoreCase("UPC")) {
+						if (propertyName.contains("UPC")) {
 							if (propertyDetails.has("value")) {
 								JSONObject propertyValue = propertyDetails
 										.getJSONArray("value").getJSONObject(0);
