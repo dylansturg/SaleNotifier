@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="TypographyDashes">
+
+    <string name="EbayAPIService">svcs.ebay.com</string>
+
+    <string-array name="EbayAPIPaths">
+        <item>services</item>
+        <item>search</item>
+        <item>FindingService</item>
+        <item>v1</item>
+    </string-array>
+
+    <string name="EbayAPIKey">Rose-Hul-7432-4fc6-8977-ca54f40fe60a</string>
+
+    <string-array name="EbayProductAPIPaths">
+        <item>services</item>
+        <item>marketplacecatalog</item>
+        <item>ProductService</item>
+        <item>v1</item>
+    </string-array>
+
+</resources>

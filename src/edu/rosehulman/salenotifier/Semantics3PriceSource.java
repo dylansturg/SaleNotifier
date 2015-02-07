@@ -10,10 +10,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.Context;
+
 import com.semantics3.api.Products;
 
 import edu.rosehulman.salenotifier.models.Item;
 import edu.rosehulman.salenotifier.models.ItemPrice;
+import edu.rosehulman.salenotifier.models.ItemQueryConstraints;
 
 public class Semantics3PriceSource implements IPricingSource {
 
@@ -197,6 +200,20 @@ public class Semantics3PriceSource implements IPricingSource {
 			throw new ApiException(e);
 		}
 		return new ArrayList<String>(list);
+	}
+
+	@Override
+	public List<Item> search(Context context, ItemQueryConstraints query)
+			throws ApiException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<ItemPrice> searchForPrices(Context context, Item item)
+			throws ApiException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

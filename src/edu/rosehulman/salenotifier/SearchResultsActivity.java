@@ -6,6 +6,8 @@ import java.util.List;
 import edu.rosehulman.salenotifier.R;
 import edu.rosehulman.salenotifier.db.SQLiteAdapter;
 import edu.rosehulman.salenotifier.db.SaleNotifierSQLHelper;
+import edu.rosehulman.salenotifier.ebay.SearchEbayItemsTask;
+import edu.rosehulman.salenotifier.ebay.SearchEbayItemsTask.ISearchEbayCallback;
 import edu.rosehulman.salenotifier.models.Item;
 import edu.rosehulman.salenotifier.models.ItemQueryConstraints;
 import android.app.Activity;
@@ -43,16 +45,25 @@ public class SearchResultsActivity extends StorageActivity {
 		mItemStorage = new SQLiteAdapter();
 
 		displaySearchToast();
-		
-		ItemSearchTask task = new ItemSearchTask(this, mSearched.getName());
-		task.execute();
-		
+
+		// ItemSearchTask task = new ItemSearchTask(this, mSearched.getName());
+		// task.execute();
+
+		SearchEbayItemsTask ebaySearch = new SearchEbayItemsTask(this,
+				new ISearchEbayCallback() {
+					@Override
+					public void onFinished(List<Item> results) {
+						onResultsLoaded(results);
+					}
+				});
+		ebaySearch.execute(mSearched);
+
 		findViewById(R.id.search_results_quit).setOnClickListener(
 				new OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						//task.cancel(true);
-						//onResultsLoaded(results);
+						// task.cancel(true);
+						// onResultsLoaded(results);
 					}
 				});
 
@@ -110,9 +121,10 @@ public class SearchResultsActivity extends StorageActivity {
 				case R.id.action_search_results_track:
 					trackItems(getItems(mSelected));
 					mode.finish();
-					
+
 					Intent result = new Intent();
-					result.putExtra(ItemSearchActivity.KEY_SEARCH_FINISHED, true);
+					result.putExtra(ItemSearchActivity.KEY_SEARCH_FINISHED,
+							true);
 					setResult(RESULT_OK, result);
 					finish();
 					return true;
