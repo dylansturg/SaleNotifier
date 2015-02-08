@@ -5,7 +5,7 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="15"
+        android:minSdkVersion="16"
         android:targetSdkVersion="18" />
 
     <instrumentation
@@ -41,6 +41,7 @@
         </activity>
         <activity
             android:name=".ItemSearchActivity"
+            android:parentActivityName=".TrackedItemsActivity"
             android:label="@string/title_activity_item_search"
             android:windowSoftInputMode="stateUnchanged" >
         </activity>
@@ -57,11 +58,13 @@
         </activity>
         <activity
             android:name=".AppSettingsActivity"
+            android:parentActivityName=".TrackedItemsActivity"
             android:label="@string/title_activity_app_settings"
             android:windowSoftInputMode="stateUnchanged" >
         </activity>
         <activity
             android:name=".ItemSettingsActivity"
+            android:parentActivityName=".TrackedItemsActivity"
             android:label="@string/title_activity_item_settings"
             android:windowSoftInputMode="stateUnchanged" >
         </activity>
