@@ -120,8 +120,10 @@ public class EbayRequest {
 		builder.appendQueryParameter("REST-PAYLOAD", "");
 
 		int filterIndex = 0;
+
+		// Ensure local search comes first - suspected bug with eBay API
+		filterIndex = appendLocalSearchParameters(builder, filterIndex);
 		filterIndex = appendSearchCriteria(builder, filterIndex);
-		// filterIndex = appendLocalSearchParameters(builder, filterIndex);
 
 		Uri serviceRequest = builder.build();
 
@@ -196,7 +198,14 @@ public class EbayRequest {
 	}
 
 	private int appendLocalSearchParameters(Uri.Builder builder, int filterIndex) {
-		assert mQuery != null;
+		if (mQuery == null || !mQuery.getSearchLimited()) {
+			return filterIndex;
+		}
+
+		if (filterIndex != 0) {
+			throw new IllegalArgumentException(
+					"EbayRequest.appendLocalSearchParameters needs to be added first, but filterIndex != 0 implies incorrect ordering.");
+		}
 
 		Location searchFrom = mQuery.getSearchLocation();
 		double searchDistance = mQuery.getSearchRadius();
@@ -210,7 +219,7 @@ public class EbayRequest {
 		List<Address> address;
 		try {
 			address = geocoder.getFromLocation(searchFrom.getLatitude(),
-					searchFrom.getLongitude(), 1);
+					searchFrom.getLongitude(), 10);
 
 		} catch (IOException e) {
 			Log.d(TrackedItemsActivity.LOG_TAG,
@@ -222,14 +231,24 @@ public class EbayRequest {
 			return filterIndex; // no results
 		}
 
-		String itemFilter = String.format("itemFilter(%d)", filterIndex);
-		String postalCode = address.get(0).getPostalCode();
+		String postalCode = null;
+		for (Address addr : address) {
+			if (addr.getPostalCode() != null && !addr.getPostalCode().isEmpty()) {
+				postalCode = addr.getPostalCode();
+				break;
+			}
+		}
 
-		builder.appendQueryParameter("buyerPostalCode", postalCode);
-		builder.appendQueryParameter(itemFilter + ".name", "MaxDistance");
-		builder.appendQueryParameter(itemFilter + ".value",
-				Double.toString(searchDistance));
+		if (postalCode != null) {
 
-		return filterIndex++;
+			String itemFilter = "itemFilter";
+			builder.appendQueryParameter("buyerPostalCode", postalCode);
+			builder.appendQueryParameter(itemFilter + ".name", "MaxDistance");
+			builder.appendQueryParameter(itemFilter + ".value",
+					Double.toString(searchDistance));
+			filterIndex++;
+		}
+
+		return filterIndex;
 	}
 }

@@ -1,5 +1,8 @@
 package edu.rosehulman.salenotifier;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.sourceforge.zbar.Symbol;
 import edu.rosehulman.salenotifier.models.BarcodeResult;
 import me.dm7.barcodescanner.zbar.*;
@@ -10,8 +13,14 @@ import android.util.Log;
 
 public class BarcodeScannerActivity extends Activity implements
 		ZBarScannerView.ResultHandler {
-
 	public static final String KEY_BARCODE_RESULT = "KEY_BARCODE_RESULT";
+
+	protected static List<String> AVAILABLE_CODE_TYPES = new ArrayList<String>();
+	static {
+		AVAILABLE_CODE_TYPES.add("UPC");
+		AVAILABLE_CODE_TYPES.add("ISBN");
+		AVAILABLE_CODE_TYPES.add("EAN");
+	}
 
 	private ZBarScannerView mScannerView;
 

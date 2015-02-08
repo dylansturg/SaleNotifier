@@ -12,6 +12,7 @@ public class ItemQueryConstraints implements Parcelable {
 	private String mProductCodeType;
 	private double mSearchRadiusMiles;
 	private Location mSearchLocation;
+	private boolean mLimitToLocal;
 
 	public ItemQueryConstraints() {
 		this("", "", "", 0.0);
@@ -23,17 +24,19 @@ public class ItemQueryConstraints implements Parcelable {
 		mProductCodeType = source.readString();
 		mSearchRadiusMiles = source.readDouble();
 		mSearchLocation = source.readParcelable(null);
+		mLimitToLocal = (source.readByte() == 0 ? false : true);
 	}
 
-	public ItemQueryConstraints(String name, String upc, String type, double radius) {
+	public ItemQueryConstraints(String name, String upc, String type,
+			double radius) {
 		mName = name;
 		mProductCode = upc;
 		mProductCodeType = type;
 		mSearchRadiusMiles = radius;
 	}
 
-	public ItemQueryConstraints(String name, String upc, String type, double radius,
-			Location location) {
+	public ItemQueryConstraints(String name, String upc, String type,
+			double radius, Location location) {
 		this(name, upc, type, radius);
 		mSearchLocation = location;
 	}
@@ -53,12 +56,12 @@ public class ItemQueryConstraints implements Parcelable {
 	public void setProductCode(String upc) {
 		mProductCode = upc;
 	};
-	
-	public String getProductCodeType(){
+
+	public String getProductCodeType() {
 		return mProductCodeType;
 	}
-	
-	public void setProductCodeType(String type){
+
+	public void setProductCodeType(String type) {
 		mProductCodeType = type;
 	}
 
@@ -78,6 +81,14 @@ public class ItemQueryConstraints implements Parcelable {
 		mSearchLocation = loc;
 	}
 
+	public boolean getSearchLimited() {
+		return mLimitToLocal;
+	}
+
+	public void setSearchLimited(boolean limited) {
+		mLimitToLocal = limited;
+	}
+
 	@Override
 	public int describeContents() {
 		return hashCode();
@@ -90,6 +101,7 @@ public class ItemQueryConstraints implements Parcelable {
 		dest.writeString(mProductCodeType);
 		dest.writeDouble(mSearchRadiusMiles);
 		dest.writeParcelable(mSearchLocation, 0);
+		dest.writeByte((byte) (mLimitToLocal ? 1 : 0));
 	}
 
 	private static class ItemQueryConstraintsCreator implements

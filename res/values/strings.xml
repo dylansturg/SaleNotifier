@@ -24,7 +24,7 @@
     <string name="search_scan">Scan</string>
     <string name="search_distance">Search Distance</string>
     <string name="search_distance_default">50</string>
-    <string name="search_online">Include online retailers</string>
+    <string name="search_only_local">Include only nearby/local sellers</string>
     <string name="bad_distance_unit_message">The %s unit probably won\'t work well.</string>
 
     <string-array name="search_distance_units">

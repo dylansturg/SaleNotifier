@@ -44,7 +44,9 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:orientation="horizontal" >
 
             <EditText
                 android:id="@+id/item_search_upc"
@@ -54,48 +56,60 @@
                 android:ems="10"
                 android:hint="@string/search_product_code_hint" />
 
-            <Button
-                android:id="@+id/item_search_scan"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:drawableLeft="@drawable/ic_action_photo"
-                android:text="@string/search_scan" />
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/item_search_distance_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="@string/search_distance" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal" >
-
-            <EditText
-                android:id="@+id/item_search_distance"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ems="10"
-                android:inputType="numberDecimal"
-                android:text="@string/search_distance_default" />
-
             <Spinner
-                android:id="@+id/item_search_distance_unit"
+                android:id="@+id/item_search_upc_type"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </LinearLayout>
 
+        <Button
+            android:id="@+id/item_search_scan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:drawableLeft="@drawable/ic_action_photo"
+            android:text="@string/search_scan" />
+
         <CheckBox
-            android:id="@+id/item_search_online"
+            android:id="@+id/item_search_local"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checked="true"
-            android:text="@string/search_online" />
+            android:text="@string/search_only_local" />
+
+        <LinearLayout
+            android:id="@+id/item_search_distance_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/item_search_distance_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/search_distance" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <EditText
+                    android:id="@+id/item_search_distance"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:inputType="numberDecimal"
+                    android:text="@string/search_distance_default" />
+
+                <Spinner
+                    android:id="@+id/item_search_distance_unit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </LinearLayout>
 
         <Button
             android:id="@+id/item_search"

@@ -16,6 +16,7 @@ import edu.rosehulman.salenotifier.R;
 import android.app.Activity;
 import android.content.Intent;
 import android.location.Location;
+import android.opengl.Visibility;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -24,7 +25,11 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -53,9 +58,11 @@ public class ItemSearchActivity extends Activity implements OnClickListener,
 	private EditText mProductCode;
 	private Button mScanButton;
 	private Button mSearchButton;
+	private CheckBox mLocalOnly;
+	private Spinner mProductCodeTypePicker;
+	private ArrayAdapter<String> mProductCodesAdapter;
 
 	private int mCurrentDistanceUnit = 0;
-	private String mBarcodeType;
 
 	private GoogleApiClient mGoogleApiClient;
 	private Location mCurrentLocation;
@@ -97,10 +104,33 @@ public class ItemSearchActivity extends Activity implements OnClickListener,
 
 		mName = (EditText) findViewById(R.id.item_search_name);
 		mProductCode = (EditText) findViewById(R.id.item_search_upc);
+		mProductCodeTypePicker = (Spinner) findViewById(R.id.item_search_upc_type);
+		mProductCodesAdapter = new ArrayAdapter<String>(this,
+				android.R.layout.simple_spinner_item,
+				BarcodeScannerActivity.AVAILABLE_CODE_TYPES);
+		mProductCodesAdapter
+				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		mProductCodeTypePicker.setAdapter(mProductCodesAdapter);
 		mScanButton = (Button) findViewById(R.id.item_search_scan);
 		mScanButton.setOnClickListener(this);
 		mSearchButton = (Button) findViewById(R.id.item_search);
 		mSearchButton.setOnClickListener(this);
+
+		final LinearLayout distanceOptionsContainer = (LinearLayout) findViewById(R.id.item_search_distance_container);
+		mLocalOnly = (CheckBox) findViewById(R.id.item_search_local);
+		mLocalOnly.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView,
+					boolean isChecked) {
+				int visibility;
+				if (isChecked) {
+					visibility = View.VISIBLE;
+				} else {
+					visibility = View.GONE;
+				}
+				distanceOptionsContainer.setVisibility(visibility);
+			}
+		});
 
 		mGoogleApiClient = new GoogleApiClient.Builder(this)
 				.addConnectionCallbacks(this)
@@ -139,7 +169,8 @@ public class ItemSearchActivity extends Activity implements OnClickListener,
 			BarcodeResult result = data
 					.getParcelableExtra(BarcodeScannerActivity.KEY_BARCODE_RESULT);
 			mProductCode.setText(result.getContent());
-			mBarcodeType = result.getFormat();
+			mProductCodeTypePicker.setSelection(mProductCodesAdapter
+					.getPosition(result.getFormat()));
 			break;
 		case REQUEST_SEARCH:
 			boolean searchFinished = data.getBooleanExtra(KEY_SEARCH_FINISHED,
@@ -169,9 +200,11 @@ public class ItemSearchActivity extends Activity implements OnClickListener,
 		ItemQueryConstraints query = new ItemQueryConstraints();
 		query.setName(mName.getText().toString());
 		query.setProductCode(mProductCode.getText().toString());
-		query.setProductCodeType(mBarcodeType);
+		query.setProductCodeType((String) mProductCodeTypePicker
+				.getSelectedItem());
 		query.setSearchRadius(parseSearchRadius());
 		query.setSearchLocation(mCurrentLocation);
+		query.setSearchLimited(mLocalOnly.isChecked());
 		return query;
 	}
 
