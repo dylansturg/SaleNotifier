@@ -24,6 +24,7 @@ import edu.rosehulman.salenotifier.TrackedItemsActivity;
 import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
+import android.util.LruCache;
 
 public class EbayProductDetailsRequest {
 
@@ -47,13 +48,24 @@ public class EbayProductDetailsRequest {
 
 	private Context mContext;
 	private EbayItem mSearchItem;
+	private LruCache<String, String> mCache;
 
-	public EbayProductDetailsRequest(Context context, EbayItem item) {
+	public EbayProductDetailsRequest(Context context, EbayItem item,
+			LruCache<String, String> requestCache) {
 		mContext = context;
 		mSearchItem = item;
+		mCache = requestCache;
 	}
 
 	public EbayItem evaluateRequest() {
+		String cachedCode = mCache != null ? mCache
+				.get(mSearchItem.productIdValue) : null;
+		;
+		if (cachedCode != null) {
+			mSearchItem.UPC = cachedCode;
+			return mSearchItem;
+		}
+
 		Uri serviceRequest = buildRequestUri();
 		String payload = buildRequestPayload();
 
@@ -70,6 +82,12 @@ public class EbayProductDetailsRequest {
 			String responseContent = EntityUtils.toString(response.getEntity(),
 					"UTF-8");
 			parseProductDetailsResponse(responseContent);
+
+			if (mCache != null) {
+				mCache.put(mSearchItem.productIdType,
+						mSearchItem.UPC != null ? mSearchItem.UPC : "");
+			}
+
 		} catch (URISyntaxException e) {
 			Log.d(TrackedItemsActivity.LOG_TAG,
 					"Failed to parse eBay Product Details URI");

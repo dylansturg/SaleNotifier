@@ -106,6 +106,13 @@ public class SearchEbayItemsTask extends
 	}
 
 	@Override
+	protected void onCancelled(List<Item> result) {
+		mCallback = null;
+		mPartialResultCallback = null;
+		mCancelToken.cancel();
+	}
+
+	@Override
 	protected void onPostExecute(List<Item> result) {
 		if (result != null && mCallback != null) {
 			if (mUnhandledPartialResults != null) {

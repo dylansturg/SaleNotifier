@@ -33,6 +33,7 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.CancellationSignal;
 import android.util.Log;
+import android.util.LruCache;
 
 public class EbayRequest {
 
@@ -59,6 +60,10 @@ public class EbayRequest {
 
 	private ISearchEbayIncrementalResultNotifier mResultNotifier;
 	private CancellationSignal mCancelToken;
+
+	private static final int CacheSize = 8 * 1024 * 1024;
+	private LruCache<String, String> mProductRequestCache = new LruCache<String, String>(
+			CacheSize);
 
 	public EbayRequest(Context context, ItemQueryConstraints query) {
 		this(context, query, null, null);
@@ -119,7 +124,8 @@ public class EbayRequest {
 						response.getEntity(), "UTF-8");
 
 				EbayResponse parsedResponse = new EbayResponse(mContext,
-						responseContent, getOperationName());
+						responseContent, getOperationName(),
+						mProductRequestCache);
 				List<EbayItem> results = parsedResponse.getResponseItems();
 				if (results != null && !isCancelled()) {
 					totalSearchResults += results.size();
@@ -149,6 +155,10 @@ public class EbayRequest {
 						"IO Failed when executing HTTP POST for EbayProductDetailsRequest");
 			}
 		}
+
+		int cacheHits = mProductRequestCache.hitCount();
+		Log.d(TrackedItemsActivity.LOG_TAG, "eBay cache got " + cacheHits
+				+ " hits");
 
 		return searchResults;
 	}
@@ -198,7 +208,7 @@ public class EbayRequest {
 		String pagination = "paginationInput";
 
 		JSONObject paginationObj = new JSONObject();
-		paginationObj.put("pageNumber", Integer.toString(mRequestCount));
+		paginationObj.put("pageNumber", Integer.toString(mRequestCount + 1));
 		paginationObj.put("entriesPerPage", Integer.toString(PAGE_SIZE));
 
 		request.put("paginationInput", paginationObj);

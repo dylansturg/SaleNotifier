@@ -35,9 +35,9 @@ public class SearchResultsActivity extends StorageActivity implements
 	private ListView mResultsList;
 	private List<Item> mSearchResults;
 
-	private AsyncTask<ItemQueryConstraints, List<Item>, List<Item>> mSearchTask;
-
 	private IItemSourceAdapter mItemStorage;
+
+	private List<AsyncTask<?, ?, ?>> mSearchTasks = new ArrayList<AsyncTask<?, ?, ?>>();
 
 	private boolean mResultsViewSet = false;
 
@@ -53,12 +53,14 @@ public class SearchResultsActivity extends StorageActivity implements
 
 		displaySearchToast();
 
-		// ItemSearchTask task = new ItemSearchTask(this, mSearched.getName());
-		// task.execute();
+		ItemSearchTask task = new ItemSearchTask(this, mSearched.getName());
+		task.execute();
+		mSearchTasks.add(task);
 
-		mSearchTask = new SearchEbayItemsTask(this, this, this);
-
-		mSearchTask.execute(mSearched);
+		SearchEbayItemsTask ebaySearch = new SearchEbayItemsTask(this, this,
+				this);
+		ebaySearch.execute(mSearched);
+		mSearchTasks.add(ebaySearch);
 
 		findViewById(R.id.search_results_quit).setOnClickListener(
 				new OnClickListener() {
@@ -69,6 +71,17 @@ public class SearchResultsActivity extends StorageActivity implements
 					}
 				});
 
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+
+		if (mSearchTasks != null) {
+			for (AsyncTask<?, ?, ?> search : mSearchTasks) {
+				search.cancel(true);
+			}
+		}
 	}
 
 	private void displaySearchToast() {
@@ -167,7 +180,6 @@ public class SearchResultsActivity extends StorageActivity implements
 			mResultsList.setAdapter(mAdapter);
 		}
 		mAdapter.addAll(searchResults);
-
 	}
 
 	private List<Item> getItems(List<Integer> itemPositions) {
@@ -181,6 +193,15 @@ public class SearchResultsActivity extends StorageActivity implements
 	private void trackItems(List<Item> items) {
 		for (Item item : items) {
 			mItemStorage.saveItem(item);
+		}
+	}
+
+	@Override
+	public void onBackPressed() {
+		if (mSearchTasks != null) {
+			for (AsyncTask<?, ?, ?> searchTask : mSearchTasks) {
+				searchTask.cancel(true);
+			}
 		}
 	}
 

@@ -14,17 +14,26 @@ import edu.rosehulman.salenotifier.TrackedItemsActivity;
 
 import android.content.Context;
 import android.util.Log;
+import android.util.LruCache;
 
 public class EbayResponse {
 
 	private Context mContext;
 	private List<EbayItem> mResponseItems;
+	private LruCache<String, String> mRequestCache;
+
+	public EbayResponse(Context context, String jsonResponse,
+			String operationName, LruCache<String, String> requestCache) {
+		mContext = context;
+		parseResponseJson(jsonResponse, operationName);
+		mRequestCache = requestCache;
+		queryItemsStockDetails();
+
+	}
 
 	public EbayResponse(Context context, String jsonResonse,
 			String operationName) {
-		mContext = context;
-		parseResponseJson(jsonResonse, operationName);
-		queryItemsStockDetails();
+		this(context, jsonResonse, operationName, null);
 	}
 
 	public EbayResponse(Context context, InputStream jsonStream,
@@ -47,7 +56,7 @@ public class EbayResponse {
 		for (EbayItem item : mResponseItems) {
 			if (item.UPC == null || item.UPC.isEmpty()) {
 				EbayProductDetailsRequest detailsRequest = new EbayProductDetailsRequest(
-						mContext, item);
+						mContext, item, mRequestCache);
 				detailsRequest.evaluateRequest(); // modifies item
 			}
 
