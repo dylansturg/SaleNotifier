@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,11 +41,16 @@ public class EbayRequest {
 		API_OPERATIONS.put(RequestType.Product, "findItemsByProduct");
 	}
 
+	private static final int PAGE_SIZE = 100;
+	private static final int DESIRED_RESULT_COUNT = 10;
+	private static final int MAXIMUM_REQUEST_COUNT = 5;
+
 	String APIKey;
 	private ItemQueryConstraints mQuery;
 	private Context mContext;
 
 	private RequestType mRequestType;
+	private int mRequestCount = 1;
 
 	public EbayRequest(Context context, ItemQueryConstraints query) {
 		APIKey = context.getString(R.string.EbayAPIKey);
@@ -64,40 +70,55 @@ public class EbayRequest {
 	}
 
 	public List<EbayItem> evaluateRequest() {
-		Uri serviceRequest = buildRequestUri();
 
 		HttpClient client = new DefaultHttpClient();
-		try {
-			URI javaUri = new URI(serviceRequest.getScheme(),
-					serviceRequest.getAuthority(), serviceRequest.getPath(),
-					serviceRequest.getQuery(), serviceRequest.getFragment());
+		List<EbayItem> searchResults = new ArrayList<EbayItem>();
 
-			HttpGet get = new HttpGet(javaUri);
+		while (searchResults.size() < DESIRED_RESULT_COUNT
+				&& mRequestCount < MAXIMUM_REQUEST_COUNT) {
+			try {
 
-			HttpResponse response = client.execute(get);
-			String responseContent = EntityUtils.toString(response.getEntity(),
-					"UTF-8");
+				Uri serviceRequest = buildRequestUri();
+				URI javaUri = new URI(serviceRequest.getScheme(),
+						serviceRequest.getAuthority(),
+						serviceRequest.getPath(), serviceRequest.getQuery(),
+						serviceRequest.getFragment());
 
-			EbayResponse parsedResponse = new EbayResponse(mContext,
-					responseContent, getOperationName());
+				Log.d(TrackedItemsActivity.LOG_TAG,
+						String.format(
+								"Querying for eBay items, currently have %d results after %d requests.",
+								searchResults.size(), mRequestCount));
+				Log.d(TrackedItemsActivity.LOG_TAG, "Endpoing: "
+						+ serviceRequest.toString());
 
-			return parsedResponse.getResponseItems();
+				HttpGet get = new HttpGet(javaUri);
 
-		} catch (URISyntaxException e) {
-			Log.d(TrackedItemsActivity.LOG_TAG,
-					"Failed to parse eBay Product Details URI");
-		} catch (UnsupportedEncodingException encodingException) {
-			Log.d(TrackedItemsActivity.LOG_TAG,
-					"Failed to encode POST XML data for EbayProductDetailsRequest");
-		} catch (ClientProtocolException httpException) {
-			Log.d(TrackedItemsActivity.LOG_TAG,
-					"Failed to execute HTTP POST for EbayProductDetailsRequest");
-		} catch (IOException networkException) {
-			Log.d(TrackedItemsActivity.LOG_TAG,
-					"IO Failed when executing HTTP POST for EbayProductDetailsRequest");
+				HttpResponse response = client.execute(get);
+				String responseContent = EntityUtils.toString(
+						response.getEntity(), "UTF-8");
+
+				EbayResponse parsedResponse = new EbayResponse(mContext,
+						responseContent, getOperationName());
+				searchResults.addAll(parsedResponse.getResponseItems());
+
+				mRequestCount++;
+
+			} catch (URISyntaxException e) {
+				Log.d(TrackedItemsActivity.LOG_TAG,
+						"Failed to parse eBay Product Details URI");
+			} catch (UnsupportedEncodingException encodingException) {
+				Log.d(TrackedItemsActivity.LOG_TAG,
+						"Failed to encode POST XML data for EbayProductDetailsRequest");
+			} catch (ClientProtocolException httpException) {
+				Log.d(TrackedItemsActivity.LOG_TAG,
+						"Failed to execute HTTP POST for EbayProductDetailsRequest");
+			} catch (IOException networkException) {
+				Log.d(TrackedItemsActivity.LOG_TAG,
+						"IO Failed when executing HTTP POST for EbayProductDetailsRequest");
+			}
 		}
 
-		return null;
+		return searchResults;
 	}
 
 	private Uri buildRequestUri() {
@@ -128,6 +149,17 @@ public class EbayRequest {
 		Uri serviceRequest = builder.build();
 
 		return serviceRequest;
+	}
+
+	private int appendPaginationCriteria(Uri.Builder builder, int filterIndex) {
+		String pagination = "paginationInput";
+
+		builder.appendQueryParameter(pagination + ".pageNumber",
+				Integer.toString(mRequestCount));
+		builder.appendQueryParameter(pagination + ".entriesPerPage",
+				Integer.toString(PAGE_SIZE));
+
+		return filterIndex;
 	}
 
 	private int appendSearchCriteria(Uri.Builder builder, int filterIndex) {

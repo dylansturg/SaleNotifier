@@ -43,13 +43,20 @@ public class EbayResponse {
 			return;
 		}
 
+		List<EbayItem> usefulItems = new ArrayList<EbayItem>();
 		for (EbayItem item : mResponseItems) {
 			if (item.UPC == null || item.UPC.isEmpty()) {
 				EbayProductDetailsRequest detailsRequest = new EbayProductDetailsRequest(
 						mContext, item);
 				detailsRequest.evaluateRequest(); // modifies item
 			}
+
+			if (item.UPC != null && !item.UPC.isEmpty()) {
+				usefulItems.add(item);
+			}
 		}
+
+		mResponseItems = usefulItems;
 	}
 
 	private void parseResponseJson(String json, String operation) {
