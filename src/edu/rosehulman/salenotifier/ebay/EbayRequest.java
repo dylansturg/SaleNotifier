@@ -17,6 +17,9 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONWriter;
 
 import edu.rosehulman.salenotifier.R;
 import edu.rosehulman.salenotifier.TrackedItemsActivity;
@@ -84,6 +87,8 @@ public class EbayRequest {
 						serviceRequest.getPath(), serviceRequest.getQuery(),
 						serviceRequest.getFragment());
 
+				String postBody = createRequestBody();
+
 				Log.d(TrackedItemsActivity.LOG_TAG,
 						String.format(
 								"Querying for eBay items, currently have %d results after %d requests.",
@@ -91,16 +96,19 @@ public class EbayRequest {
 				Log.d(TrackedItemsActivity.LOG_TAG, "Endpoing: "
 						+ serviceRequest.toString());
 
-				HttpGet get = new HttpGet(javaUri);
+				HttpPost post = new HttpPost(javaUri);
+				post.setEntity(new StringEntity(postBody));
 
-				HttpResponse response = client.execute(get);
+				HttpResponse response = client.execute(post);
 				String responseContent = EntityUtils.toString(
 						response.getEntity(), "UTF-8");
 
 				EbayResponse parsedResponse = new EbayResponse(mContext,
 						responseContent, getOperationName());
-				searchResults.addAll(parsedResponse.getResponseItems());
-
+				List<EbayItem> results = parsedResponse.getResponseItems();
+				if (results != null) {
+					searchResults.addAll(results);
+				}
 				mRequestCount++;
 
 			} catch (URISyntaxException e) {
@@ -135,59 +143,72 @@ public class EbayRequest {
 		String operation = getOperationName();
 		builder.appendQueryParameter("OPERATION-NAME", operation);
 		builder.appendQueryParameter("SECURITY-APPNAME", APIKey);
+		builder.appendQueryParameter("REQUEST-DATA-FORMAT", "JSON");
 		builder.appendQueryParameter("RESPONSE-DATA-FORMAT", "JSON");
 
 		// End of Request Headers
 		builder.appendQueryParameter("REST-PAYLOAD", "");
-
-		int filterIndex = 0;
-
-		// Ensure local search comes first - suspected bug with eBay API
-		filterIndex = appendLocalSearchParameters(builder, filterIndex);
-		filterIndex = appendSearchCriteria(builder, filterIndex);
 
 		Uri serviceRequest = builder.build();
 
 		return serviceRequest;
 	}
 
-	private int appendPaginationCriteria(Uri.Builder builder, int filterIndex) {
-		String pagination = "paginationInput";
+	private String createRequestBody() {
+		JSONObject body = new JSONObject();
+		body.put("jsonns.xsi", "http://www.w3.org/2001/XMLSchema-instance");
+		body.put("jsonns.xs", "http://www.w3.org/2001/XMLSchema");
+		body.put("jsonns.tns",
+				"http://www.ebay.com/marketplace/search/v1/services");
 
-		builder.appendQueryParameter(pagination + ".pageNumber",
-				Integer.toString(mRequestCount));
-		builder.appendQueryParameter(pagination + ".entriesPerPage",
-				Integer.toString(PAGE_SIZE));
+		JSONObject encodedRequest = new JSONObject();
+		body.put("tns." + getOperationName() + "Request", encodedRequest);
 
-		return filterIndex;
+		appendSearchCriteria(encodedRequest);
+		appendPaginationCriteria(encodedRequest);
+
+		return body.toString();
 	}
 
-	private int appendSearchCriteria(Uri.Builder builder, int filterIndex) {
+	private void appendPaginationCriteria(JSONObject request) {
+		String pagination = "paginationInput";
+
+		JSONObject paginationObj = new JSONObject();
+		paginationObj.put("pageNumber", Integer.toString(mRequestCount));
+		paginationObj.put("entriesPerPage", Integer.toString(PAGE_SIZE));
+
+		request.put("paginationInput", paginationObj);
+
+	}
+
+	private void appendSearchCriteria(JSONObject request) {
 
 		switch (mRequestType) {
 		case Keywords:
-			filterIndex = appendKeywordSearchCriteria(builder, filterIndex);
+			appendKeywordSearchCriteria(request);
 			break;
 		case Product:
-			filterIndex = appendProductSearchCriteria(builder, filterIndex);
+			appendProductSearchCriteria(request);
 			break;
 		}
 
-		String itemFilter = String.format("itemFilter(%d)", filterIndex);
-		builder.appendQueryParameter(itemFilter + ".name", "ListingType");
-		builder.appendQueryParameter(itemFilter + ".value", "FixedPrice");
-		builder.appendQueryParameter("sortOrder", "BestMatch");
+		request.put("sortOrder", "BestMatch");
 
-		filterIndex++;
-		return filterIndex;
+		JSONArray itemFilter = new JSONArray();
+		JSONObject nonAuctionFilter = new JSONObject();
+		nonAuctionFilter.put("name", "ListingType");
+		nonAuctionFilter.put("value", "FixedPrice");
+		itemFilter.put(nonAuctionFilter);
+
+		request.put("itemFilter", itemFilter);
+
 	}
 
-	private int appendKeywordSearchCriteria(Uri.Builder builder, int filterIndex) {
-		builder.appendQueryParameter("keywords", mQuery.getName());
-		return filterIndex;
+	private void appendKeywordSearchCriteria(JSONObject request) {
+		request.put("keywords", mQuery.getName());
 	}
 
-	private int appendProductSearchCriteria(Uri.Builder builder, int filterIndex) {
+	private void appendProductSearchCriteria(JSONObject request) {
 		String codeType = "";
 		if (mQuery.getProductCodeType() != null
 				&& !mQuery.getProductCodeType().isEmpty()) {
@@ -196,9 +217,11 @@ public class EbayRequest {
 			codeType = estimateProductCodeType(mQuery.getProductCode());
 		}
 
-		builder.appendQueryParameter("productId.@type", codeType);
-		builder.appendQueryParameter("productId", mQuery.getProductCode());
-		return filterIndex;
+		JSONObject productFilter = new JSONObject();
+		productFilter.put("@type", codeType);
+		productFilter.put("__value__", mQuery.getProductCode());
+
+		request.put("productId", productFilter);
 	}
 
 	private String estimateProductCodeType(String productCode) {
@@ -229,25 +252,19 @@ public class EbayRequest {
 		return "";
 	}
 
-	private int appendLocalSearchParameters(Uri.Builder builder, int filterIndex) {
+	private void appendLocalSearchParameters(JSONObject request) {
 		if (mQuery == null || !mQuery.getSearchLimited()) {
-			return filterIndex;
-		}
-
-		if (filterIndex != 0) {
-			throw new IllegalArgumentException(
-					"EbayRequest.appendLocalSearchParameters needs to be added first, but filterIndex != 0 implies incorrect ordering.");
+			return;
 		}
 
 		Location searchFrom = mQuery.getSearchLocation();
 		double searchDistance = mQuery.getSearchRadius();
 
 		if (searchFrom == null) {
-			return filterIndex; // can't do anything
+			return; // can't do anything
 		}
 
 		Geocoder geocoder = new Geocoder(mContext);
-
 		List<Address> address;
 		try {
 			address = geocoder.getFromLocation(searchFrom.getLatitude(),
@@ -256,11 +273,11 @@ public class EbayRequest {
 		} catch (IOException e) {
 			Log.d(TrackedItemsActivity.LOG_TAG,
 					"Geocoder failed to convert location to address for zip");
-			return filterIndex;
+			return;
 		}
 
 		if (address == null || address.size() == 0) {
-			return filterIndex; // no results
+			return; // no results
 		}
 
 		String postalCode = null;
@@ -273,14 +290,16 @@ public class EbayRequest {
 
 		if (postalCode != null) {
 
-			String itemFilter = "itemFilter";
-			builder.appendQueryParameter("buyerPostalCode", postalCode);
-			builder.appendQueryParameter(itemFilter + ".name", "MaxDistance");
-			builder.appendQueryParameter(itemFilter + ".value",
-					Double.toString(searchDistance));
-			filterIndex++;
-		}
+			JSONObject localSearchFilter = new JSONObject();
+			localSearchFilter.put("name", "MaxDistance");
+			localSearchFilter.put("value", Double.toString(searchDistance));
 
-		return filterIndex;
+			request.put("buyerPostalCode", postalCode);
+			JSONArray itemFilters = request.has("itemFilter") ? request
+					.getJSONArray("itemFilter") : new JSONArray();
+
+			itemFilters.put(localSearchFilter);
+			request.append("itemFilter", itemFilters);
+		}
 	}
 }
