@@ -63,6 +63,7 @@ public class ItemUpdateBackgroundService extends IntentService {
 					Log.e(TrackedItemsActivity.LOG_TAG, e.getMessage());
 				}
 			}
+			Log.d(TrackedItemsActivity.LOG_TAG, String.format("Found %d new prices for item %s", prices.size(), item.getDisplayName()));
 			item.addPrices(prices);
 			
 			// Check the notifications
@@ -71,6 +72,7 @@ public class ItemUpdateBackgroundService extends IntentService {
 				INotificationPredicate pred = NotificationPredicateFactory.resolvePredicate(notif.getPredicate());
 				if(pred.evaluate(item, notif.getThreshold())) {
 					String message = pred.getNotificationMessage(this, item, notif.getThreshold());
+					Log.d(TrackedItemsActivity.LOG_TAG, message);
 					NotificationLauncher.launch(this, item, message);
 				}
 			}
