@@ -38,9 +38,8 @@ public class PriceAbovePredicate implements INotificationPredicate {
 	@Override
 	public String getNotificationMessage(Context context, Item item,
 			double threshold) {
-		// TODO Auto-generated method stub
-		String format = "Item (%s) is available for %f from %s";
-		return String.format(format, item.getDisplayName(),
-				satisfyItemPrice.getPrice(), satisfyItemPrice.getSellerName());
+		String format = "%.2f from %s (%s %.2f)";
+		return String.format(format, satisfyItemPrice.getPrice(),
+				satisfyItemPrice.getSellerName(), "Above", threshold);
 	}
 }

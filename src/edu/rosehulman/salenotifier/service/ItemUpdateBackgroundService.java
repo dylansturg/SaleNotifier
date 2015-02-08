@@ -68,13 +68,15 @@ public class ItemUpdateBackgroundService extends IntentService {
 			
 			// Check the notifications
 			List<ItemNotification> notifications = manager.getItemNotifications(item);
-			for(ItemNotification notif : notifications) {
-				INotificationPredicate pred = NotificationPredicateFactory.resolvePredicate(notif.getPredicate());
-				if(pred.evaluate(item, notif.getThreshold())) {
-					String message = pred.getNotificationMessage(this, item, notif.getThreshold());
-					Log.d(TrackedItemsActivity.LOG_TAG, message);
-					NotificationLauncher.launch(this, item, message);
-				}
+			if(notifications != null) {
+				for(ItemNotification notif : notifications) {
+					INotificationPredicate pred = NotificationPredicateFactory.resolvePredicate(notif.getPredicate());
+					if(pred.evaluate(item, notif.getThreshold())) {
+						String message = pred.getNotificationMessage(this, item, notif.getThreshold());
+						Log.d(TrackedItemsActivity.LOG_TAG, message);
+						NotificationLauncher.launch(this, item, message);
+					}
+				}	
 			}
 			
 			// Save the new information in the datastore
