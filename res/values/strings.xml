@@ -77,5 +77,6 @@
     <string name="item_settings_add_description">Add a notification</string>
     <string name="item_settings_remove_notification">Delete Notification</string>
     <string name="title_activity_item_database_content">ItemDatabaseContentActivity</string>
+    <string name="no_results_found">Search yielded 0 results.  Go back to refine your search.</string>
 
 </resources>

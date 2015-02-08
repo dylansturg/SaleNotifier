@@ -8,10 +8,12 @@ import edu.rosehulman.salenotifier.db.SQLiteAdapter;
 import edu.rosehulman.salenotifier.db.SaleNotifierSQLHelper;
 import edu.rosehulman.salenotifier.ebay.SearchEbayItemsTask;
 import edu.rosehulman.salenotifier.ebay.SearchEbayItemsTask.ISearchEbayCallback;
+import edu.rosehulman.salenotifier.ebay.SearchEbayItemsTask.ISearchEbayIncrementalResultListener;
 import edu.rosehulman.salenotifier.models.Item;
 import edu.rosehulman.salenotifier.models.ItemQueryConstraints;
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.ActionMode;
 import android.view.Menu;
@@ -22,7 +24,8 @@ import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.ListView;
 import android.widget.Toast;
 
-public class SearchResultsActivity extends StorageActivity {
+public class SearchResultsActivity extends StorageActivity implements
+		ISearchEbayCallback, ISearchEbayIncrementalResultListener {
 
 	public static final String KEY_SEARCH_ITEM = "KEY_SEARCH_ITEM";
 
@@ -32,7 +35,11 @@ public class SearchResultsActivity extends StorageActivity {
 	private ListView mResultsList;
 	private List<Item> mSearchResults;
 
+	private AsyncTask<ItemQueryConstraints, List<Item>, List<Item>> mSearchTask;
+
 	private IItemSourceAdapter mItemStorage;
+
+	private boolean mResultsViewSet = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -49,14 +56,9 @@ public class SearchResultsActivity extends StorageActivity {
 		// ItemSearchTask task = new ItemSearchTask(this, mSearched.getName());
 		// task.execute();
 
-		SearchEbayItemsTask ebaySearch = new SearchEbayItemsTask(this,
-				new ISearchEbayCallback() {
-					@Override
-					public void onFinished(List<Item> results) {
-						onResultsLoaded(results);
-					}
-				});
-		ebaySearch.execute(mSearched);
+		mSearchTask = new SearchEbayItemsTask(this, this, this);
+
+		mSearchTask.execute(mSearched);
 
 		findViewById(R.id.search_results_quit).setOnClickListener(
 				new OnClickListener() {
@@ -84,14 +86,11 @@ public class SearchResultsActivity extends StorageActivity {
 		}
 	}
 
-	protected void onResultsLoaded(List<Item> searchResults) {
+	private void setResultsContentView() {
+		mResultsViewSet = true;
 		setContentView(R.layout.activity_search_results);
-
-		mSearchResults = searchResults;
-		mAdapter = new SearchResultsAdapter(this, searchResults);
-
+		mResultsViewSet = true;
 		mResultsList = (ListView) findViewById(R.id.search_results_list);
-		mResultsList.setAdapter(mAdapter);
 
 		mResultsList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
 		mResultsList.setMultiChoiceModeListener(new MultiChoiceModeListener() {
@@ -149,6 +148,28 @@ public class SearchResultsActivity extends StorageActivity {
 		});
 	}
 
+	protected void onResultsLoaded(List<Item> searchResults) {
+		if (searchResults == null || searchResults.size() == 0) {
+			return; // nothing to do
+		}
+
+		if (!mResultsViewSet) {
+			setResultsContentView();
+		}
+
+		if (mSearchResults == null) {
+			mSearchResults = new ArrayList<Item>();
+		}
+		mSearchResults.addAll(searchResults);
+
+		if (mAdapter == null) {
+			mAdapter = new SearchResultsAdapter(this, new ArrayList<Item>());
+			mResultsList.setAdapter(mAdapter);
+		}
+		mAdapter.addAll(searchResults);
+
+	}
+
 	private List<Item> getItems(List<Integer> itemPositions) {
 		ArrayList<Item> items = new ArrayList<Item>();
 		for (Integer position : itemPositions) {
@@ -160,6 +181,28 @@ public class SearchResultsActivity extends StorageActivity {
 	private void trackItems(List<Item> items) {
 		for (Item item : items) {
 			mItemStorage.saveItem(item);
+		}
+	}
+
+	@Override
+	public boolean publishPartialResults(List<Item> results) {
+		if (results != null && results.size() > 0) {
+			onResultsLoaded(results);
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public void onFinished(List<Item> results) {
+		if (results != null && results.size() != 0) {
+			onResultsLoaded(results);
+		}
+
+		if (mSearchResults == null || mSearchResults.size() == 0) {
+			// TODO Implement "No Results Found" message"
+			Toast.makeText(this, R.string.no_results_found, Toast.LENGTH_LONG)
+					.show();
 		}
 	}
 }

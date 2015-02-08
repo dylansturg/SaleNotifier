@@ -23,6 +23,7 @@ import org.json.JSONWriter;
 
 import edu.rosehulman.salenotifier.R;
 import edu.rosehulman.salenotifier.TrackedItemsActivity;
+import edu.rosehulman.salenotifier.ebay.SearchEbayItemsTask.ISearchEbayIncrementalResultNotifier;
 import edu.rosehulman.salenotifier.models.Item;
 import edu.rosehulman.salenotifier.models.ItemQueryConstraints;
 import android.content.Context;
@@ -30,6 +31,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
+import android.os.CancellationSignal;
 import android.util.Log;
 
 public class EbayRequest {
@@ -53,12 +55,23 @@ public class EbayRequest {
 	private Context mContext;
 
 	private RequestType mRequestType;
-	private int mRequestCount = 1;
+	private int mRequestCount = 0;
+
+	private ISearchEbayIncrementalResultNotifier mResultNotifier;
+	private CancellationSignal mCancelToken;
 
 	public EbayRequest(Context context, ItemQueryConstraints query) {
+		this(context, query, null, null);
+	}
+
+	public EbayRequest(Context context, ItemQueryConstraints query,
+			ISearchEbayIncrementalResultNotifier resultCallback,
+			CancellationSignal cancelToken) {
 		APIKey = context.getString(R.string.EbayAPIKey);
 		mQuery = query;
 		mContext = context;
+		mResultNotifier = resultCallback;
+		mCancelToken = cancelToken;
 	}
 
 	protected String getOperationName() {
@@ -77,8 +90,10 @@ public class EbayRequest {
 		HttpClient client = new DefaultHttpClient();
 		List<EbayItem> searchResults = new ArrayList<EbayItem>();
 
-		while (searchResults.size() < DESIRED_RESULT_COUNT
-				&& mRequestCount < MAXIMUM_REQUEST_COUNT) {
+		int totalSearchResults = 0;
+
+		while (totalSearchResults < DESIRED_RESULT_COUNT
+				&& mRequestCount < MAXIMUM_REQUEST_COUNT && !isCancelled()) {
 			try {
 
 				Uri serviceRequest = buildRequestUri();
@@ -92,7 +107,7 @@ public class EbayRequest {
 				Log.d(TrackedItemsActivity.LOG_TAG,
 						String.format(
 								"Querying for eBay items, currently have %d results after %d requests.",
-								searchResults.size(), mRequestCount));
+								totalSearchResults, mRequestCount));
 				Log.d(TrackedItemsActivity.LOG_TAG, "Endpoing: "
 						+ serviceRequest.toString());
 
@@ -106,8 +121,17 @@ public class EbayRequest {
 				EbayResponse parsedResponse = new EbayResponse(mContext,
 						responseContent, getOperationName());
 				List<EbayItem> results = parsedResponse.getResponseItems();
-				if (results != null) {
-					searchResults.addAll(results);
+				if (results != null && !isCancelled()) {
+					totalSearchResults += results.size();
+					if (mResultNotifier != null) {
+						boolean resultsHandled = mResultNotifier
+								.publishPartialResults(results);
+						if (!resultsHandled) {
+							searchResults.addAll(results);
+						}
+					} else {
+						searchResults.addAll(results);
+					}
 				}
 				mRequestCount++;
 
@@ -301,5 +325,9 @@ public class EbayRequest {
 			itemFilters.put(localSearchFilter);
 			request.append("itemFilter", itemFilters);
 		}
+	}
+
+	private boolean isCancelled() {
+		return mCancelToken != null && mCancelToken.isCanceled();
 	}
 }

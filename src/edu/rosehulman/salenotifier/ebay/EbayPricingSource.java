@@ -4,6 +4,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import android.content.Context;
+import android.os.CancellationSignal;
 import android.util.Log;
 
 import edu.rosehulman.salenotifier.ApiException;
@@ -11,16 +12,28 @@ import edu.rosehulman.salenotifier.IPricingSource;
 import edu.rosehulman.salenotifier.TrackedItemsActivity;
 import edu.rosehulman.salenotifier.db.Enumerable;
 import edu.rosehulman.salenotifier.db.Enumerable.IPredicate;
+import edu.rosehulman.salenotifier.ebay.SearchEbayItemsTask.ISearchEbayIncrementalResultListener;
+import edu.rosehulman.salenotifier.ebay.SearchEbayItemsTask.ISearchEbayIncrementalResultNotifier;
 import edu.rosehulman.salenotifier.models.Item;
 import edu.rosehulman.salenotifier.models.ItemPrice;
 import edu.rosehulman.salenotifier.models.ItemQueryConstraints;
 import edu.rosehulman.salenotifier.models.Seller;
 
-public class EbayPricingSource implements IPricingSource {
+public class EbayPricingSource implements IPricingSource,
+		ISearchEbayIncrementalResultNotifier {
 	private static final String EBAY_SELLER_NAME = "eBay";
+
+	private ISearchEbayIncrementalResultListener mResultListener;
+	private CancellationSignal mCancelToken;
 
 	public EbayPricingSource() {
 		// TODO Auto-generated constructor stub
+	}
+
+	public EbayPricingSource(
+			ISearchEbayIncrementalResultListener resultCallback,
+			CancellationSignal cancelToken) {
+		mResultListener = resultCallback;
 	}
 
 	@Override
@@ -57,19 +70,20 @@ public class EbayPricingSource implements IPricingSource {
 	@Override
 	public List<Item> search(Context context, ItemQueryConstraints query)
 			throws ApiException {
+
 		if (query == null) {
 			return null;
 		}
 
 		try {
-			EbayRequest apiRequest = new EbayRequest(context, query);
+			EbayRequest apiRequest = new EbayRequest(context, query, this,
+					mCancelToken);
 			List<EbayItem> apiResult = apiRequest.evaluateRequest();
 			List<Item> results = consolidateEbayResponse(apiResult);
 			return results;
 		} catch (Exception e) {
 			throw new ApiException(e);
 		}
-
 	}
 
 	@Override
@@ -105,10 +119,10 @@ public class EbayPricingSource implements IPricingSource {
 	}
 
 	private List<Item> consolidateEbayResponse(List<EbayItem> response) {
-		if(response == null){
+		if (response == null) {
 			return null;
 		}
-		
+
 		Enumerable<Item> items = new Enumerable<Item>();
 
 		for (EbayItem ebayItem : response) {
@@ -175,5 +189,15 @@ public class EbayPricingSource implements IPricingSource {
 				return element.getProductCode().equalsIgnoreCase(upc);
 			}
 		};
+	}
+
+	@Override
+	public boolean publishPartialResults(List<EbayItem> results) {
+		if (mResultListener != null) {
+			List<Item> consolidatedPartialResult = consolidateEbayResponse(results);
+			return mResultListener
+					.publishPartialResults(consolidatedPartialResult);
+		}
+		return false;
 	}
 }

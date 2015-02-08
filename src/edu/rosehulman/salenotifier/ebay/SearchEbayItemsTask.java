@@ -11,21 +11,43 @@ import edu.rosehulman.salenotifier.models.ItemQueryConstraints;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.CancellationSignal;
 import android.util.Log;
 
 public class SearchEbayItemsTask extends
-		AsyncTask<ItemQueryConstraints, Void, List<Item>> {
+		AsyncTask<ItemQueryConstraints, List<Item>, List<Item>> {
 
 	public interface ISearchEbayCallback {
 		void onFinished(List<Item> results);
 	}
 
+	public interface ISearchEbayIncrementalResultListener {
+		boolean publishPartialResults(List<Item> results);
+	}
+
+	protected interface ISearchEbayIncrementalResultNotifier {
+		boolean publishPartialResults(List<EbayItem> results);
+	}
+
 	private ISearchEbayCallback mCallback;
+	private ISearchEbayIncrementalResultListener mPartialResultCallback;
 	private Context mContext;
+	private CancellationSignal mCancelToken;
+
+	private List<Item> mUnhandledPartialResults = new ArrayList<Item>();
 
 	public SearchEbayItemsTask(Context context, ISearchEbayCallback callback) {
 		mContext = context;
 		mCallback = callback;
+
+		mCancelToken = new CancellationSignal();
+	}
+
+	public SearchEbayItemsTask(Context context,
+			ISearchEbayCallback finishedCallback,
+			ISearchEbayIncrementalResultListener partialCallback) {
+		this(context, finishedCallback);
+		mPartialResultCallback = partialCallback;
 	}
 
 	@Override
@@ -42,7 +64,19 @@ public class SearchEbayItemsTask extends
 			return null;
 		}
 
-		IPricingSource ebayPriceSource = new EbayPricingSource();
+		IPricingSource ebayPriceSource = new EbayPricingSource(
+				new ISearchEbayIncrementalResultListener() {
+
+					@Override
+					public boolean publishPartialResults(List<Item> results) {
+						if (mPartialResultCallback != null) {
+							publishProgress(results);
+							return true;
+						}
+						return false;
+					}
+				}, mCancelToken);
+
 		try {
 			List<Item> searchResults = ebayPriceSource.search(mContext,
 					params[0]);
@@ -58,8 +92,25 @@ public class SearchEbayItemsTask extends
 	}
 
 	@Override
+	protected void onProgressUpdate(List<Item>... values) {
+		if (values != null) {
+			boolean resultsHandled = false;
+			if (mPartialResultCallback != null) {
+				resultsHandled = mPartialResultCallback
+						.publishPartialResults(values[0]);
+			}
+			if (!resultsHandled) {
+				mUnhandledPartialResults.addAll(values[0]);
+			}
+		}
+	}
+
+	@Override
 	protected void onPostExecute(List<Item> result) {
 		if (result != null && mCallback != null) {
+			if (mUnhandledPartialResults != null) {
+				result.addAll(mUnhandledPartialResults);
+			}
 			mCallback.onFinished(result);
 		}
 	}
