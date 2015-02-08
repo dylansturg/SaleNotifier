@@ -8,7 +8,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import edu.rosehulman.salenotifier.TrackedItemsActivity;
-
+import edu.rosehulman.salenotifier.db.Enumerable;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
@@ -117,6 +117,12 @@ public class Item implements IQueryable, Parcelable {
 			priceData = new ArrayList<ItemPrice>();
 		}
 		priceData.add(ip);
+	}
+	
+	public void addPrices(List<ItemPrice> ip) {
+		if(priceData == null)
+			priceData = new ArrayList<ItemPrice>(ip);
+		priceData.addAll(ip);
 	}
 
 	@Override

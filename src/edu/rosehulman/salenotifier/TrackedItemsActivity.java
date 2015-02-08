@@ -44,11 +44,11 @@ public class TrackedItemsActivity extends StorageActivity {
 		new SaleNotifierWakefulReceiver().setupRegularAlarm(this);
 	}
 	
-	@Override
-	public void onBackPressed() {
-		Item i = new Item("Tea Kettle", "upc", null);
-		NotificationLauncher.launch(this, i, "Prices Below $20.00");
-	}
+//	@Override
+//	public void onBackPressed() {
+//		Item i = new Item("Tea Kettle", "upc", null);
+//		NotificationLauncher.launch(this, i, "Prices Below $20.00");
+//	}
 
 	@Override
 	protected void onResume() {
