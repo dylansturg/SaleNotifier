@@ -1,5 +1,7 @@
 package edu.rosehulman.salenotifier;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import edu.rosehulman.salenotifier.R;
@@ -12,7 +14,9 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.http.HttpResponseCache;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,6 +28,8 @@ import android.widget.ListView;
 public class TrackedItemsActivity extends StorageActivity {
 
 	public static final String LOG_TAG = "SNL";
+	protected static final String HTTP_CACHE = "httpCache";
+	protected static final int HTTP_CACHE_SIZE = 10 * 1024 * 1024; // 10MiB
 
 	private ListView listView;
 	private TrackedItemsListAdapter listAdapter;
@@ -42,6 +48,28 @@ public class TrackedItemsActivity extends StorageActivity {
 
 		// Doesn't create a new alarm if it is already set
 		new SaleNotifierWakefulReceiver().setupRegularAlarm(this);
+
+		if (HttpResponseCache.getInstalled() == null) {
+			installHTTPCache();
+		}
+
+	}
+
+	private void installHTTPCache() {
+		File cacheDir = getExternalCacheDir();
+		if (cacheDir == null) {
+			cacheDir = getCacheDir();
+		}
+
+		if (cacheDir != null) {
+			File httpCacheDir = new File(cacheDir + HTTP_CACHE);
+			try {
+				HttpResponseCache.install(httpCacheDir, HTTP_CACHE_SIZE);
+			} catch (IOException e) {
+				Log.d(LOG_TAG,
+						"Failed to install HTTP Cache - continuing w/o cache");
+			}
+		}
 	}
 
 	@Override
