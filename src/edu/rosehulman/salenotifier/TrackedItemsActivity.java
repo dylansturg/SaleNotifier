@@ -5,9 +5,9 @@ import java.io.IOException;
 import java.util.List;
 
 import edu.rosehulman.salenotifier.R;
-import edu.rosehulman.salenotifier.db.SQLiteAdapter;
-import edu.rosehulman.salenotifier.db.SaleNotifierSQLHelper;
 import edu.rosehulman.salenotifier.models.Item;
+import edu.rosehulman.salenotifier.models.NotificationPredicate;
+import edu.rosehulman.salenotifier.notifications.NotificationLauncher;
 import edu.rosehulman.salenotifier.service.SaleNotifierWakefulReceiver;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -33,7 +33,7 @@ public class TrackedItemsActivity extends StorageActivity {
 
 	private ListView listView;
 	private TrackedItemsListAdapter listAdapter;
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -71,6 +71,12 @@ public class TrackedItemsActivity extends StorageActivity {
 			}
 		}
 	}
+	
+//	@Override
+//	public void onBackPressed() {
+//		Item i = new Item("Tea Kettle", "upc", null);
+//		NotificationLauncher.launch(this, i, "Prices Below $20.00");
+//	}
 
 	@Override
 	protected void onResume() {

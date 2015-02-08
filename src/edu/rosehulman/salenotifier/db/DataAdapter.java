@@ -34,7 +34,8 @@ public abstract class DataAdapter<T extends IQueryable> {
 	/**
 	 * 
 	 * @param item
-	 * @return array of query string (index 0) along with selection args (indices 1+)
+	 * @return array of query string (index 0) along with selection args
+	 *         (indices 1+)
 	 */
 	abstract String[] createUniqueQuery(T item);
 
@@ -50,9 +51,19 @@ public abstract class DataAdapter<T extends IQueryable> {
 			if (findExists.length > 1) {
 				System.arraycopy(findExists, 1, selectionArgs, 0,
 						findExists.length - 1);
-				Cursor existingItem = db.rawQuery(findExists[0], selectionArgs);
-				if (existingItem.moveToFirst()) {
-					return constructItem(existingItem);
+				Cursor existingItem = null;
+				T foundResult = null;
+				try {
+					existingItem = db.rawQuery(findExists[0], selectionArgs);
+					if (existingItem.moveToFirst()) {
+						foundResult = constructItem(existingItem);
+					}
+				} finally {
+					existingItem.close();
+				}
+
+				if (foundResult != null) {
+					return foundResult;
 				}
 			}
 		}
@@ -110,25 +121,40 @@ public abstract class DataAdapter<T extends IQueryable> {
 	}
 
 	protected T getById(long id) {
-		Cursor results = db.query(getTableName(), null, getDBKeyColumn() + "="
-				+ id, null, null, null, null);
-		if (results.getCount() <= 0) {
-			return null;
+		Cursor results = null;
+		T result = null;
+		try {
+			results = db.query(getTableName(), null, getDBKeyColumn() + "="
+					+ id, null, null, null, null);
+			if (results.getCount() <= 0) {
+				return null;
+			}
+			results.moveToFirst();
+			result = constructItem(results);
+		} finally {
+			if (results != null) {
+				results.close();
+			}
 		}
-		results.moveToFirst();
-		T result = constructItem(results);
 		return result;
 	}
 
 	protected List<T> getAll(String where, String groupBy, String order) {
-		Cursor results = db.query(getTableName(), null, where, null, groupBy,
-				null, order);
+		Cursor results = null;
+		List<T> items = new ArrayList<T>();
+		try {
+			results = db.query(getTableName(), null, where, null, groupBy,
+					null, order);
 
-		ArrayList<T> items = new ArrayList<T>();
-		if (results.moveToFirst()) {
-			do {
-				items.add(constructItem(results));
-			} while (results.moveToNext());
+			if (results.moveToFirst()) {
+				do {
+					items.add(constructItem(results));
+				} while (results.moveToNext());
+			}
+		} finally {
+			if (results != null) {
+				results.close();
+			}
 		}
 		return items;
 	}

@@ -41,24 +41,30 @@
         </activity>
         <activity
             android:name=".ItemSearchActivity"
+            android:parentActivityName=".TrackedItemsActivity"
             android:label="@string/title_activity_item_search"
             android:windowSoftInputMode="stateUnchanged" >
         </activity>
         <activity
             android:name=".SearchResultsActivity"
+            android:parentActivityName=".ItemSearchActivity"
             android:label="@string/title_activity_search_results" >
+            
         </activity>
         <activity
             android:name=".BarcodeScannerActivity"
+            android:parentActivityName=".ItemSearchActivity"
             android:label="@string/title_activity_barcode_scanner" >
         </activity>
         <activity
             android:name=".AppSettingsActivity"
+            android:parentActivityName=".TrackedItemsActivity"
             android:label="@string/title_activity_app_settings"
             android:windowSoftInputMode="stateUnchanged" >
         </activity>
         <activity
             android:name=".ItemSettingsActivity"
+            android:parentActivityName=".TrackedItemsActivity"
             android:label="@string/title_activity_item_settings"
             android:windowSoftInputMode="stateUnchanged" >
         </activity>

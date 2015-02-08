@@ -39,8 +39,9 @@ public class PriceBelowPredicate implements INotificationPredicate {
 	public String getNotificationMessage(Context context, Item item,
 			double threshold) {
 		// TODO Improve message
-		return "Item " + item.getDisplayName() + " price has fallen to "
-				+ satisfyingPrice.getPrice();
+		String format = "%.2f from %s (%s %.2f)";
+		return String.format(format, satisfyingPrice.getPrice(),
+				satisfyingPrice.getSellerName(), "Below", threshold);
 	}
 
 }

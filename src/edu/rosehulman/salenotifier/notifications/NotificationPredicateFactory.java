@@ -30,7 +30,8 @@ public class NotificationPredicateFactory {
 		if (cachedPredicates == null) {
 			cachedPredicates = new HashMap<String, Class<?>>();
 		}
-
+		
+		String className = name;
 		name = name.toLowerCase(Locale.US);
 		Class<?> predicateClass = null;
 		if (cachedPredicates.containsKey(name)) {
@@ -46,8 +47,8 @@ public class NotificationPredicateFactory {
 						.toUpperCase(Locale.US) + name.substring(1);
 
 				predicateClass = Class
-						.forName("edu.rosehulman.salenotifier.notifications"
-								+ factoryType);
+						.forName("edu.rosehulman.salenotifier.notifications."
+								+ className + "Predicate");
 				cachedPredicates.put(name, predicateClass);
 			}
 
