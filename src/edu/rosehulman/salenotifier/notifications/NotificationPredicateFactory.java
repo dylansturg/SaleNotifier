@@ -20,7 +20,7 @@ public class NotificationPredicateFactory {
 		predicates.add(new NotificationPredicate("Price Above", "PriceAbove"));
 	}
 
-	private static Map<String, INotificationPredicate> cachedPredicates = new HashMap<String, INotificationPredicate>();
+	private static Map<String, Class<?>> cachedPredicates = new HashMap<String, Class<?>>();
 
 	public static List<NotificationPredicate> getAvailablePredicates() {
 		return predicates;
@@ -28,26 +28,33 @@ public class NotificationPredicateFactory {
 
 	public static INotificationPredicate resolvePredicate(String name) {
 		if (cachedPredicates == null) {
-			cachedPredicates = new HashMap<String, INotificationPredicate>();
+			cachedPredicates = new HashMap<String, Class<?>>();
 		}
 
 		name = name.toLowerCase(Locale.US);
+		Class<?> predicateClass = null;
 		if (cachedPredicates.containsKey(name)) {
-			return cachedPredicates.get(name);
+			predicateClass = cachedPredicates.get(name);
 		}
 
 		INotificationPredicate instance = null;
 		try {
-			// All Class names are English (who codes in Spanish?)
-			String factoryType = name.substring(0, 1).toUpperCase(Locale.US)
-					+ name.substring(1);
-			Class<?> clazz = Class
-					.forName("edu.rosehulman.salenotifier.notifications"
-							+ factoryType);
-			Constructor<?> ctor = clazz.getConstructor();
+			if (predicateClass == null) {
+
+				// All Class names are English (who codes in Spanish?)
+				String factoryType = name.substring(0, 1)
+						.toUpperCase(Locale.US) + name.substring(1);
+
+				predicateClass = Class
+						.forName("edu.rosehulman.salenotifier.notifications"
+								+ factoryType);
+				cachedPredicates.put(name, predicateClass);
+			}
+
+			Constructor<?> ctor = predicateClass.getConstructor();
 			Object object = ctor.newInstance(new Object[] {});
 			instance = (INotificationPredicate) object;
-			cachedPredicates.put(name, instance);
+
 		} catch (Exception reflectFailure) {
 			Log.d(TrackedItemsActivity.LOG_TAG,
 					"SettingFactory creating Setting<?> failed due to missing class for type: "

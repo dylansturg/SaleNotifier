@@ -6,6 +6,7 @@ import edu.rosehulman.salenotifier.R;
 import edu.rosehulman.salenotifier.models.Item;
 import edu.rosehulman.salenotifier.models.NotificationPredicate;
 import edu.rosehulman.salenotifier.notifications.NotificationLauncher;
+import edu.rosehulman.salenotifier.service.SaleNotifierWakefulReceiver;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -38,6 +39,9 @@ public class TrackedItemsActivity extends StorageActivity {
 		listView.setAdapter(listAdapter);
 
 		registerForContextMenu(listView);
+
+		// Doesn't create a new alarm if it is already set
+		new SaleNotifierWakefulReceiver().setupRegularAlarm(this);
 	}
 	
 	@Override
@@ -77,7 +81,9 @@ public class TrackedItemsActivity extends StorageActivity {
 		case R.id.context_tracked_delete:
 			confirmDeletion(info.id, info.position);
 			return true;
-
+		case R.id.context_tracked_detailed:
+			launchDetailedItem(info.id);
+			return true;
 		default:
 			return super.onContextItemSelected(item);
 		}
@@ -112,6 +118,14 @@ public class TrackedItemsActivity extends StorageActivity {
 		Intent itemSettings = new Intent(this, ItemSettingsActivity.class);
 		itemSettings.putExtra(ItemSettingsActivity.KEY_ITEM_ID, id);
 		startActivity(itemSettings);
+	}
+
+	private void launchDetailedItem(long id) {
+		Intent itemDatabaseDetails = new Intent(this,
+				ItemDatabaseContentActivity.class);
+		itemDatabaseDetails.putExtra(ItemDatabaseContentActivity.KEY_ITEM_ID,
+				id);
+		startActivity(itemDatabaseDetails);
 	}
 
 	private void launchSettings() {

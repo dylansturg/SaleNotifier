@@ -110,6 +110,10 @@ public class SearchResultsActivity extends StorageActivity {
 				case R.id.action_search_results_track:
 					trackItems(getItems(mSelected));
 					mode.finish();
+					
+					Intent result = new Intent();
+					result.putExtra(ItemSearchActivity.KEY_SEARCH_FINISHED, true);
+					setResult(RESULT_OK, result);
 					finish();
 					return true;
 				case R.id.action_search_results_find:

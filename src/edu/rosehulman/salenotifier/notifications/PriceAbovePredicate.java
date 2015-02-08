@@ -6,18 +6,18 @@ import android.content.Context;
 import edu.rosehulman.salenotifier.models.Item;
 import edu.rosehulman.salenotifier.models.ItemPrice;
 
-public class PriceBelowPredicate implements INotificationPredicate {
+public class PriceAbovePredicate implements INotificationPredicate {
 
-	private ItemPrice satisfyingPrice;
+	private ItemPrice satisfyItemPrice;
 
-	public PriceBelowPredicate() {
+	public PriceAbovePredicate() {
 	}
 
 	@Override
 	public boolean evaluate(Item item, double threshold) {
 		if (item == null) {
 			throw new IllegalArgumentException(
-					"Attempt to evaluate PriceBelowPredicate on null Item");
+					"Attempt to evaluate PriceAbovePredicate on null Item");
 		}
 
 		List<ItemPrice> currentPrices = item.getCurrentPrices();
@@ -26,8 +26,8 @@ public class PriceBelowPredicate implements INotificationPredicate {
 		}
 
 		for (ItemPrice itemPrice : currentPrices) {
-			if (itemPrice.getPrice() < threshold) {
-				satisfyingPrice = itemPrice;
+			if (itemPrice.getPrice() > threshold) {
+				satisfyItemPrice = itemPrice;
 				return true;
 			}
 		}
@@ -38,9 +38,9 @@ public class PriceBelowPredicate implements INotificationPredicate {
 	@Override
 	public String getNotificationMessage(Context context, Item item,
 			double threshold) {
-		// TODO Improve message
-		return "Item " + item.getDisplayName() + " price has fallen to "
-				+ satisfyingPrice.getPrice();
+		// TODO Auto-generated method stub
+		String format = "Item (%s) is available for %f from %s";
+		return String.format(format, item.getDisplayName(),
+				satisfyItemPrice.getPrice(), satisfyItemPrice.getSellerName());
 	}
-
 }
