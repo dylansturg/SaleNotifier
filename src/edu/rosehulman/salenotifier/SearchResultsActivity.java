@@ -203,6 +203,7 @@ public class SearchResultsActivity extends StorageActivity implements
 				searchTask.cancel(true);
 			}
 		}
+		super.onBackPressed();
 	}
 
 	@Override
