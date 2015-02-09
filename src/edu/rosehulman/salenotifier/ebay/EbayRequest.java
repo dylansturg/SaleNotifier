@@ -200,6 +200,7 @@ public class EbayRequest {
 
 		appendSearchCriteria(encodedRequest);
 		appendPaginationCriteria(encodedRequest);
+		appendLocalSearchParameters(encodedRequest);
 
 		return body.toString();
 	}
@@ -326,14 +327,15 @@ public class EbayRequest {
 
 			JSONObject localSearchFilter = new JSONObject();
 			localSearchFilter.put("name", "MaxDistance");
-			localSearchFilter.put("value", Double.toString(searchDistance));
+			localSearchFilter.put("value",
+					Integer.toString((int) searchDistance));
 
 			request.put("buyerPostalCode", postalCode);
 			JSONArray itemFilters = request.has("itemFilter") ? request
 					.getJSONArray("itemFilter") : new JSONArray();
 
 			itemFilters.put(localSearchFilter);
-			request.append("itemFilter", itemFilters);
+			request.put("itemFilter", itemFilters);
 		}
 	}
 
