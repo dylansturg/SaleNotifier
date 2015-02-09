@@ -1,11 +1,9 @@
 package edu.rosehulman.salenotifier.service;
 
-import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 import java.util.List;
 
 import edu.rosehulman.salenotifier.IItemSourceAdapter;
-import edu.rosehulman.salenotifier.TrackedItemsActivity;
 import edu.rosehulman.salenotifier.db.Enumerable;
 import edu.rosehulman.salenotifier.db.SQLiteAdapter;
 import edu.rosehulman.salenotifier.db.SaleNotifierSQLHelper;
@@ -15,7 +13,6 @@ import edu.rosehulman.salenotifier.settings.Setting;
 import edu.rosehulman.salenotifier.settings.SettingsManager;
 import android.app.IntentService;
 import android.content.Intent;
-import android.util.Log;
 
 public class DeletePricesBackgroundService extends IntentService {
 	protected static final int DEFAULT_DELETE_AFTER = 30;
@@ -59,12 +56,15 @@ public class DeletePricesBackgroundService extends IntentService {
 
 			// TODO Prevent inconsistency errors from "checked out" ItemPrice
 			// collections
-			for (ItemPrice itemPrice : itemPrices) {
-				if (itemPrice.getDate().before(expirationBeforeDate)) {
-					dataSource.deleteItemPrice(itemPrice.getId());
+			if (itemPrices != null) {
+				for (ItemPrice itemPrice : itemPrices) {
+					if (itemPrice.getDate().before(expirationBeforeDate)) {
+						dataSource.deleteItemPrice(itemPrice.getId());
+					}
 				}
 			}
 		}
+
 		stopSelf();
 	}
 }

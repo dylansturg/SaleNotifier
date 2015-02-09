@@ -21,6 +21,7 @@ import edu.rosehulman.salenotifier.models.Seller;
 
 public class EbayPricingSource implements IPricingSource,
 		ISearchEbayIncrementalResultNotifier {
+	protected static final String SOURCE_NAME = "EBAY";
 	private static final String EBAY_SELLER_NAME = "eBay";
 
 	private ISearchEbayIncrementalResultListener mResultListener;
@@ -199,5 +200,10 @@ public class EbayPricingSource implements IPricingSource,
 					.publishPartialResults(consolidatedPartialResult);
 		}
 		return false;
+	}
+
+	@Override
+	public String getSourceName() {
+		return SOURCE_NAME;
 	}
 }

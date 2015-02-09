@@ -265,7 +265,7 @@ public class EbayRequest {
 		}
 
 		int length = productCode.length();
-		boolean containsAlpha = productCode.matches("[0-9]+");
+		boolean containsAlpha = !productCode.matches("[0-9]+");
 
 		if (containsAlpha) {
 			// Hell if I know what it is...
