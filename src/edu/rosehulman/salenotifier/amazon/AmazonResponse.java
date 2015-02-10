@@ -251,9 +251,11 @@ public class AmazonResponse {
 			}
 			parser.require(XmlPullParser.END_TAG, NS, container);
 
-			if (currency.equalsIgnoreCase("USD")) {
+			if (currency == null || currency.equalsIgnoreCase("USD")) {
 				return price;
 			}
+			// We're not likely to get a currency other than USD (because we are
+			// only searching from US atm), so ignore them
 			return -1;
 		}
 
