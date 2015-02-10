@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.rosehulman.salenotifier.R;
+import edu.rosehulman.salenotifier.amazon.SearchAmazonItemsTask;
+import edu.rosehulman.salenotifier.amazon.SearchAmazonItemsTask.ISearchAmazonCallback;
 import edu.rosehulman.salenotifier.db.SQLiteAdapter;
 import edu.rosehulman.salenotifier.db.SaleNotifierSQLHelper;
 import edu.rosehulman.salenotifier.ebay.SearchEbayItemsTask;
@@ -25,7 +27,8 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 public class SearchResultsActivity extends StorageActivity implements
-		ISearchEbayCallback, ISearchEbayIncrementalResultListener {
+		ISearchEbayCallback, ISearchEbayIncrementalResultListener,
+		ISearchAmazonCallback {
 
 	public static final String KEY_SEARCH_ITEM = "KEY_SEARCH_ITEM";
 
@@ -62,14 +65,10 @@ public class SearchResultsActivity extends StorageActivity implements
 		ebaySearch.execute(mSearched);
 		mSearchTasks.add(ebaySearch);
 
-		findViewById(R.id.search_results_quit).setOnClickListener(
-				new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						// task.cancel(true);
-						// onResultsLoaded(results);
-					}
-				});
+		SearchAmazonItemsTask amazonSearch = new SearchAmazonItemsTask(this,
+				this);
+		amazonSearch.execute(mSearched);
+		mSearchTasks.add(amazonSearch);
 
 	}
 
