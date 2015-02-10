@@ -33,9 +33,9 @@ public class AmazonRequest {
 		mSearchItem = query;
 	}
 
-	public List<Item> performQuery() {
+	public List<AmazonItem> performQuery() {
 
-		List<Item> searchResults = new ArrayList<Item>();
+		List<AmazonItem> searchResults = new ArrayList<AmazonItem>();
 		try {
 			URI request = buildRequestUri();
 
@@ -51,18 +51,15 @@ public class AmazonRequest {
 			AmazonResponse amazonResponse = new AmazonResponse(responseData,
 					getOperation());
 			List<AmazonItem> results = amazonResponse.getParsedResults();
-			List<Item> consolidatedResults = consolidateResults(results);
-			searchResults.addAll(consolidatedResults);
+			if (results != null) {
+				searchResults.addAll(results);
+			}
 
 		} catch (Exception e) {
 			Log.e(TrackedItemsActivity.LOG_TAG, "Querying Amazon failed", e);
 		}
 
 		return searchResults;
-	}
-
-	private List<Item> consolidateResults(List<AmazonItem> items) {
-		return null;
 	}
 
 	private URI buildRequestUri() throws URISyntaxException {
