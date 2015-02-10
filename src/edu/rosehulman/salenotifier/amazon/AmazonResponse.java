@@ -137,6 +137,13 @@ public class AmazonResponse {
 							readImageUrl(parser, "LargeImage"));
 				} else if (name.equals("ItemAttributes")) {
 					readItemAttributes(parser, item);
+				} else if (name.equals("OfferSummary")) {
+					double price = readOfferSummary(parser);
+					if (price > 0) {
+						if (item.price > price || item.price <= 0) {
+							item.price = price;
+						}
+					}
 				} else {
 					skip(parser);
 				}
@@ -159,9 +166,11 @@ public class AmazonResponse {
 				String name = parser.getName();
 				// Starts by looking for the entry tag
 				if (name.equals("ListPrice")) {
-					double price = readPrice(parser);
+					double price = readPrice(parser, "ListPrice");
 					if (price > 0) {
-						item.price = price;
+						if (item.price > price || item.price <= 0) {
+							item.price = price;
+						}
 					}
 				} else if (name.equals("EANList")) {
 					item.EANs.addAll(readProductCodeList(parser, "EANList"));
@@ -202,9 +211,9 @@ public class AmazonResponse {
 			return productCodes;
 		}
 
-		private double readPrice(XmlPullParser parser)
+		private double readPrice(XmlPullParser parser, String container)
 				throws XmlPullParserException, IOException {
-			parser.require(XmlPullParser.START_TAG, NS, "ListPrice");
+			parser.require(XmlPullParser.START_TAG, NS, container);
 
 			double price = -1;
 			String currency = null;
@@ -240,7 +249,7 @@ public class AmazonResponse {
 					skip(parser);
 				}
 			}
-			parser.require(XmlPullParser.END_TAG, NS, "ListPrice");
+			parser.require(XmlPullParser.END_TAG, NS, container);
 
 			if (currency.equalsIgnoreCase("USD")) {
 				return price;
@@ -265,6 +274,26 @@ public class AmazonResponse {
 				}
 			}
 			parser.require(XmlPullParser.END_TAG, NS, imageSize);
+			return result;
+		}
+
+		private double readOfferSummary(XmlPullParser parser)
+				throws XmlPullParserException, IOException {
+			parser.require(XmlPullParser.START_TAG, NS, "OfferSummary");
+			double result = -1;
+			while (parser.next() != XmlPullParser.END_TAG) {
+				if (parser.getEventType() != XmlPullParser.START_TAG) {
+					continue;
+				}
+				String name = parser.getName();
+				// Starts by looking for the entry tag
+				if (name.equals("LowestNewPrice")) {
+					result = readPrice(parser, "LowestNewPrice");
+				} else {
+					skip(parser);
+				}
+			}
+			parser.require(XmlPullParser.END_TAG, NS, "OfferSummary");
 			return result;
 		}
 

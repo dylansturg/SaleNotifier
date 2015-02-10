@@ -149,7 +149,7 @@ public class AmazonRequest {
 	private void appendDefaultParams(Map<String, String> params) {
 		params.put("SearchIndex", "All");
 		params.put("Availability", "Available");
-		params.put("ResponseGroup", "ItemAttributes,Images");
+		params.put("ResponseGroup", "ItemAttributes,Images,OfferSummary");
 		params.put("ItemPage", Integer.toString(mRequestCount));
 	}
 }
