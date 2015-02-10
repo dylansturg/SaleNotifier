@@ -9,6 +9,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver.OnDrawListener;
 import android.view.ViewTreeObserver.OnPreDrawListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -44,24 +45,23 @@ public class TrackedItemsListAdapter extends ArrayAdapter<Item> {
 		// TODO Implement price display
 		subtitle.setText(item.getProductCode());
 
-		if (item.getImageUrl() != null) {
-			image.getViewTreeObserver().addOnPreDrawListener(
-					new OnPreDrawListener() {
-						@Override
-						public boolean onPreDraw() {
-							image.getViewTreeObserver()
-									.removeOnPreDrawListener(this);
-							int width = image.getMeasuredWidth();
-							int height = image.getMeasuredHeight();
-							new DownloadImageTask(image, getContext()
-									.getCacheDir(), width, height).execute(item
-									.getImageUrl());
-							return false;
-						}
-					});
-		} else {
-			image.setImageResource(R.drawable.ic_action_error);
-		}
+		image.getViewTreeObserver().addOnPreDrawListener(
+				new OnPreDrawListener() {
+					@Override
+					public boolean onPreDraw() {
+						image.getViewTreeObserver().removeOnPreDrawListener(
+								this);
+
+						int width = image.getMeasuredWidth();
+						int height = image.getMeasuredHeight();
+
+						new DownloadImageTask(image,
+								getContext().getCacheDir(), width, height)
+								.execute(item.getImageUrl());
+
+						return true;
+					}
+				});
 
 		return convertView;
 	}

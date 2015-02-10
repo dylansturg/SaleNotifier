@@ -251,7 +251,7 @@ public class AmazonResponse {
 			}
 			parser.require(XmlPullParser.END_TAG, NS, container);
 
-			if (currency.equalsIgnoreCase("USD")) {
+			if (currency == null || currency.equalsIgnoreCase("USD")) {
 				return price;
 			}
 			return -1;
