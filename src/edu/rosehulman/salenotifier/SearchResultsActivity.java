@@ -56,14 +56,14 @@ public class SearchResultsActivity extends StorageActivity implements
 
 		displaySearchToast();
 
-		// ItemSearchTask task = new ItemSearchTask(this, mSearched.getName());
-		// task.execute();
-		// mSearchTasks.add(task);
-		//
-		// SearchEbayItemsTask ebaySearch = new SearchEbayItemsTask(this, this,
-		// this);
-		// ebaySearch.execute(mSearched);
-		// mSearchTasks.add(ebaySearch);
+		ItemSearchTask task = new ItemSearchTask(this, mSearched.getName());
+		task.execute();
+		mSearchTasks.add(task);
+
+		SearchEbayItemsTask ebaySearch = new SearchEbayItemsTask(this, this,
+				this);
+		ebaySearch.execute(mSearched);
+		mSearchTasks.add(ebaySearch);
 
 		SearchAmazonItemsTask amazonSearch = new SearchAmazonItemsTask(this,
 				this);
