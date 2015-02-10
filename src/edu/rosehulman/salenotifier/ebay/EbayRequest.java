@@ -258,7 +258,7 @@ public class EbayRequest {
 		request.put("productId", productFilter);
 	}
 
-	private String estimateProductCodeType(String productCode) {
+	protected static String estimateProductCodeType(String productCode) {
 		if (productCode == null || productCode.isEmpty()) {
 			throw new IllegalArgumentException(
 					"EbayReqeust attemping to guess a product code type for a null/empty product code");
