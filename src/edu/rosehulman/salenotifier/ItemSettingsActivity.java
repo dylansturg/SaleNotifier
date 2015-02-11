@@ -54,8 +54,6 @@ public class ItemSettingsActivity extends SettingsActivity {
 		refreshSettings();
 
 		mHistoryDuration = (EditText) findViewById(R.id.item_settings_history_duration);
-		mDataSourcesContainer = (LinearLayout) findViewById(R.id.item_settings_sources_container);
-		mDataSourcesCheckBoxes = new ArrayList<CheckBox>();
 		mNotificationsSwitch = (Switch) findViewById(R.id.item_settings_notifications_switch);
 		mNotificationsContainer = (LinearLayout) findViewById(R.id.item_settings_notifications_container);
 		notificationViews = new ArrayList<ItemNotificationView>();
