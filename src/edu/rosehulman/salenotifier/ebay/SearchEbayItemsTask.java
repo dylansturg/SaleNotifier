@@ -5,6 +5,7 @@ import java.util.List;
 
 import edu.rosehulman.salenotifier.ApiException;
 import edu.rosehulman.salenotifier.IPricingSource;
+import edu.rosehulman.salenotifier.ItemSearchTask.IPartialSearchResultsCallback;
 import edu.rosehulman.salenotifier.TrackedItemsActivity;
 import edu.rosehulman.salenotifier.models.Item;
 import edu.rosehulman.salenotifier.models.ItemQueryConstraints;
@@ -64,22 +65,22 @@ public class SearchEbayItemsTask extends
 			return null;
 		}
 
-		IPricingSource ebayPriceSource = new EbayPricingSource(
-				new ISearchEbayIncrementalResultListener() {
-
-					@Override
-					public boolean publishPartialResults(List<Item> results) {
-						if (mPartialResultCallback != null) {
-							publishProgress(results);
-							return true;
-						}
-						return false;
-					}
-				}, mCancelToken);
+		IPricingSource ebayPriceSource = new EbayPricingSource();
 
 		try {
 			List<Item> searchResults = ebayPriceSource.search(mContext,
-					params[0]);
+					params[0], new IPartialSearchResultsCallback() {
+
+						@Override
+						public boolean onPartialResults(
+								List<Item> partialResults) {
+							if (mPartialResultCallback != null) {
+								publishProgress(partialResults);
+								return true;
+							}
+							return false;
+						}
+					});
 			if (searchResults == null) {
 				return new ArrayList<Item>();
 			}

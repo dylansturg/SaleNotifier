@@ -36,7 +36,7 @@ public class SearchAmazonItemsTask extends
 		IPricingSource source = new AmazonPricingSource();
 		List<Item> results = null;
 		try {
-			results = source.search(mContext, params[0]);
+			results = source.search(mContext, params[0], null);
 		} catch (ApiException e) {
 			Log.e(TrackedItemsActivity.LOG_TAG, "SearchAmazonItemTask failed",
 					e);

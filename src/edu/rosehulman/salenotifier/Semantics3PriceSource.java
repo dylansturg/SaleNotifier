@@ -14,11 +14,12 @@ import android.content.Context;
 
 import com.semantics3.api.Products;
 
+import edu.rosehulman.salenotifier.ItemSearchTask.IPartialSearchResultsCallback;
 import edu.rosehulman.salenotifier.models.Item;
 import edu.rosehulman.salenotifier.models.ItemPrice;
 import edu.rosehulman.salenotifier.models.ItemQueryConstraints;
 
-public class Semantics3PriceSource implements IPricingSource {
+public class Semantics3PriceSource extends IPricingSource {
 	protected static final String SOURCE_NAME = "SEMANTICS3";
 
 	private static final String APP_KEY = "SEM336FC88457A9E384669666327917180A7";
@@ -30,57 +31,10 @@ public class Semantics3PriceSource implements IPricingSource {
 		resetQuery();
 	}
 
-	/***
-	 * Reinitializes the query with our default settings. Should be called after
-	 * An api call to make sure filtering does not persist past that request.
-	 */
-	public void resetQuery() {
-		products = new Products(APP_KEY, SECRET);
-		products.productsField("activeproductsonly", 1);
-		products.productsField("fields", "name", "sitedetails", "upc", "url",
-				"price");
-		products.productsField("geo", "usa");
-	}
-
 	@Override
-	public List<ItemPrice> getPrices(Item item) throws ApiException {
-		if (!item.getProductCode().isEmpty())
-			return getPricesByUpc(item.getProductCode());
-		throw new ApiException(new Exception(
-				"Unhandled Condition getPrices w/ empty item UPC"));
-	}
-
-	/***
-	 * Returns a list of strings that are the names of the products found that
-	 * match the given search term
-	 * 
-	 * @param searchString
-	 * @return
-	 * @throws ApiException
-	 */
-	public List<String> searchForProduct(String searchString)
-			throws ApiException {
-		products.productsField("search", searchString);
-		try {
-			JSONObject productResults = products.getProducts();
-			List<String> l = getProductNamesFromResponse(productResults);
-			return l;
-		} catch (Exception e) {
-			throw new ApiException(e);
-		}
-	}
-
-	/***
-	 * Returns a list of Items that match the search string. The have their
-	 * prices field populated with the ItemPrice objects found.
-	 * 
-	 * @param searchString
-	 *            : term or phrase to search for
-	 * @return list of items
-	 * @throws ApiException
-	 *             when missing data in ApiResponse or API throws error
-	 */
-	public List<Item> searchForItems(String searchString) throws ApiException {
+	public List<Item> search(Context context, ItemQueryConstraints query,
+			IPartialSearchResultsCallback partialCallback) throws ApiException {
+		String searchString = query.getName();
 		products.productsField("search", searchString);
 		try {
 			List<Item> prodList = new ArrayList<Item>();
@@ -107,46 +61,11 @@ public class Semantics3PriceSource implements IPricingSource {
 		}
 	}
 
-	/***
-	 * Find a list of items by their UPC code
-	 * 
-	 * @param upc
-	 * @return
-	 */
-	public List<ItemPrice> getItemsByUpc(String upc) throws ApiException {
-		return getPrices(upc, false);
-	}
-
-	/***
-	 * Find a list of items by their UPC code
-	 * 
-	 * @param upc
-	 * @return
-	 */
-	public List<ItemPrice> getPricesByUpc(String upc) throws ApiException {
-		return getPrices(upc, false);
-	}
-
-	/**
-	 * Find prices for items with a given upper boundary on the price
-	 * 
-	 * @param upc
-	 *            : UPC code of the product
-	 * @param lessThan
-	 *            : price to use as an upper boundary
-	 * @return
-	 */
-	public List<ItemPrice> getPricesLessThan(String upc, double lessThan)
+	@Override
+	public List<ItemPrice> searchForPrices(Context context, Item item)
 			throws ApiException {
-		products.productsField("upc", upc).productsField("price", "lt",
-				lessThan);
-		return getPrices(upc, true);
-	}
-
-	protected List<ItemPrice> getPrices(String upc, boolean conditioned)
-			throws ApiException {
-		if (!conditioned)
-			products.productsField("upc", upc);
+		String upc = item.getProductCode();
+		products.productsField("upc", upc);
 		try {
 			JSONObject results = products.getProducts();
 			resetQuery();
@@ -155,6 +74,23 @@ public class Semantics3PriceSource implements IPricingSource {
 			resetQuery();
 			throw new ApiException(e);
 		}
+	}
+
+	@Override
+	public String getSourceName() {
+		return SOURCE_NAME;
+	}
+
+	/***
+	 * Reinitializes the query with our default settings. Should be called after
+	 * An api call to make sure filtering does not persist past that request.
+	 */
+	public void resetQuery() {
+		products = new Products(APP_KEY, SECRET);
+		products.productsField("activeproductsonly", 1);
+		products.productsField("fields", "name", "sitedetails", "upc", "url",
+				"price");
+		products.productsField("geo", "usa");
 	}
 
 	/***
@@ -196,51 +132,6 @@ public class Semantics3PriceSource implements IPricingSource {
 			throw new ApiException(e);
 		}
 		return new ArrayList<ItemPrice>(list);
-	}
-
-	/***
-	 * Parses the response into a string list of unique product names
-	 * 
-	 * @param response
-	 * @return
-	 * @throws ApiException
-	 */
-	private List<String> getProductNamesFromResponse(JSONObject response)
-			throws ApiException {
-		Set<String> list = new HashSet<String>();
-		try {
-			JSONArray results = response.getJSONArray("results");
-			for (int i = 0; i < results.length(); i++) {
-				JSONObject entry = results.getJSONObject(i);
-				try {
-					list.add(entry.getString("name"));
-				} catch (JSONException e) {
-					continue;
-				}
-			}
-		} catch (JSONException e) {
-			throw new ApiException(e);
-		}
-		return new ArrayList<String>(list);
-	}
-
-	@Override
-	public List<Item> search(Context context, ItemQueryConstraints query)
-			throws ApiException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<ItemPrice> searchForPrices(Context context, Item item)
-			throws ApiException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getSourceName() {
-		return SOURCE_NAME;
 	}
 
 }

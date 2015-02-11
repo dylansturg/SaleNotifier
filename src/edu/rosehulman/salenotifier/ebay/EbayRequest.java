@@ -59,24 +59,21 @@ public class EbayRequest {
 	private int mRequestCount = 0;
 
 	private ISearchEbayIncrementalResultNotifier mResultNotifier;
-	private CancellationSignal mCancelToken;
 
 	private static final int CacheSize = 8 * 1024 * 1024;
 	private LruCache<String, String> mProductRequestCache = new LruCache<String, String>(
 			CacheSize);
 
 	public EbayRequest(Context context, ItemQueryConstraints query) {
-		this(context, query, null, null);
+		this(context, query, null);
 	}
 
 	public EbayRequest(Context context, ItemQueryConstraints query,
-			ISearchEbayIncrementalResultNotifier resultCallback,
-			CancellationSignal cancelToken) {
+			ISearchEbayIncrementalResultNotifier resultCallback) {
 		APIKey = context.getString(R.string.EbayAPIKey);
 		mQuery = query;
 		mContext = context;
 		mResultNotifier = resultCallback;
-		mCancelToken = cancelToken;
 	}
 
 	protected String getOperationName() {
@@ -98,7 +95,7 @@ public class EbayRequest {
 		int totalSearchResults = 0;
 
 		while (totalSearchResults < DESIRED_RESULT_COUNT
-				&& mRequestCount < MAXIMUM_REQUEST_COUNT && !isCancelled()) {
+				&& mRequestCount < MAXIMUM_REQUEST_COUNT) {
 			try {
 
 				Uri serviceRequest = buildRequestUri();
@@ -127,7 +124,7 @@ public class EbayRequest {
 						responseContent, getOperationName(),
 						mProductRequestCache);
 				List<EbayItem> results = parsedResponse.getResponseItems();
-				if (results != null && !isCancelled()) {
+				if (results != null) {
 					totalSearchResults += results.size();
 					if (mResultNotifier != null) {
 						boolean resultsHandled = mResultNotifier
@@ -335,9 +332,5 @@ public class EbayRequest {
 			itemFilters.put(localSearchFilter);
 			request.append("itemFilter", itemFilters);
 		}
-	}
-
-	private boolean isCancelled() {
-		return mCancelToken != null && mCancelToken.isCanceled();
 	}
 }

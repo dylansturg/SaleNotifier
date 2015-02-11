@@ -99,8 +99,7 @@ public abstract class SettingsActivity extends StorageActivity {
 	}
 
 	private void presentDataSourceSettings(List<String> localVersion) {
-		String[] dataSources = getResources().getStringArray(
-				R.array.settings_data_sources_options);
+		String[] dataSources = PricingSourceFactory.AVAILABLE_PRICE_SOURCES;
 		for (final String dataSource : dataSources) {
 			CheckBox dataSourceCheckBox = new CheckBox(this);
 			dataSourceCheckBox.setText(dataSource);
@@ -119,7 +118,7 @@ public abstract class SettingsActivity extends StorageActivity {
 				if (preference != null) {
 					dataSourceCheckBox.setChecked(preference.getValue());
 				} else {
-					dataSourceCheckBox.setChecked(false);
+					dataSourceCheckBox.setChecked(true);
 				}
 			}
 		}

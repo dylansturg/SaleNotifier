@@ -12,6 +12,7 @@ import android.util.Log;
 import edu.rosehulman.salenotifier.ApiException;
 import edu.rosehulman.salenotifier.IPricingSource;
 import edu.rosehulman.salenotifier.TrackedItemsActivity;
+import edu.rosehulman.salenotifier.ItemSearchTask.IPartialSearchResultsCallback;
 import edu.rosehulman.salenotifier.db.Enumerable;
 import edu.rosehulman.salenotifier.db.Enumerable.IPredicate;
 import edu.rosehulman.salenotifier.models.Item;
@@ -19,7 +20,7 @@ import edu.rosehulman.salenotifier.models.ItemPrice;
 import edu.rosehulman.salenotifier.models.ItemQueryConstraints;
 import edu.rosehulman.salenotifier.models.Seller;
 
-public class AmazonPricingSource implements IPricingSource {
+public class AmazonPricingSource extends IPricingSource {
 	protected static final String AMAZON_SOURCE_NAME = "AMAZON";
 
 	private static final String[] PREFERRED_IMAGE_SIZES = { "Medium", "Small",
@@ -36,8 +37,8 @@ public class AmazonPricingSource implements IPricingSource {
 	}
 
 	@Override
-	public List<Item> search(Context context, ItemQueryConstraints query)
-			throws ApiException {
+	public List<Item> search(Context context, ItemQueryConstraints query,
+			IPartialSearchResultsCallback partialCallback) throws ApiException {
 		try {
 			AmazonRequest request = new AmazonRequest(query);
 			List<AmazonItem> results = request.performQuery();
@@ -52,7 +53,7 @@ public class AmazonPricingSource implements IPricingSource {
 	public List<ItemPrice> searchForPrices(Context context, Item item)
 			throws ApiException {
 		List<Item> searchResults = search(context, new ItemQueryConstraints(
-				item.getDisplayName(), item.getProductCode(), null, 0));
+				item.getDisplayName(), item.getProductCode(), null, 0), null);
 		if (searchResults.size() > 0) {
 			if (searchResults.size() > 1) {
 				Log.d(TrackedItemsActivity.LOG_TAG,
@@ -64,37 +65,6 @@ public class AmazonPricingSource implements IPricingSource {
 		}
 
 		return new ArrayList<ItemPrice>();
-	}
-
-	@Override
-	public List<Item> searchForItems(String searchString) throws ApiException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<ItemPrice> getPrices(Item item) throws ApiException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<ItemPrice> getItemsByUpc(String upc) throws ApiException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<ItemPrice> getPricesByUpc(String upc) throws ApiException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<ItemPrice> getPricesLessThan(String upc, double lessThan)
-			throws ApiException {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	private List<Item> consolidateSearchResults(List<AmazonItem> items) {

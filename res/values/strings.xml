@@ -78,5 +78,6 @@
     <string name="item_settings_remove_notification">Delete Notification</string>
     <string name="title_activity_item_database_content">ItemDatabaseContentActivity</string>
     <string name="no_results_found">Search yielded 0 results.  Go back to refine your search.</string>
+    <string name="no_results">No search results were found.  Try going back and changing your search.</string>
 
 </resources>

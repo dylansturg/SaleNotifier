@@ -76,7 +76,7 @@ public class ItemUpdateBackgroundService extends IntentService {
 			List<ItemPrice> prices = new ArrayList<ItemPrice>();
 			for (IPricingSource source : priceSources) {
 				try {
-					List<ItemPrice> foundPrices = source.getPrices(item);
+					List<ItemPrice> foundPrices = null;
 					if (foundPrices == null) {
 						foundPrices = source.searchForPrices(this, item);
 					}

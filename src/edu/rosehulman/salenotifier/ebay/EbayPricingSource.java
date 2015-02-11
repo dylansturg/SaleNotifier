@@ -10,6 +10,7 @@ import android.util.Log;
 import edu.rosehulman.salenotifier.ApiException;
 import edu.rosehulman.salenotifier.IPricingSource;
 import edu.rosehulman.salenotifier.TrackedItemsActivity;
+import edu.rosehulman.salenotifier.ItemSearchTask.IPartialSearchResultsCallback;
 import edu.rosehulman.salenotifier.db.Enumerable;
 import edu.rosehulman.salenotifier.db.Enumerable.IPredicate;
 import edu.rosehulman.salenotifier.ebay.SearchEbayItemsTask.ISearchEbayIncrementalResultListener;
@@ -19,57 +20,22 @@ import edu.rosehulman.salenotifier.models.ItemPrice;
 import edu.rosehulman.salenotifier.models.ItemQueryConstraints;
 import edu.rosehulman.salenotifier.models.Seller;
 
-public class EbayPricingSource implements IPricingSource,
-		ISearchEbayIncrementalResultNotifier {
+public class EbayPricingSource extends IPricingSource {
 	protected static final String SOURCE_NAME = "EBAY";
 	private static final String EBAY_SELLER_NAME = "eBay";
 
-	private ISearchEbayIncrementalResultListener mResultListener;
-	private CancellationSignal mCancelToken;
-
 	public EbayPricingSource() {
-		// TODO Auto-generated constructor stub
-	}
 
-	public EbayPricingSource(
-			ISearchEbayIncrementalResultListener resultCallback,
-			CancellationSignal cancelToken) {
-		mResultListener = resultCallback;
 	}
 
 	@Override
-	public List<Item> searchForItems(String searchString) throws ApiException {
-		// TODO Auto-generated method stub
-		return null;
+	public boolean allowsLocalSearches() {
+		return true;
 	}
 
 	@Override
-	public List<ItemPrice> getPrices(Item item) throws ApiException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<ItemPrice> getItemsByUpc(String upc) throws ApiException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<ItemPrice> getPricesByUpc(String upc) throws ApiException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<ItemPrice> getPricesLessThan(String upc, double lessThan)
-			throws ApiException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<Item> search(Context context, ItemQueryConstraints query)
+	public List<Item> search(Context context, ItemQueryConstraints query,
+			final IPartialSearchResultsCallback partialCallback)
 			throws ApiException {
 
 		if (query == null) {
@@ -77,8 +43,20 @@ public class EbayPricingSource implements IPricingSource,
 		}
 
 		try {
-			EbayRequest apiRequest = new EbayRequest(context, query, this,
-					mCancelToken);
+			EbayRequest apiRequest = new EbayRequest(context, query,
+					new ISearchEbayIncrementalResultNotifier() {
+
+						@Override
+						public boolean publishPartialResults(
+								List<EbayItem> results) {
+							if (partialCallback != null) {
+								List<Item> consolidatedPartialResult = consolidateEbayResponse(results);
+								return partialCallback
+										.onPartialResults(consolidatedPartialResult);
+							}
+							return false;
+						}
+					});
 			List<EbayItem> apiResult = apiRequest.evaluateRequest();
 			List<Item> results = consolidateEbayResponse(apiResult);
 			return results;
@@ -190,16 +168,6 @@ public class EbayPricingSource implements IPricingSource,
 				return element.getProductCode().equalsIgnoreCase(upc);
 			}
 		};
-	}
-
-	@Override
-	public boolean publishPartialResults(List<EbayItem> results) {
-		if (mResultListener != null) {
-			List<Item> consolidatedPartialResult = consolidateEbayResponse(results);
-			return mResultListener
-					.publishPartialResults(consolidatedPartialResult);
-		}
-		return false;
 	}
 
 	@Override
