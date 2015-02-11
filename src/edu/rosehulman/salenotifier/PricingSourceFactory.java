@@ -30,7 +30,13 @@ public class PricingSourceFactory {
 
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		Enumerable<Setting<Boolean>> datasourceSettings = (Enumerable) appSettings
-				.where(Setting.createNamePredicate(Setting.DATA_SOURCE_PREFIX));
+				.where(new IPredicate<Setting<?>>() {
+					@Override
+					public boolean match(Setting<?> element) {
+						return element.getName().contains(
+								Setting.DATA_SOURCE_PREFIX);
+					}
+				});
 
 		List<IPricingSource> sources = new ArrayList<IPricingSource>();
 		for (final String source : AVAILABLE_PRICE_SOURCES) {

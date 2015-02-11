@@ -4,9 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.rosehulman.salenotifier.amazon.AmazonPricingSource;
+import edu.rosehulman.salenotifier.db.Enumerable;
+import edu.rosehulman.salenotifier.db.Enumerable.IPredicate;
 import edu.rosehulman.salenotifier.ebay.EbayPricingSource;
 import edu.rosehulman.salenotifier.models.Item;
 import edu.rosehulman.salenotifier.models.ItemQueryConstraints;
+import edu.rosehulman.salenotifier.settings.Setting;
+import edu.rosehulman.salenotifier.settings.SettingsManager;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -57,6 +61,7 @@ public class ItemSearchTask extends
 		}
 
 		List<Item> results = new ArrayList<Item>();
+
 		List<IPricingSource> priceSources = PricingSourceFactory
 				.getValidPriceSources();
 		for (IPricingSource priceSource : priceSources) {
