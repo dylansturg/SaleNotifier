@@ -9,6 +9,8 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver.OnDrawListener;
+import android.view.ViewTreeObserver.OnPreDrawListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -18,7 +20,7 @@ public class TrackedItemsListAdapter extends ArrayAdapter<Item> {
 	public TrackedItemsListAdapter(Context context, List<Item> objects) {
 		super(context, R.layout.listview_tracked_item, objects);
 	}
-	
+
 	@Override
 	public long getItemId(int position) {
 		return getItem(position).getId();
@@ -26,7 +28,7 @@ public class TrackedItemsListAdapter extends ArrayAdapter<Item> {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		Item item = getItem(position);
+		final Item item = getItem(position);
 		if (convertView == null) {
 			convertView = LayoutInflater.from(getContext()).inflate(
 					R.layout.listview_tracked_item, null);
@@ -36,13 +38,30 @@ public class TrackedItemsListAdapter extends ArrayAdapter<Item> {
 				.findViewById(R.id.tracked_item_title);
 		TextView subtitle = (TextView) convertView
 				.findViewById(R.id.tracked_item_subtitle);
-		ImageView image = (ImageView) convertView
+		final ImageView image = (ImageView) convertView
 				.findViewById(R.id.tracked_item_image);
 
 		title.setText(item.getDisplayName());
 		// TODO Implement price display
 		subtitle.setText(item.getProductCode());
-		new DownloadImageTask(image, getContext().getCacheDir()).execute(item.getImageUrl());
+
+		image.getViewTreeObserver().addOnPreDrawListener(
+				new OnPreDrawListener() {
+					@Override
+					public boolean onPreDraw() {
+						image.getViewTreeObserver().removeOnPreDrawListener(
+								this);
+
+						int width = image.getMeasuredWidth();
+						int height = image.getMeasuredHeight();
+
+						new DownloadImageTask(image,
+								getContext().getCacheDir(), width, height)
+								.execute(item.getImageUrl());
+
+						return true;
+					}
+				});
 
 		return convertView;
 	}

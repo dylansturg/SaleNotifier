@@ -18,13 +18,31 @@ public class DownloadImageTask extends AsyncTask<URL, Void, Bitmap> {
 	private ImageView mTargetView;
 	private File mCacheDir;
 
+	private int mScaleToWidth;
+	private int mScaleToHeight;
+
 	public DownloadImageTask(ImageView target, File cacheDir) {
 		mTargetView = target;
 		mCacheDir = cacheDir;
 		target.setImageResource(R.drawable.loader);
+
+		// Don't like the defaults? Use the right constructor.
+		mScaleToHeight = 100;
+		mScaleToWidth = 100;
 	}
-	
-	private int getImageScale(int unscaledWidth, int unscaledHeight, int reqWidth, int reqHeight){
+
+	public DownloadImageTask(ImageView target, File cacheDir, int width,
+			int height) {
+		mTargetView = target;
+		mCacheDir = cacheDir;
+		target.setImageResource(R.drawable.loader);
+
+		mScaleToWidth = width;
+		mScaleToHeight = height;
+	}
+
+	private int getImageScale(int unscaledWidth, int unscaledHeight,
+			int reqWidth, int reqHeight) {
 		int inSampleSize = 1;
 		if (unscaledHeight > reqHeight || unscaledWidth > reqWidth) {
 
@@ -41,8 +59,8 @@ public class DownloadImageTask extends AsyncTask<URL, Void, Bitmap> {
 		}
 		return inSampleSize;
 	}
-	
-	private void prepStorageDir(){
+
+	private void prepStorageDir() {
 		File imagesDir = new File(mCacheDir + "/images/");
 		imagesDir.mkdir();
 	}
@@ -66,18 +84,18 @@ public class DownloadImageTask extends AsyncTask<URL, Void, Bitmap> {
 			tempImage = new File(mCacheDir.getPath() + "/images/"
 					+ DownloadId++);
 			tempImage.createNewFile();
-			BufferedOutputStream bImageWriter = new BufferedOutputStream(new FileOutputStream(tempImage));
+			BufferedOutputStream bImageWriter = new BufferedOutputStream(
+					new FileOutputStream(tempImage));
 
 			InputStream imageInStream = imageUrl.openStream();
 			final int bufferSize = 1024;
 			byte[] imageBuffer = new byte[bufferSize];
 			int readCount = 0;
-			while((readCount = imageInStream.read(imageBuffer, 0, bufferSize)) > 0){
+			while ((readCount = imageInStream.read(imageBuffer, 0, bufferSize)) > 0) {
 				bImageWriter.write(imageBuffer, 0, readCount);
 			}
 			imageInStream.close();
 			bImageWriter.close();
-			
 
 			InputStream in;
 			// Decode image size
@@ -87,29 +105,31 @@ public class DownloadImageTask extends AsyncTask<URL, Void, Bitmap> {
 			BitmapFactory.decodeStream(in, null, o);
 			in.close();
 
-			int reqHeight = 50;
-			int reqWidth = 50;
+			int reqHeight = mScaleToHeight;
+			int reqWidth = mScaleToWidth;
 
 			int unscaledWidth = o.outWidth;
 			int unscaledHeight = o.outHeight;
-			int inSampleSize = getImageScale(unscaledWidth, unscaledHeight, reqWidth, reqHeight);
-			
+			int inSampleSize = getImageScale(unscaledWidth, unscaledHeight,
+					reqWidth, reqHeight);
+
 			// Decode with inSampleSize
 			BitmapFactory.Options o2 = new BitmapFactory.Options();
 			o2.inSampleSize = inSampleSize;
 			in = new FileInputStream(tempImage);
 			Bitmap bitmap = BitmapFactory.decodeStream(in, null, o2);
 			in.close();
-			
+
 			return bitmap;
 
 		} catch (Exception e) {
 			Log.d(TrackedItemsActivity.LOG_TAG,
 					"Failed to load image into view", e);
 		} finally {
-			if(tempImage != null){
+			if (tempImage != null) {
 				boolean didDelete = tempImage.delete();
-				Log.d(TrackedItemsActivity.LOG_TAG, "Cache file removed? " + didDelete);
+				Log.d(TrackedItemsActivity.LOG_TAG, "Cache file removed? "
+						+ didDelete);
 			}
 		}
 		return result;

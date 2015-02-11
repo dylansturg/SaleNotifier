@@ -7,16 +7,16 @@
     <ImageView
         android:id="@+id/tracked_item_image"
         android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_height="0dp"
+        android:layout_alignBottom="@+id/tracked_item_subtitle"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="5dp"
+        android:layout_alignTop="@+id/tracked_item_title"
         android:contentDescription="@string/tracked_image_content_desc"
         android:scaleType="fitCenter"
         android:src="@drawable/ic_action_settings" />
 
     <TextView
-        android:id="@+id/tracked_item_title"
+        android:id="@id/tracked_item_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -26,7 +26,7 @@
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <TextView
-        android:id="@+id/tracked_item_subtitle"
+        android:id="@id/tracked_item_subtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/tracked_item_title"
