@@ -7,6 +7,7 @@ import java.util.Map;
 
 import edu.rosehulman.salenotifier.ApiException;
 import edu.rosehulman.salenotifier.IPricingSource;
+import edu.rosehulman.salenotifier.PricingSourceFactory;
 import edu.rosehulman.salenotifier.Semantics3PriceSource;
 import edu.rosehulman.salenotifier.TrackedItemsActivity;
 import edu.rosehulman.salenotifier.amazon.AmazonPricingSource;
@@ -28,15 +29,12 @@ import android.util.Log;
 
 public class ItemUpdateBackgroundService extends IntentService {
 
-	ArrayList<IPricingSource> priceSources;
+	List<IPricingSource> priceSources;
 
 	public ItemUpdateBackgroundService() {
 		super("ItemUpdateBackgroundService");
-		priceSources = new ArrayList<IPricingSource>();
-		priceSources.add(new Semantics3PriceSource());
-		// priceSources.add(new EbayPricingSource());
-		priceSources.add(new AmazonPricingSource());
-		// TODO: add more sources here
+
+		priceSources = PricingSourceFactory.getValidPriceSources();
 	}
 
 	@Override
