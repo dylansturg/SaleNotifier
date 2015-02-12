@@ -73,10 +73,10 @@
             android:label="@string/title_activity_item_database_content" >
         </activity>
 
-        <receiver android:name="edu.rosehulman.salenotifier.service.SaleNotifierWakefulReceiver" >
+        <receiver android:name=".service.SaleNotifierWakefulReceiver" >
         </receiver>
         <receiver
-            android:name="edu.rosehulman.salenotifier.service.SaleNotifierBootReceiver"
+            android:name=".service.SaleNotifierBootReceiver"
             android:enabled="false" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" >
@@ -84,8 +84,13 @@
             </intent-filter>
         </receiver>
 
-        <service android:name="edu.rosehulman.salenotifier.service.ItemUpdateBackgroundService" />
-        <service android:name="edu.rosehulman.salenotifier.service.DeletePricesBackgroundService" />
+        <service android:name=".service.ItemUpdateBackgroundService" />
+        <service android:name=".service.DeletePricesBackgroundService" />
+
+        <activity
+            android:name=".ItemCurrentActivity"
+            android:label="@string/title_activity_item_current" >
+        </activity>
     </application>
 
 </manifest>

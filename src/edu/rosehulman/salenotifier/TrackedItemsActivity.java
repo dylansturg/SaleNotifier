@@ -100,6 +100,7 @@ public class TrackedItemsActivity extends StorageActivity {
 				.getMenuInfo();
 		switch (item.getItemId()) {
 		case R.id.context_tracked_current:
+			launchItemCurrent(info.id);
 			return true;
 		case R.id.context_tracked_history:
 			return true;
@@ -140,6 +141,12 @@ public class TrackedItemsActivity extends StorageActivity {
 		default:
 			return super.onOptionsItemSelected(item);
 		}
+	}
+
+	private void launchItemCurrent(long id) {
+		Intent itemCurrent = new Intent(this, ItemCurrentActivity.class);
+		itemCurrent.putExtra(ItemCurrentActivity.KEY_ITEM_ID, id);
+		startActivity(itemCurrent);
 	}
 
 	private void launchItemSettings(long id) {
