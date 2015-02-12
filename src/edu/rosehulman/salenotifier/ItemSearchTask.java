@@ -3,15 +3,8 @@ package edu.rosehulman.salenotifier;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.rosehulman.salenotifier.amazon.AmazonPricingSource;
-import edu.rosehulman.salenotifier.db.Enumerable;
-import edu.rosehulman.salenotifier.db.Enumerable.IPredicate;
-import edu.rosehulman.salenotifier.ebay.EbayPricingSource;
 import edu.rosehulman.salenotifier.models.Item;
 import edu.rosehulman.salenotifier.models.ItemQueryConstraints;
-import edu.rosehulman.salenotifier.settings.Setting;
-import edu.rosehulman.salenotifier.settings.SettingsManager;
-
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -116,7 +109,7 @@ public class ItemSearchTask extends
 
 	@Override
 	protected void onPostExecute(List<Item> result) {
-		if (mResultsCallback != null && result != null) {
+		if (mResultsCallback != null) {
 			mResultsCallback.onResults(result);
 		}
 	}
