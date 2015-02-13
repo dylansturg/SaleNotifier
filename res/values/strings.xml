@@ -84,5 +84,7 @@
     <string name="best_available_price_format">Best Available Price: $%.2f</string>
     <string name="available_from_seller_format">Available from %s</string>
     <string name="item_current_content_desc">Tap to visit seller and view item</string>
+    <string name="price_format">$%.2f</string>
+    <string name="itemprice_seller_format">Seller: %s</string>
 
 </resources>
