@@ -8,7 +8,7 @@
         android:title="@string/context_menu_current"/>
     <item
         android:id="@+id/context_tracked_history"
-        android:icon="@drawable/ic_action_photo"
+        android:icon="@drawable/ic_action_charts"
         android:showAsAction="always"
         android:title="@string/context_menu_history"/>
     <item
