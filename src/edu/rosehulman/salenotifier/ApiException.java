@@ -5,6 +5,10 @@ import java.io.PrintWriter;
 
 public class ApiException extends Exception {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2255928442668991969L;
 	private Exception innerException;
 	
 	@Override

@@ -2,7 +2,6 @@ package edu.rosehulman.salenotifier;
 
 import java.util.List;
 
-import edu.rosehulman.salenotifier.models.Item;
 import edu.rosehulman.salenotifier.models.ItemPrice;
 import android.content.Context;
 import android.content.Intent;

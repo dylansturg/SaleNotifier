@@ -6,16 +6,9 @@ import java.util.List;
 import edu.rosehulman.salenotifier.R;
 import edu.rosehulman.salenotifier.ItemSearchTask.IPartialSearchResultsCallback;
 import edu.rosehulman.salenotifier.ItemSearchTask.ISearchResultsCallback;
-import edu.rosehulman.salenotifier.amazon.SearchAmazonItemsTask;
-import edu.rosehulman.salenotifier.amazon.SearchAmazonItemsTask.ISearchAmazonCallback;
 import edu.rosehulman.salenotifier.db.SQLiteAdapter;
-import edu.rosehulman.salenotifier.db.SaleNotifierSQLHelper;
-import edu.rosehulman.salenotifier.ebay.SearchEbayItemsTask;
-import edu.rosehulman.salenotifier.ebay.SearchEbayItemsTask.ISearchEbayCallback;
-import edu.rosehulman.salenotifier.ebay.SearchEbayItemsTask.ISearchEbayIncrementalResultListener;
 import edu.rosehulman.salenotifier.models.Item;
 import edu.rosehulman.salenotifier.models.ItemQueryConstraints;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -23,10 +16,8 @@ import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 public class SearchResultsActivity extends StorageActivity implements

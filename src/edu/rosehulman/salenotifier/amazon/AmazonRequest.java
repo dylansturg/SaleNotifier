@@ -15,15 +15,12 @@ import org.apache.http.util.EntityUtils;
 
 import android.util.Log;
 import edu.rosehulman.salenotifier.TrackedItemsActivity;
-import edu.rosehulman.salenotifier.models.Item;
 import edu.rosehulman.salenotifier.models.ItemQueryConstraints;
 
 public class AmazonRequest {
 	private enum RequestType {
 		Keywords, ProductCode
 	}
-
-	private static final int MAX_PAGES = 10;
 
 	private ItemQueryConstraints mSearchItem;
 	private RequestType mRequestType;

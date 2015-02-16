@@ -88,7 +88,7 @@
         <service android:name=".service.DeletePricesBackgroundService" />
 
         <activity
-            android:name=".ItemCurrentActivity"
+            android:name="edu.rosehulman.salenotifier.ItemCurrentActivity"
             android:label="@string/title_activity_item_current" >
         </activity>
     </application>

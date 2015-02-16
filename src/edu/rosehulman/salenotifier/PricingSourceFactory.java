@@ -3,7 +3,6 @@ package edu.rosehulman.salenotifier;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.rosehulman.salenotifier.ItemSearchTask.IPartialSearchResultsCallback;
 import edu.rosehulman.salenotifier.amazon.AmazonPricingSource;
 import edu.rosehulman.salenotifier.db.Enumerable;
 import edu.rosehulman.salenotifier.db.Enumerable.IPredicate;

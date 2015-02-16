@@ -46,6 +46,7 @@ public class ItemSearchTask extends
 		mPartialCallback = partialCallback;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected List<Item> doInBackground(ItemQueryConstraints... params) {
 		if (params == null || params.length == 0) {

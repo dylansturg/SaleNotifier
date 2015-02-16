@@ -1,9 +1,6 @@
 package edu.rosehulman.salenotifier;
 
 import java.util.ArrayList;
-import java.util.List;
-
-import edu.rosehulman.salenotifier.settings.Setting;
 import edu.rosehulman.salenotifier.settings.SettingsManager;
 
 import android.os.Bundle;
