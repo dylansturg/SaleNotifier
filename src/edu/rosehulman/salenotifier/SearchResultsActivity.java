@@ -123,6 +123,20 @@ public class SearchResultsActivity extends StorageActivity implements
 					finish();
 					return true;
 				case R.id.action_search_results_find:
+					List<Item> selectedItems = getItems(mSelected);
+					if (selectedItems != null & selectedItems.size() > 0) {
+						Item lastSelected = selectedItems.get(selectedItems
+								.size() - 1);
+
+						Intent showCurrent = new Intent(
+								SearchResultsActivity.this,
+								ItemCurrentActivity.class);
+						showCurrent.putExtra(ItemCurrentActivity.KEY_ITEM,
+								lastSelected);
+
+						startActivity(showCurrent);
+					}
+
 					mode.finish();
 					return true;
 

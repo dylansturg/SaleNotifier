@@ -19,6 +19,7 @@ import android.widget.TextView;
 public class ItemCurrentActivity extends StorageActivity {
 
 	public static final String KEY_ITEM_ID = "KEY_ITEM_ID";
+	public static final String KEY_ITEM = "KEY_ITEM";
 
 	private Item mItem;
 	private ItemPrice mBestPrice;
@@ -37,6 +38,8 @@ public class ItemCurrentActivity extends StorageActivity {
 		if (launchParams.hasExtra(KEY_ITEM_ID)) {
 			long id = launchParams.getLongExtra(KEY_ITEM_ID, -1);
 			mItem = itemSource.getItemById(id);
+		} else if (launchParams.hasExtra(KEY_ITEM)) {
+			mItem = launchParams.getParcelableExtra(KEY_ITEM);
 		}
 
 		if (mItem == null) {
