@@ -2,6 +2,7 @@ package edu.rosehulman.salenotifier.notifications;
 
 import java.util.HashMap;
 
+import edu.rosehulman.salenotifier.ItemCurrentActivity;
 import edu.rosehulman.salenotifier.ItemSearchActivity;
 import edu.rosehulman.salenotifier.R;
 import edu.rosehulman.salenotifier.models.Item;
@@ -27,7 +28,8 @@ public class NotificationLauncher {
 		        .setContentText(message);
 		
 		// TODO: change this to go straight to the items listings
-		Intent resultIntent = new Intent(ctx, ItemSearchActivity.class);
+		Intent resultIntent = new Intent(ctx, ItemCurrentActivity.class);
+		resultIntent.putExtra(ItemCurrentActivity.KEY_ITEM_ID, item.getId());
 
 		// The stack builder object will contain an artificial back stack for the
 		// started Activity.
@@ -46,25 +48,10 @@ public class NotificationLauncher {
 		            PendingIntent.FLAG_UPDATE_CURRENT
 		        );
 		mBuilder.setContentIntent(resultPendingIntent);
+		mBuilder.setAutoCancel(true);
 		NotificationManager mNotificationManager =
 		    (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
 		// mId allows you to update the notification later on.
-		
-//		NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
-//		String[] deals = new String[2];
-//		
-//		// TODO: unhard code these
-//		deals[0] = "$15.95 at Amazon.com";
-//		deals[1] = "$19.75 at Ebay.com";
-//		
-//		// Sets a title for the Inbox in expanded layout
-//		inboxStyle.setBigContentTitle("Tea Kettle");
-//		// Moves events into the expanded layout
-//		for (int i=0; i < deals.length; i++) {
-//			inboxStyle.addLine(deals[i]);
-//		}
-//		// Moves the expanded layout object into the notification object.
-//		mBuilder.setStyle(inboxStyle);
 		
 		int notifId = getOrCreateNotificationId(item.getDisplayName());
 		mNotificationManager.notify(notifId, mBuilder.build());

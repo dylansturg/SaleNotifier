@@ -8,7 +8,10 @@ import edu.rosehulman.salenotifier.R;
 import edu.rosehulman.salenotifier.models.Item;
 import edu.rosehulman.salenotifier.models.NotificationPredicate;
 import edu.rosehulman.salenotifier.notifications.NotificationLauncher;
+import edu.rosehulman.salenotifier.service.ItemUpdateBackgroundService;
 import edu.rosehulman.salenotifier.service.SaleNotifierWakefulReceiver;
+import edu.rosehulman.salenotifier.service.UpdateResultReceiver;
+import edu.rosehulman.salenotifier.service.UpdateResultReceiver.IOnItemsUpdated;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -16,12 +19,15 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.http.HttpResponseCache;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -42,12 +48,14 @@ public class TrackedItemsActivity extends StorageActivity implements
 
 	private ActionMode mActiveActionMode;
 	private TrackedItemsActionMode mActionModeCallback = new TrackedItemsActionMode();
-
+	private MenuItem mRefreshMenuItem;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.activity_tracked_items);
-
+		
 		listView = (ListView) findViewById(R.id.tracked_items_list);
 		List<Item> items = itemSource.getAllItems();
 		listAdapter = new TrackedItemsListAdapter(this, items);
@@ -110,6 +118,24 @@ public class TrackedItemsActivity extends StorageActivity implements
 			return true;
 		case R.id.action_settings:
 			launchSettings();
+			return true;
+		case R.id.action_refresh:
+			mRefreshMenuItem = item;
+			item.setEnabled(false);
+			setProgressBarIndeterminateVisibility(true);
+			UpdateResultReceiver updatedResultReceiver = new UpdateResultReceiver(new Handler());
+			updatedResultReceiver.setOnItemsUpdated(new IOnItemsUpdated() {
+				@Override
+				public void onUpdateFinished() {
+					setProgressBarIndeterminateVisibility(false);
+					mRefreshMenuItem.setEnabled(true);
+				}
+			});
+			
+			Intent launchUpdater = new Intent(this, ItemUpdateBackgroundService.class);
+			launchUpdater.putExtra(ItemUpdateBackgroundService.KEY_RESULT_RECEIVER, updatedResultReceiver);
+			startService(launchUpdater);
+			
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);

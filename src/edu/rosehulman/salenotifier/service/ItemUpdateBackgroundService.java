@@ -25,9 +25,12 @@ import edu.rosehulman.salenotifier.settings.Setting;
 import edu.rosehulman.salenotifier.settings.SettingsManager;
 import android.app.IntentService;
 import android.content.Intent;
+import android.os.Bundle;
+import android.os.ResultReceiver;
 import android.util.Log;
 
 public class ItemUpdateBackgroundService extends IntentService {
+	public static final String KEY_RESULT_RECEIVER = "RESULT_RECEIVER";
 
 	List<IPricingSource> priceSources;
 
@@ -119,6 +122,13 @@ public class ItemUpdateBackgroundService extends IntentService {
 		Intent cleanupPrices = new Intent(this,
 				DeletePricesBackgroundService.class);
 		startService(cleanupPrices);
+
+		ResultReceiver onResult = intent
+				.getParcelableExtra(KEY_RESULT_RECEIVER);
+		if (onResult != null) {
+			onResult.send(UpdateResultReceiver.ITEMS_UPDATED_RESULT,
+					new Bundle()); // no data needed
+		}
 
 		stopSelf();
 	}
