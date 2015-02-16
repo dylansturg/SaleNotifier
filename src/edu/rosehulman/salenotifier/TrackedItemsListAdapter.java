@@ -1,5 +1,6 @@
 package edu.rosehulman.salenotifier;
 
+import java.util.HashSet;
 import java.util.List;
 
 import edu.rosehulman.salenotifier.models.Item;
@@ -16,8 +17,22 @@ import android.widget.TextView;
 
 public class TrackedItemsListAdapter extends ArrayAdapter<Item> {
 
+	private HashSet<Long> mActivatedIds = new HashSet<Long>();
+
 	public TrackedItemsListAdapter(Context context, List<Item> objects) {
 		super(context, R.layout.listview_tracked_item, objects);
+	}
+
+	public void setActivated(boolean isActivated, long id) {
+		if (isActivated) {
+			mActivatedIds.add(id);
+		} else {
+			mActivatedIds.remove(id);
+		}
+	}
+
+	public void clearAllActivated() {
+		mActivatedIds.clear();
 	}
 
 	@Override
@@ -32,6 +47,8 @@ public class TrackedItemsListAdapter extends ArrayAdapter<Item> {
 			convertView = LayoutInflater.from(getContext()).inflate(
 					R.layout.listview_tracked_item, parent, false);
 		}
+
+		convertView.setActivated(mActivatedIds.contains(item.getId()));
 
 		TextView title = (TextView) convertView
 				.findViewById(R.id.tracked_item_title);

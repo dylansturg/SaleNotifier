@@ -42,13 +42,13 @@ public class TrackedItemsActivity extends StorageActivity implements
 	private ActionMode mActiveActionMode;
 	private TrackedItemsActionMode mActionModeCallback = new TrackedItemsActionMode();
 	private MenuItem mRefreshMenuItem;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.activity_tracked_items);
-		
+
 		listView = (ListView) findViewById(R.id.tracked_items_list);
 		List<Item> items = itemSource.getAllItems();
 		listAdapter = new TrackedItemsListAdapter(this, items);
@@ -116,7 +116,8 @@ public class TrackedItemsActivity extends StorageActivity implements
 			mRefreshMenuItem = item;
 			item.setEnabled(false);
 			setProgressBarIndeterminateVisibility(true);
-			UpdateResultReceiver updatedResultReceiver = new UpdateResultReceiver(new Handler());
+			UpdateResultReceiver updatedResultReceiver = new UpdateResultReceiver(
+					new Handler());
 			updatedResultReceiver.setOnItemsUpdated(new IOnItemsUpdated() {
 				@Override
 				public void onUpdateFinished() {
@@ -124,11 +125,14 @@ public class TrackedItemsActivity extends StorageActivity implements
 					mRefreshMenuItem.setEnabled(true);
 				}
 			});
-			
-			Intent launchUpdater = new Intent(this, ItemUpdateBackgroundService.class);
-			launchUpdater.putExtra(ItemUpdateBackgroundService.KEY_RESULT_RECEIVER, updatedResultReceiver);
+
+			Intent launchUpdater = new Intent(this,
+					ItemUpdateBackgroundService.class);
+			launchUpdater.putExtra(
+					ItemUpdateBackgroundService.KEY_RESULT_RECEIVER,
+					updatedResultReceiver);
 			startService(launchUpdater);
-			
+
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -239,14 +243,20 @@ public class TrackedItemsActivity extends StorageActivity implements
 
 		public void setSelected(View view, Item item) {
 			if (mSelectedView != null) {
+				if (mSelectedItem != null) {
+					listAdapter.setActivated(false, mSelectedItem.getId());
+				} else {
+					listAdapter.clearAllActivated();
+				}
 				mSelectedView.setActivated(false);
 			}
 
-			if (view == mSelectedView && mActiveActionMode != null) {
+			if (item == mSelectedItem && mActiveActionMode != null) {
 				mActiveActionMode.finish(); // exit when unselect
 				return;
 			}
 
+			listAdapter.setActivated(true, item.getId());
 			view.setActivated(true);
 			mSelectedView = view;
 			mSelectedItem = item;
@@ -296,6 +306,8 @@ public class TrackedItemsActivity extends StorageActivity implements
 				mSelectedView.setActivated(false);
 			}
 			mActiveActionMode = null;
+
+			listAdapter.clearAllActivated();
 		}
 	}
 }
