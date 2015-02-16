@@ -44,33 +44,40 @@
             android:name=".ItemSearchActivity"
             android:label="@string/title_activity_item_search"
             android:parentActivityName=".TrackedItemsActivity"
+            android:launchMode="singleTop"
             android:windowSoftInputMode="stateUnchanged" >
         </activity>
         <activity
             android:name=".SearchResultsActivity"
             android:label="@string/title_activity_search_results"
-            android:parentActivityName=".ItemSearchActivity" >
+            android:parentActivityName=".ItemSearchActivity"
+            android:launchMode="singleTop" >
         </activity>
         <activity
             android:name=".BarcodeScannerActivity"
             android:label="@string/title_activity_barcode_scanner"
-            android:parentActivityName=".ItemSearchActivity" >
+            android:parentActivityName=".ItemSearchActivity"
+            android:launchMode="singleTop" >
         </activity>
         <activity
             android:name=".AppSettingsActivity"
             android:label="@string/title_activity_app_settings"
             android:parentActivityName=".TrackedItemsActivity"
-            android:windowSoftInputMode="stateUnchanged" >
+            android:windowSoftInputMode="stateUnchanged"
+            android:launchMode="singleTop" >
         </activity>
         <activity
             android:name=".ItemSettingsActivity"
             android:label="@string/title_activity_item_settings"
             android:parentActivityName=".TrackedItemsActivity"
-            android:windowSoftInputMode="stateUnchanged" >
+            android:windowSoftInputMode="stateUnchanged"
+            android:launchMode="singleTop" >
         </activity>
         <activity
             android:name=".ItemDatabaseContentActivity"
-            android:label="@string/title_activity_item_database_content" >
+            android:label="@string/title_activity_item_database_content"
+            android:parentActivityName=".TrackedItemsActivity"
+            android:launchMode="singleTop" >
         </activity>
 
         <receiver android:name=".service.SaleNotifierWakefulReceiver" >
@@ -89,7 +96,9 @@
 
         <activity
             android:name="edu.rosehulman.salenotifier.ItemCurrentActivity"
-            android:label="@string/title_activity_item_current" >
+            android:label="@string/title_activity_item_current"
+            android:parentActivityName=".TrackedItemsActivity"
+            android:launchMode="singleTop" >
         </activity>
     </application>
 

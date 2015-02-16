@@ -10,6 +10,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import edu.rosehulman.salenotifier.ApiException;
 import edu.rosehulman.salenotifier.TrackedItemsActivity;
 
 import android.content.Context;
@@ -23,7 +24,7 @@ public class EbayResponse {
 	private LruCache<String, String> mRequestCache;
 
 	public EbayResponse(Context context, String jsonResponse,
-			String operationName, LruCache<String, String> requestCache) {
+			String operationName, LruCache<String, String> requestCache) throws ApiException {
 		mContext = context;
 		parseResponseJson(jsonResponse, operationName);
 		mRequestCache = requestCache;
@@ -32,12 +33,12 @@ public class EbayResponse {
 	}
 
 	public EbayResponse(Context context, String jsonResonse,
-			String operationName) {
+			String operationName) throws ApiException {
 		this(context, jsonResonse, operationName, null);
 	}
 
 	public EbayResponse(Context context, InputStream jsonStream,
-			String operationName) {
+			String operationName) throws ApiException {
 		mContext = context;
 		parseResponseJson(readStreamToEnd(jsonStream), operationName);
 		queryItemsStockDetails();
@@ -68,7 +69,7 @@ public class EbayResponse {
 		mResponseItems = usefulItems;
 	}
 
-	private void parseResponseJson(String json, String operation) {
+	private void parseResponseJson(String json, String operation) throws ApiException {
 		try {
 			JSONObject parsed = new JSONObject(json);
 			JSONObject response = parsed.getJSONArray(operation + "Response")
@@ -96,6 +97,7 @@ public class EbayResponse {
 		} catch (JSONException jsonFailure) {
 			Log.d(TrackedItemsActivity.LOG_TAG,
 					"Failed to parse JSON for EbayResponse");
+			throw new ApiException(jsonFailure);
 		}
 	}
 

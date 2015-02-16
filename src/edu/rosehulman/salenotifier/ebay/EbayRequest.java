@@ -21,6 +21,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONWriter;
 
+import edu.rosehulman.salenotifier.ApiException;
 import edu.rosehulman.salenotifier.R;
 import edu.rosehulman.salenotifier.TrackedItemsActivity;
 import edu.rosehulman.salenotifier.ebay.SearchEbayItemsTask.ISearchEbayIncrementalResultNotifier;
@@ -150,6 +151,8 @@ public class EbayRequest {
 			} catch (IOException networkException) {
 				Log.d(TrackedItemsActivity.LOG_TAG,
 						"IO Failed when executing HTTP POST for EbayProductDetailsRequest");
+			} catch(ApiException apiFailed){
+				return searchResults;
 			}
 		}
 
