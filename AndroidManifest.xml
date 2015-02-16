@@ -50,6 +50,7 @@
         <activity
             android:name=".SearchResultsActivity"
             android:label="@string/title_activity_search_results"
+            android:configChanges="orientation|screenSize"
             android:parentActivityName=".ItemSearchActivity"
             android:launchMode="singleTop" >
         </activity>
