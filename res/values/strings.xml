@@ -87,5 +87,7 @@
     <string name="item_current_content_desc">Tap to visit seller and view item</string>
     <string name="price_format">$%.2f</string>
     <string name="itemprice_seller_format">Seller: %s</string>
+    <string name="actionmode_search_results_current">View more information</string>
+    <string name="action_refresh">Check for prices</string>
 
 </resources>

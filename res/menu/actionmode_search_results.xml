@@ -3,13 +3,13 @@
 
     <item
         android:id="@+id/action_search_results_track"
-        android:icon="@drawable/ic_action_star"
+        android:icon="@drawable/ic_action_new"
         android:showAsAction="ifRoom"
         android:title="@string/actionmode_search_results_track"/>
     <item
         android:id="@+id/action_search_results_find"
-        android:icon="@drawable/ic_action_locate"
+        android:icon="@drawable/ic_action_about"
         android:showAsAction="ifRoom"
-        android:title="@string/actionmode_search_results_track"/>
+        android:title="@string/actionmode_search_results_current"/>
 
 </menu>

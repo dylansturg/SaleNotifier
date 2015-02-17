@@ -94,66 +94,60 @@ public class EbayRequest {
 		List<EbayItem> searchResults = new ArrayList<EbayItem>();
 
 		int totalSearchResults = 0;
+		try {
 
-		while (totalSearchResults < DESIRED_RESULT_COUNT
-				&& mRequestCount < MAXIMUM_REQUEST_COUNT) {
-			try {
+			Uri serviceRequest = buildRequestUri();
+			URI javaUri = new URI(serviceRequest.getScheme(),
+					serviceRequest.getAuthority(), serviceRequest.getPath(),
+					serviceRequest.getQuery(), serviceRequest.getFragment());
 
-				Uri serviceRequest = buildRequestUri();
-				URI javaUri = new URI(serviceRequest.getScheme(),
-						serviceRequest.getAuthority(),
-						serviceRequest.getPath(), serviceRequest.getQuery(),
-						serviceRequest.getFragment());
+			String postBody = createRequestBody();
 
-				String postBody = createRequestBody();
+			Log.d(TrackedItemsActivity.LOG_TAG,
+					String.format(
+							"Querying for eBay items, currently have %d results after %d requests.",
+							totalSearchResults, mRequestCount));
+			Log.d(TrackedItemsActivity.LOG_TAG,
+					"Endpoing: " + serviceRequest.toString());
 
-				Log.d(TrackedItemsActivity.LOG_TAG,
-						String.format(
-								"Querying for eBay items, currently have %d results after %d requests.",
-								totalSearchResults, mRequestCount));
-				Log.d(TrackedItemsActivity.LOG_TAG, "Endpoing: "
-						+ serviceRequest.toString());
+			HttpPost post = new HttpPost(javaUri);
+			post.setEntity(new StringEntity(postBody));
 
-				HttpPost post = new HttpPost(javaUri);
-				post.setEntity(new StringEntity(postBody));
+			HttpResponse response = client.execute(post);
+			String responseContent = EntityUtils.toString(response.getEntity(),
+					"UTF-8");
 
-				HttpResponse response = client.execute(post);
-				String responseContent = EntityUtils.toString(
-						response.getEntity(), "UTF-8");
-
-				EbayResponse parsedResponse = new EbayResponse(mContext,
-						responseContent, getOperationName(),
-						mProductRequestCache);
-				List<EbayItem> results = parsedResponse.getResponseItems();
-				if (results != null) {
-					totalSearchResults += results.size();
-					if (mResultNotifier != null) {
-						boolean resultsHandled = mResultNotifier
-								.publishPartialResults(results);
-						if (!resultsHandled) {
-							searchResults.addAll(results);
-						}
-					} else {
+			EbayResponse parsedResponse = new EbayResponse(mContext,
+					responseContent, getOperationName(), mProductRequestCache);
+			List<EbayItem> results = parsedResponse.getResponseItems();
+			if (results != null) {
+				totalSearchResults += results.size();
+				if (mResultNotifier != null) {
+					boolean resultsHandled = mResultNotifier
+							.publishPartialResults(results);
+					if (!resultsHandled) {
 						searchResults.addAll(results);
 					}
+				} else {
+					searchResults.addAll(results);
 				}
-				mRequestCount++;
-
-			} catch (URISyntaxException e) {
-				Log.d(TrackedItemsActivity.LOG_TAG,
-						"Failed to parse eBay Product Details URI");
-			} catch (UnsupportedEncodingException encodingException) {
-				Log.d(TrackedItemsActivity.LOG_TAG,
-						"Failed to encode POST XML data for EbayProductDetailsRequest");
-			} catch (ClientProtocolException httpException) {
-				Log.d(TrackedItemsActivity.LOG_TAG,
-						"Failed to execute HTTP POST for EbayProductDetailsRequest");
-			} catch (IOException networkException) {
-				Log.d(TrackedItemsActivity.LOG_TAG,
-						"IO Failed when executing HTTP POST for EbayProductDetailsRequest");
-			} catch(ApiException apiFailed){
-				return searchResults;
 			}
+			mRequestCount++;
+
+		} catch (URISyntaxException e) {
+			Log.d(TrackedItemsActivity.LOG_TAG,
+					"Failed to parse eBay Product Details URI");
+		} catch (UnsupportedEncodingException encodingException) {
+			Log.d(TrackedItemsActivity.LOG_TAG,
+					"Failed to encode POST XML data for EbayProductDetailsRequest");
+		} catch (ClientProtocolException httpException) {
+			Log.d(TrackedItemsActivity.LOG_TAG,
+					"Failed to execute HTTP POST for EbayProductDetailsRequest");
+		} catch (IOException networkException) {
+			Log.d(TrackedItemsActivity.LOG_TAG,
+					"IO Failed when executing HTTP POST for EbayProductDetailsRequest");
+		} catch (ApiException apiFailed) {
+			return searchResults;
 		}
 
 		int cacheHits = mProductRequestCache.hitCount();

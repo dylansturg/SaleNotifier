@@ -225,7 +225,9 @@ public class TrackedItemsActivity extends StorageActivity implements
 		Item selected = (Item) parent.getAdapter().getItem(position);
 		if (mActionModeCallback != null) {
 			mActionModeCallback.setSelected(view, selected);
-			mActiveActionMode = startActionMode(mActionModeCallback);
+			if (mActiveActionMode == null) {
+				mActiveActionMode = startActionMode(mActionModeCallback);
+			}
 		}
 
 		return true;
