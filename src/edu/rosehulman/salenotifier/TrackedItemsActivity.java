@@ -102,6 +102,10 @@ public class TrackedItemsActivity extends StorageActivity {
 		case R.id.context_tracked_current:
 			return true;
 		case R.id.context_tracked_history:
+			Intent historyIntent = new Intent(this, ItemHistoryActivity.class);
+			Log.d(LOG_TAG, "sending extra " + info.id);
+			historyIntent.putExtra(ItemHistoryActivity.KEY_ITEM_ID, info.id);
+			startActivity(historyIntent);
 			return true;
 		case R.id.context_tracked_options:
 			launchItemSettings(info.id);

@@ -282,7 +282,11 @@ public class ItemPrice implements IQueryable, Parcelable, Comparable<ItemPrice> 
 
 	@Override
 	public int compareTo(ItemPrice another) {
-		return Double.compare(getPrice(), another.getPrice());
+		int result = getDate().compareTo(another.getDate());
+		if(result == 0)
+			return Double.compare(getPrice(), another.getPrice());
+		else
+			return result;
 	}
 
 	@Override

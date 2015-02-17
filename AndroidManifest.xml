@@ -41,31 +41,30 @@
         </activity>
         <activity
             android:name=".ItemSearchActivity"
-            android:parentActivityName=".TrackedItemsActivity"
             android:label="@string/title_activity_item_search"
+            android:parentActivityName=".TrackedItemsActivity"
             android:windowSoftInputMode="stateUnchanged" >
         </activity>
         <activity
             android:name=".SearchResultsActivity"
-            android:parentActivityName=".ItemSearchActivity"
-            android:label="@string/title_activity_search_results" >
-            
+            android:label="@string/title_activity_search_results"
+            android:parentActivityName=".ItemSearchActivity" >
         </activity>
         <activity
             android:name=".BarcodeScannerActivity"
-            android:parentActivityName=".ItemSearchActivity"
-            android:label="@string/title_activity_barcode_scanner" >
+            android:label="@string/title_activity_barcode_scanner"
+            android:parentActivityName=".ItemSearchActivity" >
         </activity>
         <activity
             android:name=".AppSettingsActivity"
-            android:parentActivityName=".TrackedItemsActivity"
             android:label="@string/title_activity_app_settings"
+            android:parentActivityName=".TrackedItemsActivity"
             android:windowSoftInputMode="stateUnchanged" >
         </activity>
         <activity
             android:name=".ItemSettingsActivity"
-            android:parentActivityName=".TrackedItemsActivity"
             android:label="@string/title_activity_item_settings"
+            android:parentActivityName=".TrackedItemsActivity"
             android:windowSoftInputMode="stateUnchanged" >
         </activity>
         <activity
@@ -73,10 +72,10 @@
             android:label="@string/title_activity_item_database_content" >
         </activity>
 
-        <receiver android:name="edu.rosehulman.salenotifier.service.SaleNotifierWakefulReceiver" >
+        <receiver android:name=".service.SaleNotifierWakefulReceiver" >
         </receiver>
         <receiver
-            android:name="edu.rosehulman.salenotifier.service.SaleNotifierBootReceiver"
+            android:name=".service.SaleNotifierBootReceiver"
             android:enabled="false" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" >
@@ -84,8 +83,13 @@
             </intent-filter>
         </receiver>
 
-        <service android:name="edu.rosehulman.salenotifier.service.ItemUpdateBackgroundService" />
-        <service android:name="edu.rosehulman.salenotifier.service.DeletePricesBackgroundService" />
+        <service android:name=".service.ItemUpdateBackgroundService" />
+        <service android:name=".service.DeletePricesBackgroundService" />
+
+        <activity
+            android:name=".ItemHistoryActivity"
+            android:label="@string/title_activity_item_history" >
+        </activity>
     </application>
 
 </manifest>
