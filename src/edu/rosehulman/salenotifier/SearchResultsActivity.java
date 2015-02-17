@@ -18,7 +18,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.ListView;
-import android.widget.Toast;
 
 public class SearchResultsActivity extends StorageActivity implements
 		IPartialSearchResultsCallback, ISearchResultsCallback {
@@ -47,8 +46,6 @@ public class SearchResultsActivity extends StorageActivity implements
 
 		mItemStorage = new SQLiteAdapter();
 
-		displaySearchToast();
-
 		ItemSearchTask task = new ItemSearchTask(this, this, this);
 		task.execute(mSearched);
 		mSearchTasks.add(task);
@@ -63,21 +60,6 @@ public class SearchResultsActivity extends StorageActivity implements
 			for (AsyncTask<?, ?, ?> search : mSearchTasks) {
 				search.cancel(true);
 			}
-		}
-	}
-
-	private void displaySearchToast() {
-		if (mSearched == null) {
-			Toast.makeText(this, "Please provide something to search for!",
-					Toast.LENGTH_LONG).show();
-			finish();
-		} else {
-			Toast.makeText(
-					this,
-					"Searching for " + mSearched.getName() + "("
-							+ mSearched.getProductCode() + ") within "
-							+ mSearched.getSearchRadius() + " miles.",
-					Toast.LENGTH_LONG).show();
 		}
 	}
 

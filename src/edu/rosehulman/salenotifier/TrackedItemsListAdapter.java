@@ -1,9 +1,11 @@
 package edu.rosehulman.salenotifier;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
 import edu.rosehulman.salenotifier.models.Item;
+import edu.rosehulman.salenotifier.models.ItemPrice;
 
 import edu.rosehulman.salenotifier.R;
 import android.content.Context;
@@ -58,8 +60,15 @@ public class TrackedItemsListAdapter extends ArrayAdapter<Item> {
 				.findViewById(R.id.tracked_item_image);
 
 		title.setText(item.getDisplayName());
-		// TODO Implement price display
-		subtitle.setText(item.getProductCode());
+
+		List<ItemPrice> cPrices = item.getCurrentPrices();
+		if (cPrices != null && cPrices.size() > 0) {
+			Collections.sort(cPrices);
+			subtitle.setText(getContext().getString(R.string.price_format,
+					cPrices.get(0).getPrice()));
+		} else {
+			subtitle.setText(R.string.no_price_information);
+		}
 
 		image.getViewTreeObserver().addOnPreDrawListener(
 				new OnPreDrawListener() {

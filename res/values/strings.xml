@@ -89,5 +89,7 @@
     <string name="itemprice_seller_format">Seller: %s</string>
     <string name="actionmode_search_results_current">View more information</string>
     <string name="action_refresh">Check for prices</string>
+    <string name="no_price_information">No Price Information</string>
+    <string name="tracked_items_starter_hint">Start SAVING MONEY!</string>
 
 </resources>

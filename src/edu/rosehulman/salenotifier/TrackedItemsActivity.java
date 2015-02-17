@@ -16,6 +16,7 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.http.HttpResponseCache;
+import android.opengl.Visibility;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -54,6 +55,12 @@ public class TrackedItemsActivity extends StorageActivity implements
 		listAdapter = new TrackedItemsListAdapter(this, items);
 		listView.setAdapter(listAdapter);
 
+		if (items == null || items.size() == 0) {
+			findViewById(R.id.tracked_items_search).setVisibility(View.VISIBLE);
+		} else {
+			findViewById(R.id.tracked_items_search).setVisibility(View.GONE);
+		}
+
 		listView.setOnItemClickListener(this);
 		listView.setOnItemLongClickListener(this);
 
@@ -90,6 +97,12 @@ public class TrackedItemsActivity extends StorageActivity implements
 		List<Item> items = itemSource.getAllItems();
 		listAdapter = new TrackedItemsListAdapter(this, items);
 		listView.setAdapter(listAdapter);
+
+		if (items == null || items.size() == 0) {
+			findViewById(R.id.tracked_items_search).setVisibility(View.VISIBLE);
+		} else {
+			findViewById(R.id.tracked_items_search).setVisibility(View.GONE);
+		}
 	}
 
 	@Override
@@ -233,6 +246,10 @@ public class TrackedItemsActivity extends StorageActivity implements
 		return true;
 	}
 
+	public void startSearching(View sender) {
+		launchSearch();
+	}
+
 	private class TrackedItemsActionMode implements ActionMode.Callback {
 
 		private View mSelectedView;
@@ -283,8 +300,10 @@ public class TrackedItemsActivity extends StorageActivity implements
 				launchItemCurrent(mSelectedItem.getId());
 				break;
 			case R.id.context_tracked_history:
-				Intent historyIntent = new Intent(TrackedItemsActivity.this, ItemHistoryActivity.class);
-				historyIntent.putExtra(ItemHistoryActivity.KEY_ITEM_ID, mSelectedItem.getId());
+				Intent historyIntent = new Intent(TrackedItemsActivity.this,
+						ItemHistoryActivity.class);
+				historyIntent.putExtra(ItemHistoryActivity.KEY_ITEM_ID,
+						mSelectedItem.getId());
 				startActivity(historyIntent);
 				break;
 			case R.id.context_tracked_options:
