@@ -36,8 +36,6 @@ public class ItemUpdateBackgroundService extends IntentService {
 
 	public ItemUpdateBackgroundService() {
 		super("ItemUpdateBackgroundService");
-
-		priceSources = PricingSourceFactory.getValidPriceSources();
 	}
 
 	@Override
@@ -50,6 +48,8 @@ public class ItemUpdateBackgroundService extends IntentService {
 			Log.d(TrackedItemsActivity.LOG_TAG,
 					"ItemUpdateBackgroundService init database");
 		}
+
+		priceSources = PricingSourceFactory.getValidPriceSources();
 
 		SQLiteAdapter dataSource = new SQLiteAdapter();
 		List<Item> storedItems = dataSource.getAllItems();

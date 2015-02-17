@@ -99,7 +99,8 @@ public class AmazonResponse {
 				// Starts by looking for the entry tag
 				if (name.equals("Item")) {
 					AmazonItem item = readItem(parser);
-					if (item != null) {
+					// defaults to -1, which is certainly < -0.99
+					if (item != null && item.price > -0.99) {
 						results.add(item);
 					}
 				} else {
