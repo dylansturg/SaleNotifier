@@ -9,7 +9,6 @@ import edu.rosehulman.salenotifier.models.Item;
 import edu.rosehulman.salenotifier.models.ItemNotification;
 import edu.rosehulman.salenotifier.models.NotificationPredicate;
 import edu.rosehulman.salenotifier.notifications.NotificationPredicateFactory;
-import edu.rosehulman.salenotifier.settings.Setting;
 import edu.rosehulman.salenotifier.settings.SettingsManager;
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,7 +16,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Switch;
@@ -54,8 +52,6 @@ public class ItemSettingsActivity extends SettingsActivity {
 		refreshSettings();
 
 		mHistoryDuration = (EditText) findViewById(R.id.item_settings_history_duration);
-		mDataSourcesContainer = (LinearLayout) findViewById(R.id.item_settings_sources_container);
-		mDataSourcesCheckBoxes = new ArrayList<CheckBox>();
 		mNotificationsSwitch = (Switch) findViewById(R.id.item_settings_notifications_switch);
 		mNotificationsContainer = (LinearLayout) findViewById(R.id.item_settings_notifications_container);
 		notificationViews = new ArrayList<ItemNotificationView>();

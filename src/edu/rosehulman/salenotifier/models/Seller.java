@@ -5,6 +5,8 @@ import android.os.Parcelable;
 
 public class Seller implements IQueryable, Parcelable {
 
+	public static final Parcelable.Creator<Seller> CREATOR = new SellerCreator();
+
 	private long mId = -1;
 	private String mName;
 

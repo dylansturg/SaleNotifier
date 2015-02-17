@@ -3,18 +3,28 @@
 
     <item
         android:id="@+id/context_tracked_current"
+        android:icon="@drawable/ic_action_locate"
+        android:showAsAction="never"
         android:title="@string/context_menu_current"/>
     <item
         android:id="@+id/context_tracked_history"
+        android:icon="@drawable/ic_action_charts"
+        android:showAsAction="always"
         android:title="@string/context_menu_history"/>
     <item
         android:id="@+id/context_tracked_options"
+        android:icon="@drawable/ic_action_settings"
+        android:showAsAction="always"
         android:title="@string/context_menu_options"/>
     <item
         android:id="@+id/context_tracked_delete"
+        android:icon="@drawable/ic_action_discard"
+        android:showAsAction="always"
         android:title="@string/context_menu_delete"/>
     <item
         android:id="@+id/context_tracked_detailed"
+        android:icon="@drawable/ic_action_star"
+        android:showAsAction="never"
         android:title="@string/context_menu_detailed"/>
 
 </menu>

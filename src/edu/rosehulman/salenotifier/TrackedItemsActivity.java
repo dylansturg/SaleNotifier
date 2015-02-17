@@ -6,9 +6,10 @@ import java.util.List;
 
 import edu.rosehulman.salenotifier.R;
 import edu.rosehulman.salenotifier.models.Item;
-import edu.rosehulman.salenotifier.models.NotificationPredicate;
-import edu.rosehulman.salenotifier.notifications.NotificationLauncher;
+import edu.rosehulman.salenotifier.service.ItemUpdateBackgroundService;
 import edu.rosehulman.salenotifier.service.SaleNotifierWakefulReceiver;
+import edu.rosehulman.salenotifier.service.UpdateResultReceiver;
+import edu.rosehulman.salenotifier.service.UpdateResultReceiver.IOnItemsUpdated;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -16,16 +17,20 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.http.HttpResponseCache;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
-import android.view.ContextMenu;
+import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
-import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 
-public class TrackedItemsActivity extends StorageActivity {
+public class TrackedItemsActivity extends StorageActivity implements
+		OnItemClickListener, OnItemLongClickListener {
 
 	public static final String LOG_TAG = "SNL";
 	protected static final String HTTP_CACHE = "httpCache";
@@ -33,10 +38,15 @@ public class TrackedItemsActivity extends StorageActivity {
 
 	private ListView listView;
 	private TrackedItemsListAdapter listAdapter;
-	
+
+	private ActionMode mActiveActionMode;
+	private TrackedItemsActionMode mActionModeCallback = new TrackedItemsActionMode();
+	private MenuItem mRefreshMenuItem;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.activity_tracked_items);
 
 		listView = (ListView) findViewById(R.id.tracked_items_list);
@@ -44,7 +54,8 @@ public class TrackedItemsActivity extends StorageActivity {
 		listAdapter = new TrackedItemsListAdapter(this, items);
 		listView.setAdapter(listAdapter);
 
-		registerForContextMenu(listView);
+		listView.setOnItemClickListener(this);
+		listView.setOnItemLongClickListener(this);
 
 		// Doesn't create a new alarm if it is already set
 		new SaleNotifierWakefulReceiver().setupRegularAlarm(this);
@@ -71,12 +82,6 @@ public class TrackedItemsActivity extends StorageActivity {
 			}
 		}
 	}
-	
-//	@Override
-//	public void onBackPressed() {
-//		Item i = new Item("Tea Kettle", "upc", null);
-//		NotificationLauncher.launch(this, i, "Prices Below $20.00");
-//	}
 
 	@Override
 	protected void onResume() {
@@ -85,40 +90,6 @@ public class TrackedItemsActivity extends StorageActivity {
 		List<Item> items = itemSource.getAllItems();
 		listAdapter = new TrackedItemsListAdapter(this, items);
 		listView.setAdapter(listAdapter);
-	}
-
-	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v,
-			ContextMenuInfo menuInfo) {
-		super.onCreateContextMenu(menu, v, menuInfo);
-		getMenuInflater().inflate(R.menu.context_tracked_items, menu);
-	}
-
-	@Override
-	public boolean onContextItemSelected(MenuItem item) {
-		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
-				.getMenuInfo();
-		switch (item.getItemId()) {
-		case R.id.context_tracked_current:
-			return true;
-		case R.id.context_tracked_history:
-			Intent historyIntent = new Intent(this, ItemHistoryActivity.class);
-			Log.d(LOG_TAG, "sending extra " + info.id);
-			historyIntent.putExtra(ItemHistoryActivity.KEY_ITEM_ID, info.id);
-			startActivity(historyIntent);
-			return true;
-		case R.id.context_tracked_options:
-			launchItemSettings(info.id);
-			return true;
-		case R.id.context_tracked_delete:
-			confirmDeletion(info.id, info.position);
-			return true;
-		case R.id.context_tracked_detailed:
-			launchDetailedItem(info.id);
-			return true;
-		default:
-			return super.onContextItemSelected(item);
-		}
 	}
 
 	@Override
@@ -141,9 +112,37 @@ public class TrackedItemsActivity extends StorageActivity {
 		case R.id.action_settings:
 			launchSettings();
 			return true;
+		case R.id.action_refresh:
+			mRefreshMenuItem = item;
+			item.setEnabled(false);
+			setProgressBarIndeterminateVisibility(true);
+			UpdateResultReceiver updatedResultReceiver = new UpdateResultReceiver(
+					new Handler());
+			updatedResultReceiver.setOnItemsUpdated(new IOnItemsUpdated() {
+				@Override
+				public void onUpdateFinished() {
+					setProgressBarIndeterminateVisibility(false);
+					mRefreshMenuItem.setEnabled(true);
+				}
+			});
+
+			Intent launchUpdater = new Intent(this,
+					ItemUpdateBackgroundService.class);
+			launchUpdater.putExtra(
+					ItemUpdateBackgroundService.KEY_RESULT_RECEIVER,
+					updatedResultReceiver);
+			startService(launchUpdater);
+
+			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
+	}
+
+	private void launchItemCurrent(long id) {
+		Intent itemCurrent = new Intent(this, ItemCurrentActivity.class);
+		itemCurrent.putExtra(ItemCurrentActivity.KEY_ITEM_ID, id);
+		startActivity(itemCurrent);
 	}
 
 	private void launchItemSettings(long id) {
@@ -170,14 +169,16 @@ public class TrackedItemsActivity extends StorageActivity {
 		startActivity(searchIntent);
 	}
 
-	private void confirmDeletion(final long id, final int position) {
+	private void confirmDeletion(final Item deleted) {
+		final long id = deleted.getId();
+		final String name = deleted.getDisplayName();
+
 		DialogFragment deleteDialog = new DialogFragment() {
 			@Override
 			public Dialog onCreateDialog(Bundle savedInstanceState) {
 				AlertDialog.Builder builder = new AlertDialog.Builder(
 						getActivity());
 				builder.setTitle(R.string.dialog_delete_title);
-				String name = listAdapter.getItem(position).getDisplayName();
 				builder.setMessage(getString(R.string.dialog_delete_message,
 						name));
 				builder.setNegativeButton(android.R.string.cancel, null);
@@ -204,5 +205,112 @@ public class TrackedItemsActivity extends StorageActivity {
 		List<Item> items = itemSource.getAllItems();
 		listAdapter = new TrackedItemsListAdapter(this, items);
 		listView.setAdapter(listAdapter);
+	}
+
+	// OnItemClick listener for the tracked items list
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position,
+			long id) {
+		Item item = (Item) parent.getAdapter().getItem(position);
+		if (!mActionModeCallback.isActive()) {
+			launchItemCurrent(item.getId());
+		} else {
+			mActionModeCallback.setSelected(view, item);
+		}
+	}
+
+	@Override
+	public boolean onItemLongClick(AdapterView<?> parent, View view,
+			int position, long id) {
+		Item selected = (Item) parent.getAdapter().getItem(position);
+		if (mActionModeCallback != null) {
+			mActionModeCallback.setSelected(view, selected);
+			mActiveActionMode = startActionMode(mActionModeCallback);
+		}
+
+		return true;
+	}
+
+	private class TrackedItemsActionMode implements ActionMode.Callback {
+
+		private View mSelectedView;
+		private Item mSelectedItem;
+		private boolean mActive = false;
+
+		public boolean isActive() {
+			return mActive;
+		}
+
+		public void setSelected(View view, Item item) {
+			if (mSelectedView != null) {
+				if (mSelectedItem != null) {
+					listAdapter.setActivated(false, mSelectedItem.getId());
+				} else {
+					listAdapter.clearAllActivated();
+				}
+				mSelectedView.setActivated(false);
+			}
+
+			if (item == mSelectedItem && mActiveActionMode != null) {
+				mActiveActionMode.finish(); // exit when unselect
+				return;
+			}
+
+			listAdapter.setActivated(true, item.getId());
+			view.setActivated(true);
+			mSelectedView = view;
+			mSelectedItem = item;
+		}
+
+		@Override
+		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+			getMenuInflater().inflate(R.menu.context_tracked_items, menu);
+			return true;
+		}
+
+		@Override
+		public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+			mActive = true;
+			return false;
+		}
+
+		@Override
+		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+			switch (item.getItemId()) {
+			case R.id.context_tracked_current:
+				launchItemCurrent(mSelectedItem.getId());
+				break;
+			case R.id.context_tracked_history:
+				Intent historyIntent = new Intent(TrackedItemsActivity.this, ItemHistoryActivity.class);
+				historyIntent.putExtra(ItemHistoryActivity.KEY_ITEM_ID, mSelectedItem.getId());
+				startActivity(historyIntent);
+				break;
+			case R.id.context_tracked_options:
+				launchItemSettings(mSelectedItem.getId());
+				break;
+			case R.id.context_tracked_delete:
+				confirmDeletion(mSelectedItem);
+				break;
+			case R.id.context_tracked_detailed:
+				launchDetailedItem(mSelectedItem.getId());
+				break;
+			default:
+				return false;
+			}
+
+			mode.finish();
+			return true;
+		}
+
+		@Override
+		public void onDestroyActionMode(ActionMode mode) {
+			mActive = false;
+			if (mSelectedView != null) {
+				mSelectedView.setActivated(false);
+			}
+			mActiveActionMode = null;
+
+			listAdapter.clearAllActivated();
+		}
 	}
 }

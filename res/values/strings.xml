@@ -79,5 +79,13 @@
     <string name="title_activity_item_database_content">ItemDatabaseContentActivity</string>
     <string name="no_results_found">Search yielded 0 results.  Go back to refine your search.</string>
     <string name="title_activity_item_history">ItemHistoryActivity</string>
+    <string name="no_results">No search results were found.  Try going back and changing your search.</string>
+    <string name="title_activity_item_current">ItemCurrentActivity</string>
+    <string name="item_name_placeholder">Item Name Placeholder</string>
+    <string name="best_available_price_format">Best Available Price: $%.2f</string>
+    <string name="available_from_seller_format">Available from %s</string>
+    <string name="item_current_content_desc">Tap to visit seller and view item</string>
+    <string name="price_format">$%.2f</string>
+    <string name="itemprice_seller_format">Seller: %s</string>
 
 </resources>

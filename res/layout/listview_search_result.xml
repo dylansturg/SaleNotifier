@@ -8,15 +8,15 @@
     <ImageView
         android:id="@+id/search_result_image"
         android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_height="0dp"
+        android:layout_alignBottom="@+id/search_result_subtitle"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="0dp"
+        android:layout_alignTop="@+id/search_result_title"
         android:scaleType="fitCenter"
         android:src="@drawable/ic_action_photo" />
 
     <TextView
-        android:id="@+id/search_result_title"
+        android:id="@id/search_result_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"

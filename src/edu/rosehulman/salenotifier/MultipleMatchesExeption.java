@@ -1,10 +1,13 @@
 package edu.rosehulman.salenotifier;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class MultipleMatchesExeption extends Exception {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5671255427988414366L;
 	private ArrayList<String> matches;
 	
 	public MultipleMatchesExeption(ArrayList<String> matches) {

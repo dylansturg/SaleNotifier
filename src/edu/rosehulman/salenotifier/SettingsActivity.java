@@ -99,8 +99,11 @@ public abstract class SettingsActivity extends StorageActivity {
 	}
 
 	private void presentDataSourceSettings(List<String> localVersion) {
-		String[] dataSources = getResources().getStringArray(
-				R.array.settings_data_sources_options);
+		if (mDataSourcesContainer == null || mDataSourcesCheckBoxes == null) {
+			return;
+		}
+
+		String[] dataSources = PricingSourceFactory.AVAILABLE_PRICE_SOURCES;
 		for (final String dataSource : dataSources) {
 			CheckBox dataSourceCheckBox = new CheckBox(this);
 			dataSourceCheckBox.setText(dataSource);
@@ -119,7 +122,7 @@ public abstract class SettingsActivity extends StorageActivity {
 				if (preference != null) {
 					dataSourceCheckBox.setChecked(preference.getValue());
 				} else {
-					dataSourceCheckBox.setChecked(false);
+					dataSourceCheckBox.setChecked(true);
 				}
 			}
 		}
@@ -142,13 +145,16 @@ public abstract class SettingsActivity extends StorageActivity {
 		outState.putBoolean(KEY_CHECKED_NOTIFICATIONS,
 				mNotificationsSwitch.isChecked());
 
-		ArrayList<String> checkedSources = new ArrayList<String>();
-		for (CheckBox checkBox : mDataSourcesCheckBoxes) {
-			if (checkBox.isChecked()) {
-				checkedSources.add(checkBox.getText().toString());
+		if (mDataSourcesCheckBoxes != null) {
+			ArrayList<String> checkedSources = new ArrayList<String>();
+			for (CheckBox checkBox : mDataSourcesCheckBoxes) {
+				if (checkBox.isChecked()) {
+					checkedSources.add(checkBox.getText().toString());
+				}
 			}
+			outState.putStringArrayList(KEY_CHECKED_DATA_SOURCES,
+					checkedSources);
 		}
-		outState.putStringArrayList(KEY_CHECKED_DATA_SOURCES, checkedSources);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -242,6 +248,10 @@ public abstract class SettingsActivity extends StorageActivity {
 	protected void captureCurrentDataSourceSettings(
 			Enumerable<Setting<Boolean>> settings) {
 		assert (settings != null);
+
+		if (mDataSourcesCheckBoxes == null) {
+			return;
+		}
 
 		for (final CheckBox checkBox : mDataSourcesCheckBoxes) {
 			final String dataSource = checkBox.getText().toString();

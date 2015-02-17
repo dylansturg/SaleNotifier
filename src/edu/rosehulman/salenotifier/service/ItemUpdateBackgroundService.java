@@ -7,8 +7,10 @@ import java.util.Map;
 
 import edu.rosehulman.salenotifier.ApiException;
 import edu.rosehulman.salenotifier.IPricingSource;
+import edu.rosehulman.salenotifier.PricingSourceFactory;
 import edu.rosehulman.salenotifier.Semantics3PriceSource;
 import edu.rosehulman.salenotifier.TrackedItemsActivity;
+import edu.rosehulman.salenotifier.amazon.AmazonPricingSource;
 import edu.rosehulman.salenotifier.db.Enumerable;
 import edu.rosehulman.salenotifier.db.SQLiteAdapter;
 import edu.rosehulman.salenotifier.db.SaleNotifierSQLHelper;
@@ -23,18 +25,17 @@ import edu.rosehulman.salenotifier.settings.Setting;
 import edu.rosehulman.salenotifier.settings.SettingsManager;
 import android.app.IntentService;
 import android.content.Intent;
+import android.os.Bundle;
+import android.os.ResultReceiver;
 import android.util.Log;
 
 public class ItemUpdateBackgroundService extends IntentService {
+	public static final String KEY_RESULT_RECEIVER = "RESULT_RECEIVER";
 
-	ArrayList<IPricingSource> priceSources;
+	List<IPricingSource> priceSources;
 
 	public ItemUpdateBackgroundService() {
 		super("ItemUpdateBackgroundService");
-		priceSources = new ArrayList<IPricingSource>();
-		priceSources.add(new Semantics3PriceSource());
-		priceSources.add(new EbayPricingSource());
-		// TODO: add more sources here
 	}
 
 	@Override
@@ -47,6 +48,8 @@ public class ItemUpdateBackgroundService extends IntentService {
 			Log.d(TrackedItemsActivity.LOG_TAG,
 					"ItemUpdateBackgroundService init database");
 		}
+
+		priceSources = PricingSourceFactory.getValidPriceSources();
 
 		SQLiteAdapter dataSource = new SQLiteAdapter();
 		List<Item> storedItems = dataSource.getAllItems();
@@ -74,7 +77,7 @@ public class ItemUpdateBackgroundService extends IntentService {
 			List<ItemPrice> prices = new ArrayList<ItemPrice>();
 			for (IPricingSource source : priceSources) {
 				try {
-					List<ItemPrice> foundPrices = source.getPrices(item);
+					List<ItemPrice> foundPrices = null;
 					if (foundPrices == null) {
 						foundPrices = source.searchForPrices(this, item);
 					}
@@ -119,6 +122,13 @@ public class ItemUpdateBackgroundService extends IntentService {
 		Intent cleanupPrices = new Intent(this,
 				DeletePricesBackgroundService.class);
 		startService(cleanupPrices);
+
+		ResultReceiver onResult = intent
+				.getParcelableExtra(KEY_RESULT_RECEIVER);
+		if (onResult != null) {
+			onResult.send(UpdateResultReceiver.ITEMS_UPDATED_RESULT,
+					new Bundle()); // no data needed
+		}
 
 		stopSelf();
 	}

@@ -82,10 +82,9 @@ public class ItemPrice implements IQueryable, Parcelable, Comparable<ItemPrice> 
 
 	public ItemPrice(Parcel source) {
 		mId = source.readLong();
-		mItem = source.readParcelable(null);
 		mItemId = source.readLong();
 
-		mSeller = source.readParcelable(null);
+		mSeller = source.readParcelable(Seller.class.getClassLoader());
 		mSellerId = source.readLong();
 
 		long timeMilis = source.readLong();
@@ -244,7 +243,6 @@ public class ItemPrice implements IQueryable, Parcelable, Comparable<ItemPrice> 
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeLong(mId);
-		dest.writeParcelable(mItem, flags);
 		dest.writeLong(mItemId);
 
 		dest.writeParcelable(mSeller, flags);

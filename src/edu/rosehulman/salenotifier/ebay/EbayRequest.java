@@ -21,6 +21,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONWriter;
 
+import edu.rosehulman.salenotifier.ApiException;
 import edu.rosehulman.salenotifier.R;
 import edu.rosehulman.salenotifier.TrackedItemsActivity;
 import edu.rosehulman.salenotifier.ebay.SearchEbayItemsTask.ISearchEbayIncrementalResultNotifier;
@@ -59,24 +60,21 @@ public class EbayRequest {
 	private int mRequestCount = 0;
 
 	private ISearchEbayIncrementalResultNotifier mResultNotifier;
-	private CancellationSignal mCancelToken;
 
 	private static final int CacheSize = 8 * 1024 * 1024;
 	private LruCache<String, String> mProductRequestCache = new LruCache<String, String>(
 			CacheSize);
 
 	public EbayRequest(Context context, ItemQueryConstraints query) {
-		this(context, query, null, null);
+		this(context, query, null);
 	}
 
 	public EbayRequest(Context context, ItemQueryConstraints query,
-			ISearchEbayIncrementalResultNotifier resultCallback,
-			CancellationSignal cancelToken) {
+			ISearchEbayIncrementalResultNotifier resultCallback) {
 		APIKey = context.getString(R.string.EbayAPIKey);
 		mQuery = query;
 		mContext = context;
 		mResultNotifier = resultCallback;
-		mCancelToken = cancelToken;
 	}
 
 	protected String getOperationName() {
@@ -98,7 +96,7 @@ public class EbayRequest {
 		int totalSearchResults = 0;
 
 		while (totalSearchResults < DESIRED_RESULT_COUNT
-				&& mRequestCount < MAXIMUM_REQUEST_COUNT && !isCancelled()) {
+				&& mRequestCount < MAXIMUM_REQUEST_COUNT) {
 			try {
 
 				Uri serviceRequest = buildRequestUri();
@@ -127,7 +125,7 @@ public class EbayRequest {
 						responseContent, getOperationName(),
 						mProductRequestCache);
 				List<EbayItem> results = parsedResponse.getResponseItems();
-				if (results != null && !isCancelled()) {
+				if (results != null) {
 					totalSearchResults += results.size();
 					if (mResultNotifier != null) {
 						boolean resultsHandled = mResultNotifier
@@ -153,6 +151,8 @@ public class EbayRequest {
 			} catch (IOException networkException) {
 				Log.d(TrackedItemsActivity.LOG_TAG,
 						"IO Failed when executing HTTP POST for EbayProductDetailsRequest");
+			} catch(ApiException apiFailed){
+				return searchResults;
 			}
 		}
 
@@ -259,7 +259,7 @@ public class EbayRequest {
 		request.put("productId", productFilter);
 	}
 
-	private String estimateProductCodeType(String productCode) {
+	protected static String estimateProductCodeType(String productCode) {
 		if (productCode == null || productCode.isEmpty()) {
 			throw new IllegalArgumentException(
 					"EbayReqeust attemping to guess a product code type for a null/empty product code");
@@ -337,9 +337,5 @@ public class EbayRequest {
 			itemFilters.put(localSearchFilter);
 			request.put("itemFilter", itemFilters);
 		}
-	}
-
-	private boolean isCancelled() {
-		return mCancelToken != null && mCancelToken.isCanceled();
 	}
 }

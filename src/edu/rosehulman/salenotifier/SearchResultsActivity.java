@@ -4,14 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.rosehulman.salenotifier.R;
+import edu.rosehulman.salenotifier.ItemSearchTask.IPartialSearchResultsCallback;
+import edu.rosehulman.salenotifier.ItemSearchTask.ISearchResultsCallback;
 import edu.rosehulman.salenotifier.db.SQLiteAdapter;
-import edu.rosehulman.salenotifier.db.SaleNotifierSQLHelper;
-import edu.rosehulman.salenotifier.ebay.SearchEbayItemsTask;
-import edu.rosehulman.salenotifier.ebay.SearchEbayItemsTask.ISearchEbayCallback;
-import edu.rosehulman.salenotifier.ebay.SearchEbayItemsTask.ISearchEbayIncrementalResultListener;
 import edu.rosehulman.salenotifier.models.Item;
 import edu.rosehulman.salenotifier.models.ItemQueryConstraints;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -19,13 +16,12 @@ import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.ListView;
 import android.widget.Toast;
 
 public class SearchResultsActivity extends StorageActivity implements
-		ISearchEbayCallback, ISearchEbayIncrementalResultListener {
+		IPartialSearchResultsCallback, ISearchResultsCallback {
 
 	public static final String KEY_SEARCH_ITEM = "KEY_SEARCH_ITEM";
 
@@ -53,23 +49,9 @@ public class SearchResultsActivity extends StorageActivity implements
 
 		displaySearchToast();
 
-		ItemSearchTask task = new ItemSearchTask(this, mSearched.getName());
-		task.execute();
+		ItemSearchTask task = new ItemSearchTask(this, this, this);
+		task.execute(mSearched);
 		mSearchTasks.add(task);
-
-		SearchEbayItemsTask ebaySearch = new SearchEbayItemsTask(this, this,
-				this);
-		ebaySearch.execute(mSearched);
-		mSearchTasks.add(ebaySearch);
-
-		findViewById(R.id.search_results_quit).setOnClickListener(
-				new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						// task.cancel(true);
-						// onResultsLoaded(results);
-					}
-				});
 
 	}
 
@@ -141,6 +123,20 @@ public class SearchResultsActivity extends StorageActivity implements
 					finish();
 					return true;
 				case R.id.action_search_results_find:
+					List<Item> selectedItems = getItems(mSelected);
+					if (selectedItems != null & selectedItems.size() > 0) {
+						Item lastSelected = selectedItems.get(selectedItems
+								.size() - 1);
+
+						Intent showCurrent = new Intent(
+								SearchResultsActivity.this,
+								ItemCurrentActivity.class);
+						showCurrent.putExtra(ItemCurrentActivity.KEY_ITEM,
+								lastSelected);
+
+						startActivity(showCurrent);
+					}
+
 					mode.finish();
 					return true;
 
@@ -207,24 +203,25 @@ public class SearchResultsActivity extends StorageActivity implements
 	}
 
 	@Override
-	public boolean publishPartialResults(List<Item> results) {
-		if (results != null && results.size() > 0) {
-			onResultsLoaded(results);
-			return true;
-		}
-		return false;
-	}
-
-	@Override
-	public void onFinished(List<Item> results) {
-		if (results != null && results.size() != 0) {
-			onResultsLoaded(results);
+	public void onResults(List<Item> searchResults) {
+		if (searchResults != null && searchResults.size() > 0) {
+			onResultsLoaded(searchResults);
 		}
 
 		if (mSearchResults == null || mSearchResults.size() == 0) {
-			// TODO Implement "No Results Found" message"
-			Toast.makeText(this, R.string.no_results_found, Toast.LENGTH_LONG)
-					.show();
+			// Search yielded no results - might as well tell them
+			findViewById(R.id.search_results_failure).setVisibility(
+					View.VISIBLE);
+			findViewById(R.id.search_results_indicator)
+					.setVisibility(View.GONE);
 		}
+	}
+
+	@Override
+	public boolean onPartialResults(List<Item> partialResults) {
+		if (partialResults != null && partialResults.size() > 0) {
+			onResultsLoaded(partialResults);
+		}
+		return true;
 	}
 }
