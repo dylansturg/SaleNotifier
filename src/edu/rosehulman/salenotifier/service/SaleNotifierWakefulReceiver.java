@@ -13,7 +13,7 @@ import android.util.Log;
 
 public class SaleNotifierWakefulReceiver extends WakefulBroadcastReceiver {
 
-	private static final int ALARM_REQUEST_CODE = 1;
+	private static final int ALARM_REQUEST_CODE = 9156;
 
 	private AlarmManager alarmManager;
 	private PendingIntent alarmIntent;
@@ -32,8 +32,9 @@ public class SaleNotifierWakefulReceiver extends WakefulBroadcastReceiver {
 	}
 
 	public void setupRegularAlarm(Context context, boolean ignoreIfExists) {
-		boolean alarmExists = (PendingIntent.getBroadcast(context, 0,
-				new Intent(context, SaleNotifierWakefulReceiver.class),
+		boolean alarmExists = (PendingIntent.getBroadcast(context,
+				ALARM_REQUEST_CODE, new Intent(context,
+						SaleNotifierWakefulReceiver.class),
 				PendingIntent.FLAG_NO_CREATE) != null);
 
 		if (alarmExists && ignoreIfExists) {

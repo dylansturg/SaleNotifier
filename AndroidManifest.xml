@@ -32,7 +32,7 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name=".TrackedItemsActivity"
+            android:name="edu.rosehulman.salenotifier.TrackedItemsActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -41,50 +41,50 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ItemSearchActivity"
+            android:name="edu.rosehulman.salenotifier.ItemSearchActivity"
             android:label="@string/title_activity_item_search"
-            android:parentActivityName=".TrackedItemsActivity"
             android:launchMode="singleTop"
+            android:parentActivityName="edu.rosehulman.salenotifier.TrackedItemsActivity"
             android:windowSoftInputMode="stateUnchanged" >
         </activity>
         <activity
-            android:name=".SearchResultsActivity"
-            android:label="@string/title_activity_search_results"
+            android:name="edu.rosehulman.salenotifier.SearchResultsActivity"
             android:configChanges="orientation|screenSize"
-            android:parentActivityName=".ItemSearchActivity"
-            android:launchMode="singleTop" >
+            android:label="@string/title_activity_search_results"
+            android:launchMode="singleTop"
+            android:parentActivityName="edu.rosehulman.salenotifier.ItemSearchActivity" >
         </activity>
         <activity
-            android:name=".BarcodeScannerActivity"
+            android:name="edu.rosehulman.salenotifier.BarcodeScannerActivity"
             android:label="@string/title_activity_barcode_scanner"
-            android:parentActivityName=".ItemSearchActivity"
-            android:launchMode="singleTop" >
+            android:launchMode="singleTop"
+            android:parentActivityName="edu.rosehulman.salenotifier.ItemSearchActivity" >
         </activity>
         <activity
-            android:name=".AppSettingsActivity"
+            android:name="edu.rosehulman.salenotifier.AppSettingsActivity"
             android:label="@string/title_activity_app_settings"
-            android:parentActivityName=".TrackedItemsActivity"
-            android:windowSoftInputMode="stateUnchanged"
-            android:launchMode="singleTop" >
+            android:launchMode="singleTop"
+            android:parentActivityName="edu.rosehulman.salenotifier.TrackedItemsActivity"
+            android:windowSoftInputMode="stateUnchanged" >
         </activity>
         <activity
-            android:name=".ItemSettingsActivity"
+            android:name="edu.rosehulman.salenotifier.ItemSettingsActivity"
             android:label="@string/title_activity_item_settings"
-            android:parentActivityName=".TrackedItemsActivity"
-            android:windowSoftInputMode="stateUnchanged"
-            android:launchMode="singleTop" >
+            android:launchMode="singleTop"
+            android:parentActivityName="edu.rosehulman.salenotifier.TrackedItemsActivity"
+            android:windowSoftInputMode="stateUnchanged" >
         </activity>
         <activity
-            android:name=".ItemDatabaseContentActivity"
+            android:name="edu.rosehulman.salenotifier.ItemDatabaseContentActivity"
             android:label="@string/title_activity_item_database_content"
-            android:parentActivityName=".TrackedItemsActivity"
-            android:launchMode="singleTop" >
+            android:launchMode="singleTop"
+            android:parentActivityName="edu.rosehulman.salenotifier.TrackedItemsActivity" >
         </activity>
 
-        <receiver android:name=".service.SaleNotifierWakefulReceiver" >
+        <receiver android:name="edu.rosehulman.salenotifier.service.SaleNotifierWakefulReceiver" >
         </receiver>
         <receiver
-            android:name=".service.SaleNotifierBootReceiver"
+            android:name="edu.rosehulman.salenotifier.service.SaleNotifierBootReceiver"
             android:enabled="false" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" >
@@ -92,14 +92,14 @@
             </intent-filter>
         </receiver>
 
-        <service android:name=".service.ItemUpdateBackgroundService" />
-        <service android:name=".service.DeletePricesBackgroundService" />
+        <service android:name="edu.rosehulman.salenotifier.service.ItemUpdateBackgroundService" />
+        <service android:name="edu.rosehulman.salenotifier.service.DeletePricesBackgroundService" />
 
         <activity
             android:name="edu.rosehulman.salenotifier.ItemCurrentActivity"
             android:label="@string/title_activity_item_current"
-            android:parentActivityName=".TrackedItemsActivity"
-            android:launchMode="singleTop" >
+            android:launchMode="singleTop"
+            android:parentActivityName=".TrackedItemsActivity" >
         </activity>
     </application>
 
