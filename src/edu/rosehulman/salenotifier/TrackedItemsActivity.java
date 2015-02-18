@@ -312,9 +312,6 @@ public class TrackedItemsActivity extends StorageActivity implements
 			case R.id.context_tracked_delete:
 				confirmDeletion(mSelectedItem);
 				break;
-			case R.id.context_tracked_detailed:
-				launchDetailedItem(mSelectedItem.getId());
-				break;
 			default:
 				return false;
 			}

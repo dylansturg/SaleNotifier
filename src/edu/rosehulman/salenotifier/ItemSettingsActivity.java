@@ -19,6 +19,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class ItemSettingsActivity extends SettingsActivity {
@@ -55,6 +56,9 @@ public class ItemSettingsActivity extends SettingsActivity {
 		mNotificationsSwitch = (Switch) findViewById(R.id.item_settings_notifications_switch);
 		mNotificationsContainer = (LinearLayout) findViewById(R.id.item_settings_notifications_container);
 		notificationViews = new ArrayList<ItemNotificationView>();
+
+		TextView title = (TextView) findViewById(R.id.item_settings_title);
+		title.setText(mItem.getDisplayName());
 
 		displayCachedOrSavedSettings(savedInstanceState);
 		displayNotificationSettings();
