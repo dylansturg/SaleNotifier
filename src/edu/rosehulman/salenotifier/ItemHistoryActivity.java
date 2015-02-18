@@ -18,6 +18,7 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.utils.Legend;
 import com.github.mikephil.charting.utils.Legend.LegendPosition;
 import com.github.mikephil.charting.utils.XLabels.XLabelPosition;
+import com.google.android.gms.internal.db;
 import com.google.android.gms.internal.la;
 
 import edu.rosehulman.salenotifier.models.Item;
@@ -74,15 +75,12 @@ public class ItemHistoryActivity extends StorageActivity {
 		prices.add(new ItemPrice(30.00d, "walmart.com", 2015, 1, 2));
 		prices.add(new ItemPrice(25.00d, "walmart.com", 2015, 1, 3));
 		prices.add(new ItemPrice(25.00d, "walmart.com", 2015, 1, 4));
-		prices.add(new ItemPrice(20.00d, "walmart.com", 2015, 1, 5));
-		prices.add(new ItemPrice(40.00d, "walmart.com", 2015, 1, 6));
 		
 		prices.add(new ItemPrice(37.93d, "newegg.com", 2015, 1, 1));
 		prices.add(new ItemPrice(35.00d, "newegg.com", 2015, 1, 2));
 		prices.add(new ItemPrice(36.99d, "newegg.com", 2015, 1, 3));
 		prices.add(new ItemPrice(36.99d, "newegg.com", 2015, 1, 4));
-		prices.add(new ItemPrice(36.99d, "newegg.com", 2015, 1, 5));
-		prices.add(new ItemPrice(36.99d, "newegg.com", 2015, 1, 6));
+
 		
 		// Create a mapping between our xAxis labels and their order (position)
 		ArrayList<String> xAxis = getListOfDays(prices);
@@ -121,6 +119,14 @@ public class ItemHistoryActivity extends StorageActivity {
 	    LineData data = new LineData(xVals, dataSets);
 	    
 	    mChart = (LineChart) findViewById(R.id.chart);
+	    for(int i = 0; i < data.getDataSetCount(); i++) {
+	    	LineDataSet ds = data.getDataSetByIndex(i);
+	    	for(int j = 0; j < ds.getEntryCount(); j++) {
+	    		Entry e = ds.getEntryForXIndex(j);
+	    		if(e != null)
+	    			Log.d("SNL", "i=" + i + " j=" + j + " e.x=" + e.getXIndex() + " e.y=" + e.getVal());
+	    	}
+	    }
 		mChart.setData(data);
 		
 		mChart.setDescription("");
@@ -147,6 +153,7 @@ public class ItemHistoryActivity extends StorageActivity {
 		
 		mChart.setStartAtZero(false);
 		mChart.getXLabels().setPosition(XLabelPosition.BOTTOM);
+		
 	}
 	
 	private void showLegendDialog(ArrayList<LegendEntry> legend) {
