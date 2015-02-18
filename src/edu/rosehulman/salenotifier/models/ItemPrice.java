@@ -67,6 +67,12 @@ public class ItemPrice implements IQueryable, Parcelable, Comparable<ItemPrice> 
 		mSeller = new Seller();
 		mSeller.setName(seller);
 	}
+	
+	public ItemPrice(double price, String seller, int year, int month, int day)
+	{
+		this("", "", price, "", seller);
+		setDate(year, month, day);
+	}
 
 	public ItemPrice(double price, String urlSource) {
 		mPrice = price;
@@ -202,6 +208,11 @@ public class ItemPrice implements IQueryable, Parcelable, Comparable<ItemPrice> 
 		return mFoundDate;
 	}
 
+	public void setDate(int year, int month, int day) {
+		GregorianCalendar g = new GregorianCalendar(year, month, day);
+		setDate(g);
+	}
+	
 	public void setDate(GregorianCalendar date) {
 		mFoundDate = date;
 	}

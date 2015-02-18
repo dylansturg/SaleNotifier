@@ -68,7 +68,21 @@ public class ItemHistoryActivity extends StorageActivity {
 			Log.e(TrackedItemsActivity.LOG_TAG, "Item id of 0 was passed to the activity");
 		
 		Item item = itemSource.getItemById(itemId);
-		List<ItemPrice> prices = item.getPrices();
+		//List<ItemPrice> prices = item.getPrices();
+		List<ItemPrice> prices = new ArrayList<ItemPrice>();
+		prices.add(new ItemPrice(30.00d, "walmart.com", 2015, 1, 1));
+		prices.add(new ItemPrice(30.00d, "walmart.com", 2015, 1, 2));
+		prices.add(new ItemPrice(25.00d, "walmart.com", 2015, 1, 3));
+		prices.add(new ItemPrice(25.00d, "walmart.com", 2015, 1, 4));
+		prices.add(new ItemPrice(20.00d, "walmart.com", 2015, 1, 5));
+		prices.add(new ItemPrice(40.00d, "walmart.com", 2015, 1, 6));
+		
+		prices.add(new ItemPrice(37.93d, "newegg.com", 2015, 1, 1));
+		prices.add(new ItemPrice(35.00d, "newegg.com", 2015, 1, 2));
+		prices.add(new ItemPrice(36.99d, "newegg.com", 2015, 1, 3));
+		prices.add(new ItemPrice(36.99d, "newegg.com", 2015, 1, 4));
+		prices.add(new ItemPrice(36.99d, "newegg.com", 2015, 1, 5));
+		prices.add(new ItemPrice(36.99d, "newegg.com", 2015, 1, 6));
 		
 		// Create a mapping between our xAxis labels and their order (position)
 		ArrayList<String> xAxis = getListOfDays(prices);
