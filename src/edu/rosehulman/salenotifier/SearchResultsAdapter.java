@@ -2,6 +2,8 @@ package edu.rosehulman.salenotifier;
 
 import java.util.List;
 
+import com.squareup.picasso.Picasso;
+
 import edu.rosehulman.salenotifier.models.Item;
 
 import edu.rosehulman.salenotifier.R;
@@ -42,6 +44,9 @@ public class SearchResultsAdapter extends ArrayAdapter<Item> {
 				.findViewById(R.id.search_result_image);
 		if (searchResult.getImageUrl() != null) {
 
+			Picasso.with(getContext())
+					.load(searchResult.getImageUrl().toString()).into(image);
+
 			image.getViewTreeObserver().addOnPreDrawListener(
 					new OnPreDrawListener() {
 						@Override
@@ -50,10 +55,13 @@ public class SearchResultsAdapter extends ArrayAdapter<Item> {
 									.removeOnPreDrawListener(this);
 							int width = image.getMeasuredWidth();
 							int height = image.getMeasuredHeight();
-							new DownloadImageTask(image, getContext()
-									.getCacheDir(), width, height)
-									.execute(searchResult.getImageUrl());
-							return false;
+							Picasso.with(getContext())
+									.load(searchResult.getImageUrl().toString())
+									.resize(width, height)
+									.placeholder(R.drawable.loader)
+									.error(R.drawable.ic_action_error)
+									.into(image);
+							return true;
 						}
 					});
 		} else {

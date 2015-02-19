@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
+import com.squareup.picasso.Picasso;
+
 import edu.rosehulman.salenotifier.models.Item;
 import edu.rosehulman.salenotifier.models.ItemPrice;
 
@@ -70,23 +72,31 @@ public class TrackedItemsListAdapter extends ArrayAdapter<Item> {
 			subtitle.setText(R.string.no_price_information);
 		}
 
-		image.getViewTreeObserver().addOnPreDrawListener(
-				new OnPreDrawListener() {
-					@Override
-					public boolean onPreDraw() {
-						image.getViewTreeObserver().removeOnPreDrawListener(
-								this);
+		if (item.getImageUrl() != null) {
 
-						int width = image.getMeasuredWidth();
-						int height = image.getMeasuredHeight();
+			image.getViewTreeObserver().addOnPreDrawListener(
+					new OnPreDrawListener() {
+						@Override
+						public boolean onPreDraw() {
+							image.getViewTreeObserver()
+									.removeOnPreDrawListener(this);
 
-						new DownloadImageTask(image,
-								getContext().getCacheDir(), width, height)
-								.execute(item.getImageUrl());
+							int width = image.getMeasuredWidth();
+							int height = image.getMeasuredHeight();
 
-						return true;
-					}
-				});
+							Picasso.with(getContext())
+									.load(item.getImageUrl().toString())
+									.resize(width, height)
+									.placeholder(R.drawable.loader)
+									.error(R.drawable.ic_action_error)
+									.into(image);
+							return true;
+						}
+					});
+
+		} else {
+			image.setBackgroundResource(R.drawable.ic_action_error);
+		}
 
 		return convertView;
 	}
