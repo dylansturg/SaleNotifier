@@ -89,7 +89,20 @@ public class ItemHistoryActivity extends StorageActivity {
 				Log.d("SNL", "seller: " + seller + ", p: " + lowest.getPrice() + ", d: " + dateKey + ", dk: " + xAxisMapping.get(dateKey));
 				entries.add(new Entry((float)lowest.getPrice(), xAxisMapping.get(dateKey)));
 			}
-			LineDataSet dataSet = new LineDataSet(entries, seller);
+			// Order the array of entries
+			int found = 0;
+			ArrayList<Entry> sortedEntries = new ArrayList<Entry>();
+			do {
+				for(int i = 0; i < entries.size(); i++) {
+					if(found == entries.get(i).getXIndex()) {
+						sortedEntries.add(entries.get(i));
+						found++;
+						break;
+					}
+				}
+			} while(found < entries.size());
+			
+			LineDataSet dataSet = new LineDataSet(sortedEntries, seller);
 			dataSet.setCircleSize(4f);
 			dataSet.setLineWidth(2f);
 			dataSet.setCircleColor(COLORS[colorIndex % COLORS.length]);
