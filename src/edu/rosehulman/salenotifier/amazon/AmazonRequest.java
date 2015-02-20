@@ -134,8 +134,10 @@ public class AmazonRequest {
 			 */
 			if (length == 12) {
 				return "UPC";
-			} else {
+			} else if (length == 10) {
 				return "ISBN";
+			} else {
+				return "EAN";
 			}
 		}
 

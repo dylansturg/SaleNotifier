@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -44,51 +45,58 @@ import android.widget.TimePicker;
 
 public class ItemHistoryActivity extends StorageActivity {
 
-	
 	public static final String KEY_ITEM_ID = "KEY_ITEM_ID";
 	LineChart mChart;
 	Legend mLegend;
-	
-	private static int[] COLORS = new int[] {
-		Color.RED,
-		Color.BLUE,
-		Color.GREEN,
-		Color.MAGENTA,
-		Color.CYAN,
-		Color.YELLOW,
-	};
-	
+
+	private static int[] COLORS = new int[] { Color.RED, Color.BLUE,
+			Color.GREEN, Color.MAGENTA, Color.CYAN, Color.YELLOW, };
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_item_history);
-		
+
 		long itemId = getIntent().getLongExtra(KEY_ITEM_ID, 0);
-		if(itemId == 0)
-			Log.e(TrackedItemsActivity.LOG_TAG, "Item id of 0 was passed to the activity");
-		
+		if (itemId == 0)
+			Log.e(TrackedItemsActivity.LOG_TAG,
+					"Item id of 0 was passed to the activity");
+
 		Item item = itemSource.getItemById(itemId);
 		List<ItemPrice> prices = item.getPrices();
-		
+
 		// Create a mapping between our xAxis labels and their order (position)
 		ArrayList<String> xAxis = getListOfDays(prices);
 		HashMap<String, Integer> xAxisMapping = new HashMap<String, Integer>();
-		for(int i = 0; i < xAxis.size(); i++)
+		for (int i = 0; i < xAxis.size(); i++)
 			xAxisMapping.put(xAxis.get(i), i);
-		
+
 		// Create a DataSet for each seller
 		int colorIndex = 0;
 		HashMap<String, ArrayList<ItemPrice>> sellerMap = partitionBySeller(prices);
 		ArrayList<LineDataSet> dataSets = new ArrayList<LineDataSet>();
-		for(String seller : sellerMap.keySet()) {
+		for (String seller : sellerMap.keySet()) {
 			List<ItemPrice> fromSeller = sellerMap.get(seller);
 			ArrayList<Entry> entries = new ArrayList<Entry>();
 			HashMap<String, ArrayList<ItemPrice>> byDate = partitionByDay(fromSeller);
-			for(String dateKey : byDate.keySet()) {
+			for (String dateKey : byDate.keySet()) {
 				ItemPrice lowest = byDate.get(dateKey).get(0);
-				Log.d("SNL", "seller: " + seller + ", p: " + lowest.getPrice() + ", d: " + dateKey + ", dk: " + xAxisMapping.get(dateKey));
-				entries.add(new Entry((float)lowest.getPrice(), xAxisMapping.get(dateKey)));
+				Log.d("SNL",
+						"seller: " + seller + ", p: " + lowest.getPrice()
+								+ ", d: " + dateKey + ", dk: "
+								+ xAxisMapping.get(dateKey));
+				entries.add(new Entry((float) lowest.getPrice(), xAxisMapping
+						.get(dateKey)));
 			}
+
+			Collections.sort(entries, new Comparator<Entry>() {
+
+				@Override
+				public int compare(Entry lhs, Entry rhs) {
+					return lhs.getXIndex() - rhs.getXIndex();
+				}
+			});
+
 			LineDataSet dataSet = new LineDataSet(entries, seller);
 			dataSet.setCircleSize(4f);
 			dataSet.setLineWidth(2f);
@@ -97,68 +105,73 @@ public class ItemHistoryActivity extends StorageActivity {
 			dataSet.setHighLightColor(Color.WHITE);
 			dataSets.add(dataSet);
 		}
-	    
+
 		// Create the labels for our xAxis
-	    ArrayList<String> xVals = new ArrayList<String>();
-	    for(int i = 0; i < xAxis.size(); i++)
-	    	xVals.add(xAxis.get(i));
-	    xVals.set(xVals.size()-1, ""); // last value is today
-	    
-	    LineData data = new LineData(xVals, dataSets);
-	    
-	    mChart = (LineChart) findViewById(R.id.chart);
+		ArrayList<String> xVals = new ArrayList<String>();
+		for (int i = 0; i < xAxis.size(); i++)
+			xVals.add(xAxis.get(i));
+		xVals.set(xVals.size() - 1, ""); // last value is today
+
+		LineData data = new LineData(xVals, dataSets);
+
+		mChart = (LineChart) findViewById(R.id.chart);
 		mChart.setData(data);
-		
+
 		mChart.setDescription("");
 		mChart.getLegend().setTextColor(Color.WHITE);
 		mChart.getXLabels().setTextColor(Color.WHITE);
 		mChart.getYLabels().setTextColor(Color.WHITE);
-		
+
 		mChart.getXLabels().setTextSize(14);
 		mChart.getYLabels().setTextSize(14);
 		mChart.getLegend().setTextSize(18);
-		
+
 		mChart.getLegend().setFormSize(10f);
 		mChart.getLegend().setPosition(LegendPosition.BELOW_CHART_LEFT);
-		
+
 		mLegend = mChart.getLegend();
 		mChart.setDrawLegend(false);
-		
+
 		Paint p = new Paint();
 		p.setColor(Color.DKGRAY);
 		mChart.setPaint(p, Chart.PAINT_GRID_BACKGROUND);
 		mChart.setGridColor(Color.GREEN);
 		mChart.setValueTextColor(Color.WHITE);
 		mChart.setValueTextSize(12f);
-		
+
 		mChart.setStartAtZero(false);
 		mChart.getXLabels().setPosition(XLabelPosition.BOTTOM);
 	}
-	
+
 	private void showLegendDialog(ArrayList<LegendEntry> legend) {
 		final ArrayList<LegendEntry> entries = legend;
 		DialogFragment df = new DialogFragment() {
 			@Override
 			public Dialog onCreateDialog(Bundle savedInstanceState) {
-				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+				AlertDialog.Builder builder = new AlertDialog.Builder(
+						getActivity());
 				builder.setTitle("Chart Legend");
-				
+
 				LayoutInflater inflater = getActivity().getLayoutInflater();
-				View dialogView = inflater.inflate(R.layout.legend_dialog, null);
-				
-				ListView list = ((ListView)dialogView.findViewById(R.id.list));
-				ChartLegendAdapter adapter = new ChartLegendAdapter(ItemHistoryActivity.this, entries);
+				View dialogView = inflater
+						.inflate(R.layout.legend_dialog, null);
+
+				ListView list = ((ListView) dialogView.findViewById(R.id.list));
+				ChartLegendAdapter adapter = new ChartLegendAdapter(
+						ItemHistoryActivity.this, entries);
 				list.setAdapter(adapter);
-				
+
 				builder.setView(dialogView);
-				
-				builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-					}
-				});
-				
+
+				builder.setPositiveButton(android.R.string.ok,
+						new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								dialog.dismiss();
+							}
+						});
+
 				return builder.create();
 			}
 		};
@@ -181,72 +194,79 @@ public class ItemHistoryActivity extends StorageActivity {
 		if (id == R.id.viewLegend) {
 			ArrayList<LegendEntry> entries = new ArrayList<LegendEntry>();
 			String[] labels = mChart.getLegend().getLegendLabels();
-			for(int i = 0; i < labels.length; i++) {
-				entries.add(new LegendEntry(COLORS[i % COLORS.length], labels[i]));
+			for (int i = 0; i < labels.length; i++) {
+				entries.add(new LegendEntry(COLORS[i % COLORS.length],
+						labels[i]));
 			}
 			showLegendDialog(entries);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	
-	private HashMap<String, ArrayList<ItemPrice>> partitionBySeller(List<ItemPrice> prices) {
+
+	private HashMap<String, ArrayList<ItemPrice>> partitionBySeller(
+			List<ItemPrice> prices) {
 		HashMap<String, ArrayList<ItemPrice>> map = new HashMap<String, ArrayList<ItemPrice>>();
-		for(ItemPrice ip : prices) {
+		for (ItemPrice ip : prices) {
 			ArrayList<ItemPrice> list = new ArrayList<ItemPrice>();
-			if(map.containsKey(ip.getSellerName()))
+			if (map.containsKey(ip.getSellerName()))
 				list = map.get(ip.getSellerName());
 			list.add(ip);
 			map.put(ip.getSellerName(), list);
 		}
 		return map;
 	}
-	
+
 	private ArrayList<String> getListOfDays(List<ItemPrice> prices) {
 		Collections.sort(prices);
 		ArrayList<String> days = new ArrayList<String>();
-		for(ItemPrice ip : prices) {
+		for (ItemPrice ip : prices) {
 			String dateString = dateToString(ip);
-			if(!days.contains(dateString))
+			if (!days.contains(dateString))
 				days.add(dateString);
 		}
 		return days;
 	}
-	
+
 	private String dateToString(ItemPrice ip) {
-		return dateToString(ip.getDate().get(GregorianCalendar.MONTH), ip.getDate().get(GregorianCalendar.DAY_OF_MONTH));
+		return dateToString(ip.getDate().get(GregorianCalendar.MONTH), ip
+				.getDate().get(GregorianCalendar.DAY_OF_MONTH));
 	}
-	
+
 	private String dateToString(int month, int day) {
-		String monthStr = new DateFormatSymbols().getMonths()[month - 1].substring(0, 3);
+
+		String monthStr = new DateFormatSymbols().getMonths()[month].substring(
+				0, 3);
 		return monthStr + " " + day;
 	}
-	
-	private HashMap<String, ArrayList<ItemPrice>> partitionByDay(List<ItemPrice> prices) {
+
+	private HashMap<String, ArrayList<ItemPrice>> partitionByDay(
+			List<ItemPrice> prices) {
 		HashMap<String, ArrayList<ItemPrice>> map = new HashMap<String, ArrayList<ItemPrice>>();
-		for(ItemPrice ip : prices) {
+		for (ItemPrice ip : prices) {
 			String dateKey = dateToString(ip);
-			if(!map.containsKey(dateKey))
+			if (!map.containsKey(dateKey))
 				map.put(dateKey, new ArrayList<ItemPrice>());
 			ArrayList<ItemPrice> list = map.get(dateKey);
 			list.add(ip);
 		}
-		for(String s : map.keySet())
+		for (String s : map.keySet())
 			Collections.sort(map.get(s));
 		return map;
 	}
-	
-	private List<ItemPrice> getPricesForDay(List<ItemPrice> prices, ItemPrice itemPrice) {
+
+	private List<ItemPrice> getPricesForDay(List<ItemPrice> prices,
+			ItemPrice itemPrice) {
 		int month = itemPrice.getDate().get(GregorianCalendar.MONTH);
 		int day = itemPrice.getDate().get(GregorianCalendar.DAY_OF_MONTH);
 		List<ItemPrice> result = new ArrayList<ItemPrice>();
-		for(ItemPrice ip : prices) {
+		for (ItemPrice ip : prices) {
 			boolean dayMatch = ip.getDate().get(GregorianCalendar.DAY_OF_MONTH) == day;
 			boolean monthMatch = ip.getDate().get(GregorianCalendar.MONTH) == month;
-			if(dayMatch && monthMatch)
+			if (dayMatch && monthMatch)
 				result.add(ip);
 		}
 		return result;
 	}
-	
+
 }

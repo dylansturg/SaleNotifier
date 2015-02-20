@@ -3,7 +3,6 @@ package edu.rosehulman.salenotifier;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-
 import edu.rosehulman.salenotifier.R;
 import edu.rosehulman.salenotifier.models.Item;
 import edu.rosehulman.salenotifier.service.ItemUpdateBackgroundService;
@@ -16,7 +15,6 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.http.HttpResponseCache;
-import android.opengl.Visibility;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;

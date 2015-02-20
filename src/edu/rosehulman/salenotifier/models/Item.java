@@ -183,7 +183,7 @@ public class Item implements IQueryable, Parcelable {
 			int sellerCompare = Double.compare(lhs.getSellerId(),
 					rhs.getSellerId());
 			if (sellerCompare == 0) {
-				return lhs.getDate().compareTo(rhs.getDate());
+				return rhs.getDate().compareTo(lhs.getDate());
 			}
 			return sellerCompare;
 		}
