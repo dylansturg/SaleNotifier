@@ -16,4 +16,4 @@ The charts are touch enabled, allowing the user to select data points and zoom i
 
 The charts also include a legend which specifies all of the sellers listed on the chart.  Sellers are color coded.  The legend can be accessed from the overflow menu.
 
-<img src="/screenshots/ChartLegend.png?raw=true" alt="Chart With a Legend" style="height: 100px;"/>
+![Chart with a legend up.](/screenshots/ChartLegend.png?raw=true "Legend")
