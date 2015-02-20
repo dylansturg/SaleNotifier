@@ -75,15 +75,15 @@ public class ItemHistoryActivity extends StorageActivity {
 		prices.add(new ItemPrice(30.00d, "walmart.com", 2015, 1, 2));
 		prices.add(new ItemPrice(25.00d, "walmart.com", 2015, 1, 3));
 		prices.add(new ItemPrice(25.00d, "walmart.com", 2015, 1, 4));
-//		prices.add(new ItemPrice(20.00d, "walmart.com", 2015, 1, 5));
-//		prices.add(new ItemPrice(40.00d, "walmart.com", 2015, 1, 6));
+		prices.add(new ItemPrice(20.00d, "walmart.com", 2015, 1, 5));
+		prices.add(new ItemPrice(40.00d, "walmart.com", 2015, 1, 6));
 		
 		prices.add(new ItemPrice(37.93d, "newegg.com", 2015, 1, 1));
 		prices.add(new ItemPrice(35.00d, "newegg.com", 2015, 1, 2));
 		prices.add(new ItemPrice(36.99d, "newegg.com", 2015, 1, 3));
 		prices.add(new ItemPrice(36.99d, "newegg.com", 2015, 1, 4));
-//		prices.add(new ItemPrice(36.99d, "newegg.com", 2015, 1, 5));
-//		prices.add(new ItemPrice(36.99d, "newegg.com", 2015, 1, 6));
+		prices.add(new ItemPrice(36.99d, "newegg.com", 2015, 1, 5));
+		prices.add(new ItemPrice(36.99d, "newegg.com", 2015, 1, 6));
 		
 		// Create a mapping between our xAxis labels and their order (position)
 		ArrayList<String> xAxis = getListOfDays(prices);
@@ -104,13 +104,28 @@ public class ItemHistoryActivity extends StorageActivity {
 				Log.d("SNL", "seller: " + seller + ", p: " + lowest.getPrice() + ", d: " + dateKey + ", dk: " + xAxisMapping.get(dateKey));
 				entries.add(new Entry((float)lowest.getPrice(), xAxisMapping.get(dateKey)));
 			}
-			LineDataSet dataSet = new LineDataSet(entries, seller);
+			
+			// Order the array of entries
+			int found = 0;
+			ArrayList<Entry> sortedEntries = new ArrayList<Entry>();
+			do {
+				for(int i = 0; i < entries.size(); i++) {
+					if(found == entries.get(i).getXIndex()) {
+						sortedEntries.add(entries.get(i));
+						found++;
+						break;
+					}
+				}
+			} while(found < entries.size());
+			
+			LineDataSet dataSet = new LineDataSet(sortedEntries, seller);
 			dataSet.setCircleSize(4f);
 			dataSet.setLineWidth(2f);
 			dataSet.setCircleColor(COLORS[colorIndex % COLORS.length]);
 			dataSet.setColor(COLORS[colorIndex++ % COLORS.length]);
 			dataSet.setHighLightColor(Color.WHITE);
 			dataSets.add(dataSet);
+			
 		}
 	    
 		// Create the labels for our xAxis
