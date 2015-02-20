@@ -204,6 +204,12 @@ public class ItemSearchActivity extends Activity implements OnClickListener,
 		query.setSearchRadius(parseSearchRadius());
 		query.setSearchLocation(mCurrentLocation);
 		query.setSearchLimited(mLocalOnly.isChecked());
+
+		if (query.getSearchLimited() && mCurrentLocation == null) {
+			Toast.makeText(this, R.string.search_missing_location,
+					Toast.LENGTH_LONG).show();
+		}
+
 		return query;
 	}
 

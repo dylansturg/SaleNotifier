@@ -56,9 +56,11 @@
         </activity>
         <activity
             android:name="edu.rosehulman.salenotifier.BarcodeScannerActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_barcode_scanner"
             android:launchMode="singleTop"
-            android:parentActivityName="edu.rosehulman.salenotifier.ItemSearchActivity" >
+            android:parentActivityName="edu.rosehulman.salenotifier.ItemSearchActivity"
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name="edu.rosehulman.salenotifier.AppSettingsActivity"
@@ -94,7 +96,6 @@
             android:label="@string/title_activity_item_history"
             android:launchMode="singleTop"
             android:parentActivityName=".TrackedItemsActivity" />
-
         <activity
             android:name="edu.rosehulman.salenotifier.ItemCurrentActivity"
             android:label="@string/title_activity_item_current"

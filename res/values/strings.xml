@@ -90,5 +90,6 @@
     <string name="action_refresh">Update Prices</string>
     <string name="no_price_information">No Price Information</string>
     <string name="tracked_items_starter_hint">Start SAVING MONEY!</string>
+    <string name="search_missing_location">No location data available.  Is your GPS on?</string>
 
 </resources>
